@@ -1,63 +1,63 @@
-class ZCL_ABAPGIT_OBJECT_ZN01 definition
-  public
-  inheriting from ZCL_ABAPGIT_OBJECTS_SUPER
-  final
-  create public .
+CLASS zcl_abapgit_object_zn01 DEFINITION
+  PUBLIC
+  INHERITING FROM zcl_abapgit_objects_super
+  FINAL
+  CREATE PUBLIC .
 
-public section.
+  PUBLIC SECTION.
 
-  interfaces ZIF_ABAPGIT_OBJECT .
-protected section.
-private section.
+    INTERFACES zif_abapgit_object .
+  PROTECTED SECTION.
+  PRIVATE SECTION.
 ENDCLASS.
 
 
 
-CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
+CLASS zcl_abapgit_object_zn01 IMPLEMENTATION.
 
 
-method ZIF_ABAPGIT_OBJECT~CHANGED_BY.
-endmethod.
+  METHOD zif_abapgit_object~changed_by.
+  ENDMETHOD.
 
 
-method ZIF_ABAPGIT_OBJECT~DELETE.
-endmethod.
+  METHOD zif_abapgit_object~delete.
+  ENDMETHOD.
 
 
-method ZIF_ABAPGIT_OBJECT~DESERIALIZE.
-endmethod.
+  METHOD zif_abapgit_object~deserialize.
+  ENDMETHOD.
 
 
-method ZIF_ABAPGIT_OBJECT~EXISTS.
-  rv_bool = abap_true.
-endmethod.
+  METHOD zif_abapgit_object~exists.
+    rv_bool = abap_true.
+  ENDMETHOD.
 
 
-method ZIF_ABAPGIT_OBJECT~GET_COMPARATOR.
-endmethod.
+  METHOD zif_abapgit_object~get_comparator.
+  ENDMETHOD.
 
 
-method ZIF_ABAPGIT_OBJECT~GET_DESERIALIZE_STEPS.
-endmethod.
+  METHOD zif_abapgit_object~get_deserialize_steps.
+  ENDMETHOD.
 
 
-method ZIF_ABAPGIT_OBJECT~GET_METADATA.
-endmethod.
+  METHOD zif_abapgit_object~get_metadata.
+  ENDMETHOD.
 
 
-method ZIF_ABAPGIT_OBJECT~IS_ACTIVE.
-  rv_active = abap_true.
-endmethod.
+  METHOD zif_abapgit_object~is_active.
+    rv_active = abap_true.
+  ENDMETHOD.
 
 
-method ZIF_ABAPGIT_OBJECT~IS_LOCKED.
-endmethod.
+  METHOD zif_abapgit_object~is_locked.
+  ENDMETHOD.
 
 
-method ZIF_ABAPGIT_OBJECT~JUMP.
-endmethod.
+  METHOD zif_abapgit_object~jump.
+  ENDMETHOD.
 
 
-method ZIF_ABAPGIT_OBJECT~SERIALIZE.
-endmethod.
+  METHOD zif_abapgit_object~serialize.
+  ENDMETHOD.
 ENDCLASS.

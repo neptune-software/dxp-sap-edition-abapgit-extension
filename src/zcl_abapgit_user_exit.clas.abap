@@ -1,18 +1,18 @@
-class ZCL_ABAPGIT_USER_EXIT definition
-  public
-  final
-  create public .
+CLASS zcl_abapgit_user_exit DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
 
-public section.
+  PUBLIC SECTION.
 
-  interfaces ZIF_ABAPGIT_EXIT .
-protected section.
-private section.
+    INTERFACES zif_abapgit_exit .
+  PROTECTED SECTION.
+  PRIVATE SECTION.
 ENDCLASS.
 
 
 
-CLASS ZCL_ABAPGIT_USER_EXIT IMPLEMENTATION.
+CLASS zcl_abapgit_user_exit IMPLEMENTATION.
   METHOD zif_abapgit_exit~wall_message_repo.
     RETURN. " todo, implement method
   ENDMETHOD.
@@ -75,14 +75,14 @@ CLASS ZCL_ABAPGIT_USER_EXIT IMPLEMENTATION.
   ENDMETHOD.
 
 
-method zif_abapgit_exit~change_tadir.
+  METHOD zif_abapgit_exit~change_tadir.
 
 *  data: ls_tadir like line of ct_tadir.
-  field-symbols: <fs_tadir> like line of ct_tadir.
+    FIELD-SYMBOLS: <fs_tadir> LIKE LINE OF ct_tadir.
 
-  if sy-uname eq 'ANDREC'.
-    BREAK-POINT.
-    if iv_package cs '$NEPTUNE_GIT_TESTING'.
+    IF sy-uname EQ 'ANDREC'.
+      BREAK-POINT.
+      IF iv_package CS '$NEPTUNE_GIT_TESTING'.
 *      append value #(
 *        pgmid    = 'R3TR'
 *        object   = 'ZN01'"some_logic( something )
@@ -92,15 +92,15 @@ method zif_abapgit_exit~change_tadir.
 *        ) to ct_tadir.
 
 
-      append initial line to ct_tadir assigning <fs_tadir>.
-      if sy-subrc eq 0.
-        <fs_tadir>-pgmid    = 'R3TR'.
-        <fs_tadir>-object   = 'ZN01' ."some_logic( something ).
-        <fs_tadir>-obj_name = 'ANDRE_GIT_TESTES' . "something-name.
-        <fs_tadir>-devclass = iv_package.
-        <fs_tadir>-path     = '/src/' .
-      endif.
-    endif.
-  endif.
-endmethod.
+        APPEND INITIAL LINE TO ct_tadir ASSIGNING <fs_tadir>.
+        IF sy-subrc EQ 0.
+          <fs_tadir>-pgmid    = 'R3TR'.
+          <fs_tadir>-object   = 'ZN01' ."some_logic( something ).
+          <fs_tadir>-obj_name = 'ANDRE_GIT_TESTES' . "something-name.
+          <fs_tadir>-devclass = iv_package.
+          <fs_tadir>-path     = '/src/' .
+        ENDIF.
+      ENDIF.
+    ENDIF.
+  ENDMETHOD.
 ENDCLASS.
