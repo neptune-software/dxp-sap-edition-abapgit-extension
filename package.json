@@ -5,7 +5,9 @@
   "description": "Neptune DXP SAP Edition abapGit Extension Objects",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint:file": "abaplint > list.txt",
+    "test": "npm run lint",
+    "lint": "abaplint"
   },
   "repository": {
     "type": "git",
