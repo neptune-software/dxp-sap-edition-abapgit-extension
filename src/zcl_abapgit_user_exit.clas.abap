@@ -1,21 +1,11 @@
-class zcl_abapgit_user_exit definition
+class ZCL_ABAPGIT_USER_EXIT definition
   public
   final
   create public .
 
-  public section.
+public section.
 
-    interfaces zif_abapgit_exit .
-
-    types: begin of ty_tadir,
-            artifact_type type  /neptune/artifact_type,
-            key_mandt     type  mandt,
-            key1          type  /neptune/artifact_key,
-            devclass      type char30,
-            artifact_name type /neptune/artifact_name,
-            object_type	  type /neptune/tadir_obj_type,
-           end of ty_tadir.
-    types ty_tadir_tt type standard table of ty_tadir.
+  interfaces ZIF_ABAPGIT_EXIT .
   PROTECTED SECTION.
 private section.
 ENDCLASS.
@@ -25,65 +15,58 @@ ENDCLASS.
 CLASS ZCL_ABAPGIT_USER_EXIT IMPLEMENTATION.
 
 
-  METHOD zif_abapgit_exit~adjust_display_commit_url.
+  METHOD ZIF_ABAPGIT_EXIT~ADJUST_DISPLAY_COMMIT_URL.
     RETURN. " todo, implement method
   ENDMETHOD.
 
 
-  METHOD zif_abapgit_exit~adjust_display_filename.
+  METHOD ZIF_ABAPGIT_EXIT~ADJUST_DISPLAY_FILENAME.
     RETURN. " todo, implement method
   ENDMETHOD.
 
 
-  METHOD zif_abapgit_exit~allow_sap_objects.
+  METHOD ZIF_ABAPGIT_EXIT~ALLOW_SAP_OBJECTS.
     RETURN. " todo, implement method
   ENDMETHOD.
 
 
-  METHOD zif_abapgit_exit~change_local_host.
+  METHOD ZIF_ABAPGIT_EXIT~CHANGE_LOCAL_HOST.
     RETURN. " todo, implement method
   ENDMETHOD.
 
 
-  METHOD zif_abapgit_exit~change_proxy_authentication.
+  METHOD ZIF_ABAPGIT_EXIT~CHANGE_PROXY_AUTHENTICATION.
     RETURN. " todo, implement method
   ENDMETHOD.
 
 
-  METHOD zif_abapgit_exit~change_proxy_port.
+  METHOD ZIF_ABAPGIT_EXIT~CHANGE_PROXY_PORT.
     RETURN. " todo, implement method
   ENDMETHOD.
 
 
-  METHOD zif_abapgit_exit~change_proxy_url.
+  METHOD ZIF_ABAPGIT_EXIT~CHANGE_PROXY_URL.
     RETURN. " todo, implement method
   ENDMETHOD.
 
 
   method zif_abapgit_exit~change_tadir.
 
-    data: lt_tadir type ty_tadir_tt.
-
-    data: lt_neptadir type ty_tadir_tt,
+    data: lt_neptadir type /neptune/if_artifact_type=>ty_t_lcl_tadir,
           ls_neptadir like line of lt_neptadir.
-*    data: lt_neptadir type standard table of /neptune/tadir,
-*          ls_neptadir like line of lt_neptadir.
-
-*    data: lo_tadir type ref to /neptune/if_tadir,
-*          lv_object_type type /neptune/tadir_obj_type.
 
     field-symbols <fs_tadir> like line of ct_tadir.
 
 **********************************************************************
-    break andrec.
+*    break andrec.
 
     try.
 
 *          raise exception type cx_sy_dyn_call_illegal_method.
 *          raise exception type CX_SY_DYN_CALL_ILLEGAL_CLASS.
 
-        " Ongoing ffrom DXP 23 fetch wie tadir framework (all artifacts can be assigned to a devclass)
-        call method ('/NEPTUNE/CL_TADIR')=>('GET_TADIR_FOR_DEVCLASS')
+        " Ongoing from DXP 23 fetch wie tadir framework (all artifacts can be assigned to a devclass)
+        call method ('/NEPTUNE/CL_TADIR')=>('GET_TADIR_FOR_DEVCLASS') ##CALLED
 *          call method  /neptune/cl_tadir=>get_tadir_for_devclass
           exporting
             iv_devclass = iv_package
@@ -99,13 +82,9 @@ CLASS ZCL_ABAPGIT_USER_EXIT IMPLEMENTATION.
 
     endtry.
 
-*      lo_tadir = /neptune/cl_tadir=>get_instance( iv_devclass = iv_package ).
-*      lt_neptadir = lo_tadir->get_tadir( ).
-
     loop at lt_neptadir into ls_neptadir.
       append initial line to ct_tadir assigning <fs_tadir>.
       if sy-subrc eq 0.
-*          lv_object_type = lo_tadir->get_object_type( iv_artifact_type = ls_neptadir-artifact_type ).
         <fs_tadir>-pgmid     = 'R3TR'.
         <fs_tadir>-object    = ls_neptadir-object_type.
         <fs_tadir>-obj_name  = ls_neptadir-key1.
@@ -116,71 +95,70 @@ CLASS ZCL_ABAPGIT_USER_EXIT IMPLEMENTATION.
 
     endloop.
 
-
   endmethod.
 
 
-  METHOD zif_abapgit_exit~create_http_client.
+  METHOD ZIF_ABAPGIT_EXIT~CREATE_HTTP_CLIENT.
     RETURN. " todo, implement method
   ENDMETHOD.
 
 
-  METHOD zif_abapgit_exit~custom_serialize_abap_clif.
+  METHOD ZIF_ABAPGIT_EXIT~CUSTOM_SERIALIZE_ABAP_CLIF.
     RETURN. " todo, implement method
   ENDMETHOD.
 
 
-  METHOD zif_abapgit_exit~deserialize_postprocess.
+  METHOD ZIF_ABAPGIT_EXIT~DESERIALIZE_POSTPROCESS.
     RETURN. " todo, implement method
   ENDMETHOD.
 
 
-  METHOD zif_abapgit_exit~determine_transport_request.
+  METHOD ZIF_ABAPGIT_EXIT~DETERMINE_TRANSPORT_REQUEST.
     RETURN. " todo, implement method
   ENDMETHOD.
 
 
-  METHOD zif_abapgit_exit~get_ci_tests.
+  METHOD ZIF_ABAPGIT_EXIT~GET_CI_TESTS.
     RETURN. " todo, implement method
   ENDMETHOD.
 
 
-  METHOD zif_abapgit_exit~get_ssl_id.
+  METHOD ZIF_ABAPGIT_EXIT~GET_SSL_ID.
     RETURN. " todo, implement method
   ENDMETHOD.
 
 
-  METHOD zif_abapgit_exit~http_client.
+  METHOD ZIF_ABAPGIT_EXIT~HTTP_CLIENT.
     RETURN. " todo, implement method
   ENDMETHOD.
 
 
-  METHOD zif_abapgit_exit~on_event.
+  METHOD ZIF_ABAPGIT_EXIT~ON_EVENT.
     RETURN. " todo, implement method
   ENDMETHOD.
 
 
-  METHOD zif_abapgit_exit~pre_calculate_repo_status.
+  METHOD ZIF_ABAPGIT_EXIT~PRE_CALCULATE_REPO_STATUS.
     RETURN. " todo, implement method
   ENDMETHOD.
 
 
-  METHOD zif_abapgit_exit~serialize_postprocess.
+  METHOD ZIF_ABAPGIT_EXIT~SERIALIZE_POSTPROCESS.
     RETURN. " todo, implement method
   ENDMETHOD.
 
 
-  METHOD zif_abapgit_exit~validate_before_push.
+  METHOD ZIF_ABAPGIT_EXIT~VALIDATE_BEFORE_PUSH.
     RETURN. " todo, implement method
   ENDMETHOD.
 
 
-  METHOD zif_abapgit_exit~wall_message_list.
+  METHOD ZIF_ABAPGIT_EXIT~WALL_MESSAGE_LIST.
     RETURN. " todo, implement method
   ENDMETHOD.
 
 
-  METHOD zif_abapgit_exit~wall_message_repo.
+  METHOD ZIF_ABAPGIT_EXIT~WALL_MESSAGE_REPO.
     RETURN. " todo, implement method
   ENDMETHOD.
 ENDCLASS.
