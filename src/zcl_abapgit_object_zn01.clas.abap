@@ -23,6 +23,14 @@ private section.
   types:
     ty_tt_lcl_evtscr type standard table of ty_lcl_evtscr .
   types:
+    begin of ty_lcl_css,
+          applid    type /neptune/applid,
+          version   type /neptune/version,
+          file_name type string,
+         end of ty_lcl_css .
+  types:
+    ty_tt_lcl_css type standard table of ty_lcl_css .
+  types:
     begin of ty_code,
           file_name type string,
           code      type string,
@@ -43,6 +51,12 @@ private section.
     importing
       !IV_TABNAME type TABNAME
       !IT_TABLE type ANY .
+  methods SERIALIZE_CSS
+    importing
+      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
+  methods SERIALIZE__CSS
+    importing
+      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
 ENDCLASS.
 
 
@@ -50,15 +64,73 @@ ENDCLASS.
 CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
 
+method serialize_css.
+
+  data ls_file type zif_abapgit_git_definitions=>ty_file.
+  data lv_code type string.
+*  data lv_file_name type string.
+
+  data lt_lcl_css type ty_tt_lcl_css.
+  data ls_lcl_css like line of lt_lcl_css.
+
+  data lt_css type standard table of /neptune/css.
+  data ls_css like line of lt_css.
+
+  field-symbols: <lt_standard_table> type standard table.
+
+**********************************************************************\\
+
+  assign is_table_content-table_content->* to <lt_standard_table>.
+
+  lt_css = <lt_standard_table>.
+
+  sort lt_css.
+
+  read table lt_css into ls_css index 1.
+  check sy-subrc eq 0.
+
+  move-corresponding ls_css to ls_lcl_css.
+
+  loop at lt_css into ls_css.
+    if lv_code is initial.
+      lv_code = ls_css-text.
+    else.
+      concatenate lv_code ls_css-text into lv_code separated by gc_crlf.
+    endif.
+  endloop.
+
+  concatenate me->ms_item-obj_name
+              me->ms_item-obj_type
+              is_table_content-tabname
+              'css' into ls_lcl_css-file_name separated by '.'.
+
+  replace all occurrences of '/' in ls_lcl_css-file_name with '#'.
+
+  translate ls_lcl_css-file_name to lower case.
+  append ls_lcl_css to lt_lcl_css.
+
+** Add adjusted table to files
+  me->serialize_table(
+    exporting
+      iv_tabname = is_table_content-tabname
+      it_table   = lt_lcl_css ).
+
+** loop at code table to add each entry as a file
+  ls_file-path = '/'.
+  ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_code ).
+  ls_file-filename = ls_lcl_css-file_name.
+
+  zif_abapgit_object~mo_files->add( ls_file ).
+
+endmethod.
+
+
 method serialize_evtscr.
 
-  data: lo_ajson         type ref to zcl_abapgit_ajson,
-        lx_ajson         type ref to zcx_abapgit_ajson_error,
-        lv_json          type string,
-        ls_file          type zif_abapgit_git_definitions=>ty_file.
+  data ls_file type zif_abapgit_git_definitions=>ty_file.
 
-  data: lt_lcl_evtscr type ty_tt_lcl_evtscr,
-        ls_lcl_evtscr like line of lt_lcl_evtscr.
+  data lt_lcl_evtscr type ty_tt_lcl_evtscr.
+  data ls_lcl_evtscr like line of lt_lcl_evtscr.
 
   data lt_evtscr type standard table of /neptune/evtscr.
   data ls_evtscr like line of lt_evtscr.
@@ -171,15 +243,73 @@ method serialize_table.
 endmethod.
 
 
+method SERIALIZE__CSS.
+
+  data ls_file type zif_abapgit_git_definitions=>ty_file.
+  data lv_code type string.
+*  data lv_file_name type string.
+
+  data lt_lcl_css type ty_tt_lcl_css.
+  data ls_lcl_css like line of lt_lcl_css.
+
+  data lt_css type standard table of /neptune/_css_d.
+  data ls_css like line of lt_css.
+
+  field-symbols: <lt_standard_table> type standard table.
+
+**********************************************************************\\
+
+  assign is_table_content-table_content->* to <lt_standard_table>.
+
+  lt_css = <lt_standard_table>.
+
+  sort lt_css.
+
+  read table lt_css into ls_css index 1.
+  check sy-subrc eq 0.
+
+  move-corresponding ls_css to ls_lcl_css.
+
+  loop at lt_css into ls_css.
+    if lv_code is initial.
+      lv_code = ls_css-text.
+    else.
+      concatenate lv_code ls_css-text into lv_code separated by gc_crlf.
+    endif.
+  endloop.
+
+  concatenate me->ms_item-obj_name
+              me->ms_item-obj_type
+              is_table_content-tabname
+              'css' into ls_lcl_css-file_name separated by '.'.
+
+  replace all occurrences of '/' in ls_lcl_css-file_name with '#'.
+
+  translate ls_lcl_css-file_name to lower case.
+  append ls_lcl_css to lt_lcl_css.
+
+** Add adjusted table to files
+  me->serialize_table(
+    exporting
+      iv_tabname = is_table_content-tabname
+      it_table   = lt_lcl_css ).
+
+** loop at code table to add each entry as a file
+  ls_file-path = '/'.
+  ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_code ).
+  ls_file-filename = ls_lcl_css-file_name.
+
+  zif_abapgit_object~mo_files->add( ls_file ).
+
+endmethod.
+
+
 method serialize__evtscr.
 
-  data: lo_ajson         type ref to zcl_abapgit_ajson,
-        lx_ajson         type ref to zcx_abapgit_ajson_error,
-        lv_json          type string,
-        ls_file          type zif_abapgit_git_definitions=>ty_file.
+  data ls_file type zif_abapgit_git_definitions=>ty_file.
 
-  data: lt_lcl_evtscr type ty_tt_lcl_evtscr,
-        ls_lcl_evtscr like line of lt_lcl_evtscr.
+  data lt_lcl_evtscr type ty_tt_lcl_evtscr.
+  data ls_lcl_evtscr like line of lt_lcl_evtscr.
 
   data lt__evtscr type standard table of /neptune/_evtscr.
   data ls__evtscr like line of lt__evtscr.
@@ -339,12 +469,10 @@ method zif_abapgit_object~serialize.
         lv_key           type /neptune/artifact_key,
         ls_file          type zif_abapgit_git_definitions=>ty_file.
 
+  data: lt_obj type standard table of /neptune/obj,
+        ls_obj like line of lt_obj.
+
   field-symbols: <lt_standard_table> type standard table.
-
-**********************************************************************
-
-  data lt_obj type standard table of /neptune/obj.
-  data ls_obj like line of lt_obj.
 
 **********************************************************************
 
@@ -356,7 +484,7 @@ method zif_abapgit_object~serialize.
     exporting iv_key1          = lv_key
     importing et_table_content = lt_table_content ).
 
-* Save Obj Table so we ca nthe read the name of objects with the FIELD_ID
+* Save OBJ Table so we can read the name of objects with the FIELD_ID
   read table lt_table_content into ls_table_content with key tabname = '/NEPTUNE/OBJ'.
   if sy-subrc eq 0.
     assign ls_table_content-table_content->* to <lt_standard_table>.
@@ -369,27 +497,31 @@ method zif_abapgit_object~serialize.
     case ls_table_content-tabname.
       when '/NEPTUNE/EVTSCR'.
 
-*        break andrec.
         me->serialize_evtscr(
           exporting
             it_obj    = lt_obj
             is_table_content = ls_table_content ).
 
-**********************************************************************
-**********************************************************************
-**********************************************************************
-
       when '/NEPTUNE/_EVTSCR'.
 
-*        break andrec.
         me->serialize__evtscr(
           exporting
             it_obj    = lt_obj
             is_table_content = ls_table_content ).
 
-**********************************************************************
-**********************************************************************
-**********************************************************************
+      when '/NEPTUNE/CSS'.
+
+        me->serialize_css(
+          exporting
+            is_table_content = ls_table_content ).
+
+      when '/NEPTUNE/_CSS_D' or
+           '/NEPTUNE/_CSS_P' or
+           '/NEPTUNE/_CSS_T'.
+
+        me->serialize__css(
+          exporting
+            is_table_content = ls_table_content ).
 
       when others.
 
