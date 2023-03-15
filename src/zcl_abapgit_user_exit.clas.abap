@@ -60,6 +60,8 @@ CLASS ZCL_ABAPGIT_USER_EXIT IMPLEMENTATION.
 **********************************************************************
 *    break andrec.
 
+    check iv_package = '$NEPTUNE_GIT_TESTING'.
+
     try.
 
 *          raise exception type cx_sy_dyn_call_illegal_method.
