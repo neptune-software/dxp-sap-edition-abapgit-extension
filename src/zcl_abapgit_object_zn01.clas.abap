@@ -38,6 +38,8 @@ private section.
   types:
     ty_tt_code type standard table of ty_code with non-unique key file_name .
 
+  data GT_SKIP_PATHS type STRING_TABLE .
+
   interface /NEPTUNE/IF_ARTIFACT_TYPE load .
   methods SERIALIZE_EVTSCR
     importing
@@ -50,18 +52,77 @@ private section.
   methods SERIALIZE_TABLE
     importing
       !IV_TABNAME type TABNAME
-      !IT_TABLE type ANY .
+      !IT_TABLE type ANY
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
   methods SERIALIZE_CSS
     importing
       !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
   methods SERIALIZE__CSS
     importing
       !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
+  interface ZIF_ABAPGIT_GIT_DEFINITIONS load .
+  methods DESERIALIZE_TABLE
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IR_DATA type ref to DATA .
+  methods GET_TABNAME_FROM_FILE
+    importing
+      !IS_FILENAME type STRING
+    returning
+      value(EV_TABNAME) type TADIR-OBJ_NAME .
+  methods SET_SKIP_FIELDS .
+  methods GET_SKIP_FIELDS
+    returning
+      value(RT_SKIP_PATHS) type STRING_TABLE .
 ENDCLASS.
 
 
 
 CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
+
+
+method deserialize_table.
+
+  data lo_ajson type ref to zcl_abapgit_ajson.
+  data lx_ajson type ref to zcx_abapgit_ajson_error.
+
+  field-symbols <lg_tab> type any table.
+
+  assign ir_data->* to <lg_tab>.
+
+  try.
+      lo_ajson = zcl_abapgit_ajson=>parse( zcl_abapgit_convert=>xstring_to_string_utf8( is_file-data ) ).
+      lo_ajson->zif_abapgit_ajson~to_abap( importing ev_container = <lg_tab> ).
+    catch zcx_abapgit_ajson_error into lx_ajson.
+      zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
+  endtry.
+
+endmethod.
+
+
+method get_skip_fields.
+
+  rt_skip_paths = gt_skip_paths.
+
+endmethod.
+
+
+method get_tabname_from_file.
+
+  data lt_comp type standard table of string.
+  data ls_comp like line of lt_comp.
+
+  split is_filename at '.' into table lt_comp.
+
+  read table lt_comp into ls_comp index 3.
+  if sy-subrc eq 0.
+    replace all occurrences of '#' in ls_comp with '/'.
+    translate ls_comp to upper case.
+    ev_tabname = ls_comp.
+  endif.
+
+endmethod.
 
 
 method serialize_css.
@@ -213,6 +274,8 @@ method serialize_table.
         lv_json          type string,
         ls_file          type zif_abapgit_git_definitions=>ty_file.
 
+  data it_skip_paths type string_table.
+
   try.
       lo_ajson = zcl_abapgit_ajson=>create_empty( ).
       lo_ajson->keep_item_order( ).
@@ -220,11 +283,20 @@ method serialize_table.
         iv_path = '/'
         iv_val = it_table ).
 
-*          if iv_skip_initial = abap_true.
-*            lo_ajson = zcl_abapgit_ajson=>create_from(
-*              ii_source_json = lo_ajson
-*              ii_filter = zcl_abapgit_ajson_filter_lib=>create_empty_filter( ) ).
-*          endif.
+* Remove fields that have initial value
+      lo_ajson = zcl_abapgit_ajson=>create_from(
+        ii_source_json = lo_ajson
+        ii_filter = zcl_abapgit_ajson_filter_lib=>create_empty_filter( ) ).
+
+* Remove unwanted fields
+      it_skip_paths = get_skip_fields( ).
+      if it_skip_paths is not initial.
+        lo_ajson = zcl_abapgit_ajson=>create_from(
+          ii_source_json = lo_ajson
+          ii_filter = zcl_abapgit_ajson_filter_lib=>create_path_filter(
+                                                      it_skip_paths     = it_skip_paths
+                                                      iv_pattern_search = abap_true ) ).
+      endif.
 
       lv_json = lo_ajson->stringify( 2 ).
     catch zcx_abapgit_ajson_error into lx_ajson.
@@ -384,6 +456,29 @@ method serialize__evtscr.
 endmethod.
 
 
+method set_skip_fields.
+
+  data: lv_skip type string.
+
+  lv_skip = '*APPLID'.
+  append lv_skip to gt_skip_paths.
+  lv_skip = '*CREDAT'.
+  append lv_skip to gt_skip_paths.
+  lv_skip = '*CRETIM'.
+  append lv_skip to gt_skip_paths.
+  lv_skip = '*CRENAM'.
+  append lv_skip to gt_skip_paths.
+  lv_skip = '*UPDDAT'.
+  append lv_skip to gt_skip_paths.
+  lv_skip = '*UPDTIM'.
+  append lv_skip to gt_skip_paths.
+  lv_skip = '*UPDNAM'.
+  append lv_skip to gt_skip_paths.
+
+
+endmethod.
+
+
 method zif_abapgit_object~changed_by.
 
   data: lo_artifact type ref to /neptune/if_artifact_type,
@@ -419,9 +514,71 @@ endmethod.
 method zif_abapgit_object~deserialize.
 ** pick up logic from CLASS ZCL_ABAPGIT_DATA_DESERIALIZER
 
-  data lt_files type zif_abapgit_git_definitions=>ty_files_tt.
+  data: lt_files type zif_abapgit_git_definitions=>ty_files_tt,
+        ls_files like line of lt_files.
+
+  data: lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
+        ls_table_content like line of lt_table_content.
+
+  data lr_data    type ref to data.
+  data lv_tabname type tadir-obj_name.
+
+**********************************************************************
 
   lt_files = zif_abapgit_object~mo_files->get_files( ).
+
+  loop at lt_files into ls_files where filename cs '.json'.
+
+    lv_tabname = get_tabname_from_file( ls_files-filename ).
+
+    lr_data = zcl_abapgit_data_utils=>build_table_itab( lv_tabname ).
+
+    case lv_tabname.
+      when '/NEPTUNE/EVTSCR'.
+
+*        me->serialize_evtscr(
+*          exporting
+*            it_obj    = lt_obj
+*            is_table_content = ls_table_content ).
+
+      when '/NEPTUNE/_EVTSCR'.
+
+*        me->serialize__evtscr(
+*          exporting
+*            it_obj    = lt_obj
+*            is_table_content = ls_table_content ).
+
+      when '/NEPTUNE/CSS'.
+
+*        me->serialize_css(
+*          exporting
+*            is_table_content = ls_table_content ).
+
+      when '/NEPTUNE/_CSS_D' or
+           '/NEPTUNE/_CSS_P' or
+           '/NEPTUNE/_CSS_T'.
+
+*        me->serialize__css(
+*          exporting
+*            is_table_content = ls_table_content ).
+
+      when others.
+
+        deserialize_table(
+        exporting
+          is_file = ls_files
+          ir_data = lr_data
+        ).
+
+    endcase.
+
+    ls_table_content-tabname = lv_tabname.
+    ls_table_content-table_content = lr_data.
+    append ls_table_content to lt_table_content.
+    clear ls_table_content.
+
+
+  endloop.
 
 endmethod.
 
@@ -437,7 +594,7 @@ endmethod.
 
 
 method zif_abapgit_object~get_deserialize_steps.
-  append zif_abapgit_object=>gc_step_id-early to rt_steps.
+  append zif_abapgit_object=>gc_step_id-late to rt_steps.
 endmethod.
 
 
@@ -491,7 +648,10 @@ method zif_abapgit_object~serialize.
     lt_obj = <lt_standard_table>.
   endif.
 
+* set fields that will be skipped in the serialization process
+  set_skip_fields( ).
 
+* serialize
   loop at lt_table_content into ls_table_content.
 
     case ls_table_content-tabname.

@@ -38,15 +38,30 @@ private section.
   types:
     ty_tt_code type standard table of ty_code with non-unique key file_name .
 
+  data GT_SKIP_PATHS type STRING_TABLE .
+
   methods SERIALIZE_TABLE
     importing
       !IV_TABNAME type TABNAME
-      !IT_TABLE type ANY .
+      !IT_TABLE type ANY
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods SET_SKIP_FIELDS .
+  methods GET_SKIP_FIELDS
+    returning
+      value(RT_SKIP_PATHS) type STRING_TABLE .
 ENDCLASS.
 
 
 
 CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
+
+
+method GET_SKIP_FIELDS.
+
+  rt_skip_paths = gt_skip_paths.
+
+endmethod.
 
 
 method serialize_table.
@@ -57,6 +72,8 @@ method serialize_table.
         lv_json          type string,
         ls_file          type zif_abapgit_git_definitions=>ty_file.
 
+  data it_skip_paths type string_table.
+
   try.
       lo_ajson = zcl_abapgit_ajson=>create_empty( ).
       lo_ajson->keep_item_order( ).
@@ -64,11 +81,20 @@ method serialize_table.
         iv_path = '/'
         iv_val = it_table ).
 
-*          if iv_skip_initial = abap_true.
-*            lo_ajson = zcl_abapgit_ajson=>create_from(
-*              ii_source_json = lo_ajson
-*              ii_filter = zcl_abapgit_ajson_filter_lib=>create_empty_filter( ) ).
-*          endif.
+* Remove fields that have initial value
+      lo_ajson = zcl_abapgit_ajson=>create_from(
+        ii_source_json = lo_ajson
+        ii_filter = zcl_abapgit_ajson_filter_lib=>create_empty_filter( ) ).
+
+* Remove unwanted fields
+      it_skip_paths = get_skip_fields( ).
+      if it_skip_paths is not initial.
+        lo_ajson = zcl_abapgit_ajson=>create_from(
+          ii_source_json = lo_ajson
+          ii_filter = zcl_abapgit_ajson_filter_lib=>create_path_filter(
+                                                      it_skip_paths     = it_skip_paths
+                                                      iv_pattern_search = abap_true ) ).
+      endif.
 
       lv_json = lo_ajson->stringify( 2 ).
     catch zcx_abapgit_ajson_error into lx_ajson.
@@ -83,6 +109,29 @@ method serialize_table.
                          iv_ext   = 'json' ).
 
   zif_abapgit_object~mo_files->add( ls_file ).
+
+endmethod.
+
+
+method SET_SKIP_FIELDS.
+
+  data: lv_skip type string.
+
+  lv_skip = '*APIID'.
+  append lv_skip to gt_skip_paths.
+  lv_skip = '*CREDAT'.
+  append lv_skip to gt_skip_paths.
+  lv_skip = '*CRETIM'.
+  append lv_skip to gt_skip_paths.
+  lv_skip = '*CRENAM'.
+  append lv_skip to gt_skip_paths.
+  lv_skip = '*UPDDAT'.
+  append lv_skip to gt_skip_paths.
+  lv_skip = '*UPDTIM'.
+  append lv_skip to gt_skip_paths.
+  lv_skip = '*UPDNAM'.
+  append lv_skip to gt_skip_paths.
+
 
 endmethod.
 
@@ -140,7 +189,7 @@ endmethod.
 
 
 method ZIF_ABAPGIT_OBJECT~GET_DESERIALIZE_STEPS.
-  append zif_abapgit_object=>gc_step_id-early to rt_steps.
+  append zif_abapgit_object=>gc_step_id-late to rt_steps.
 endmethod.
 
 
@@ -184,6 +233,10 @@ method zif_abapgit_object~serialize.
     exporting iv_key1          = lv_key
     importing et_table_content = lt_table_content ).
 
+* set fields that will be skipped in the serialization process
+  set_skip_fields( ).
+
+* serialize
   loop at lt_table_content into ls_table_content.
 
     assign ls_table_content-table_content->* to <lt_standard_table>.
