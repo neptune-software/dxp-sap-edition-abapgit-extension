@@ -16,7 +16,7 @@ private section.
     begin of ty_lcl_evtscr,
           applid    type /neptune/applid,
           field_id  type /neptune/field_id,
-          version   type /neptune/version,
+*          version   type /neptune/version,
           event     type /neptune/event_id,
           file_name type string,
          end of ty_lcl_evtscr .
@@ -25,7 +25,7 @@ private section.
   types:
     begin of ty_lcl_css,
           applid    type /neptune/applid,
-          version   type /neptune/version,
+*          version   type /neptune/version,
           file_name type string,
          end of ty_lcl_css .
   types:
@@ -65,7 +65,9 @@ private section.
   methods DESERIALIZE_TABLE
     importing
       !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IR_DATA type ref to DATA .
+      !IR_DATA type ref to DATA
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
   methods GET_TABNAME_FROM_FILE
     importing
       !IS_FILENAME type STRING
@@ -75,11 +77,97 @@ private section.
   methods GET_SKIP_FIELDS
     returning
       value(RT_SKIP_PATHS) type STRING_TABLE .
+  methods DESERIALIZE_EVTSCR
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
+      !IR_DATA type ref to DATA
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods DESERIALIZE__EVTSCR
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
+      !IR_DATA type ref to DATA
+    exceptions
+      ZCX_ABAPG .
+  methods DESERIALIZE_CSS
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
+      !IR_DATA type ref to DATA
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods DESERIALIZE__CSS
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
+      !IR_DATA type ref to DATA
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
 ENDCLASS.
 
 
 
 CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
+
+
+method DESERIALIZE_CSS.
+endmethod.
+
+
+method deserialize_evtscr.
+
+  data lt_lcl_evtscr type ty_tt_lcl_evtscr.
+  data ls_lcl_evtscr like line of lt_lcl_evtscr.
+
+  data lt_evtscr type standard table of /neptune/evtscr.
+  data ls_evtscr like line of lt_evtscr.
+
+  data lo_ajson type ref to zcl_abapgit_ajson.
+  data lx_ajson type ref to zcx_abapgit_ajson_error.
+
+  data ls_file like line of it_files.
+
+  data lt_code type string_table.
+  data lv_code type string.
+
+  field-symbols <lg_tab> type any table.
+
+  assign ir_data->* to <lg_tab>.
+
+  try.
+      lo_ajson = zcl_abapgit_ajson=>parse( zcl_abapgit_convert=>xstring_to_string_utf8( is_file-data ) ).
+      lo_ajson->zif_abapgit_ajson~to_abap( importing ev_container = lt_lcl_evtscr ).
+    catch zcx_abapgit_ajson_error into lx_ajson.
+      zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
+  endtry.
+
+  loop at lt_lcl_evtscr into ls_lcl_evtscr.
+
+    move-corresponding ls_lcl_evtscr to ls_evtscr.
+
+    read table it_files into ls_file with key filename = ls_lcl_evtscr-file_name.
+    if sy-subrc eq 0.
+
+      lv_code =  zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ) .
+
+      split lv_code at gc_crlf into table lt_code.
+      loop at lt_code into lv_code.
+        ls_evtscr-seqnr = sy-tabix.
+        ls_evtscr-text = lv_code.
+        append ls_evtscr to lt_evtscr.
+      endloop.
+
+
+    endif.
+  endloop.
+
+
+  <lg_tab> = lt_evtscr.
+
+
+endmethod.
 
 
 method deserialize_table.
@@ -98,6 +186,14 @@ method deserialize_table.
       zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
   endtry.
 
+endmethod.
+
+
+method DESERIALIZE__CSS.
+endmethod.
+
+
+method DESERIALIZE__EVTSCR.
 endmethod.
 
 
@@ -275,6 +371,8 @@ method serialize_table.
         ls_file          type zif_abapgit_git_definitions=>ty_file.
 
   data it_skip_paths type string_table.
+
+  check it_table is not initial.
 
   try.
       lo_ajson = zcl_abapgit_ajson=>create_empty( ).
@@ -536,10 +634,13 @@ method zif_abapgit_object~deserialize.
     case lv_tabname.
       when '/NEPTUNE/EVTSCR'.
 
-*        me->serialize_evtscr(
-*          exporting
-*            it_obj    = lt_obj
-*            is_table_content = ls_table_content ).
+        deserialize_evtscr(
+          exporting
+            is_file  = ls_files
+            it_files = lt_files
+            ir_data  = lr_data
+        ).
+
 
       when '/NEPTUNE/_EVTSCR'.
 
@@ -565,10 +666,9 @@ method zif_abapgit_object~deserialize.
       when others.
 
         deserialize_table(
-        exporting
-          is_file = ls_files
-          ir_data = lr_data
-        ).
+          exporting
+            is_file = ls_files
+            ir_data = lr_data ).
 
     endcase.
 
