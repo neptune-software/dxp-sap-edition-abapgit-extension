@@ -3,7 +3,6 @@
   "private": true,
   "version": "1.0.0",
   "description": "Neptune DXP SAP Edition abapGit Extension Objects",
-  "main": "index.js",
   "scripts": {
     "lint:file": "abaplint > list.txt",
     "test": "npm run lint",
@@ -18,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/neptune-software/dxp-sap-edition-abapgit-extension/issues"
   },
-  "homepage": "https://github.com/neptune-software/dxp-sap-edition-abapgit-extension#readme"
+  "homepage": "https://github.com/neptune-software/dxp-sap-edition-abapgit-extension#readme",
+  "devDependencies": {
+    "@abaplint/cli": "^2.95.43"
+  }
 }

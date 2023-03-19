@@ -6,17 +6,17 @@
   "dependencies": [
     {
       "url": "https://github.com/abaplint/deps",
-      "folder": "/abaplint-deps",
+      "folder": "/deps1",
       "files": "/src/**/*.*"
     },
     {
       "url": "https://github.com/abapGit/abapGit",
-      "folder": "/abapgit-deps",
+      "folder": "/deps2",
       "files": "/src/**/*.*"
     },
     {
       "url": "https://github.com/neptune-software/dxp-sap-edition-abap",
-      "folder": "/deps2",
+      "folder": "/deps3",
       "files": "/src/**/*.*"
     }
   ],
