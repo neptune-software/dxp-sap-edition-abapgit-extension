@@ -552,8 +552,7 @@ endmethod.
 
 method serialize_table.
 
-  data: lo_artifact      type ref to /neptune/if_artifact_type,
-        lo_ajson         type ref to zcl_abapgit_ajson,
+  data: lo_ajson         type ref to zcl_abapgit_ajson,
         lx_ajson         type ref to zcx_abapgit_ajson_error,
         lv_json          type string,
         ls_file          type zif_abapgit_git_definitions=>ty_file.
@@ -770,13 +769,13 @@ method zif_abapgit_object~changed_by.
   data: lo_artifact type ref to /neptune/if_artifact_type,
         lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
         ls_table_content like line of lt_table_content,
-        lv_json          type string,
         lv_key           type /neptune/artifact_key.
+
+  data ls_app type /neptune/app.
 
   field-symbols <lt_standard_table> type standard table.
 
 **********************************************************************
-*    break andrec.
 
   lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = me->ms_item-obj_type ).
 
@@ -786,9 +785,16 @@ method zif_abapgit_object~changed_by.
     exporting iv_key1          = lv_key
     importing et_table_content = lt_table_content ).
 
-  loop at lt_table_content into ls_table_content.
+  read table lt_table_content into ls_table_content with table key tabname = '/NEPTUNE/APP'.
+  if sy-subrc eq 0.
     assign ls_table_content-table_content->* to <lt_standard_table>.
-  endloop.
+    read table <lt_standard_table> into ls_app index 1.
+    if ls_app-updnam is not initial.
+      rv_user = ls_app-updnam.
+    else.
+      rv_user = ls_app-crenam.
+    endif.
+  endif.
 
 endmethod.
 
@@ -927,16 +933,11 @@ endmethod.
 method zif_abapgit_object~serialize.
 
   data: lo_artifact      type ref to /neptune/if_artifact_type,
-        lo_ajson         type ref to zcl_abapgit_ajson,
-        lx_ajson         type ref to zcx_abapgit_ajson_error,
         lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
         ls_table_content like line of lt_table_content,
-        lv_json          type string,
-        lv_key           type /neptune/artifact_key,
-        ls_file          type zif_abapgit_git_definitions=>ty_file.
+        lv_key           type /neptune/artifact_key.
 
-  data: lt_obj type standard table of /neptune/obj,
-        ls_obj like line of lt_obj.
+  data: lt_obj type standard table of /neptune/obj.
 
   field-symbols: <lt_standard_table> type standard table.
 
