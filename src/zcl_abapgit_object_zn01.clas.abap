@@ -66,13 +66,16 @@ private section.
     importing
       !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
       !IR_DATA type ref to DATA
+      !IV_TABNAME type TADIR-OBJ_NAME
+      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
     raising
       ZCX_ABAPGIT_EXCEPTION .
-  methods GET_TABNAME_FROM_FILE
+  methods GET_VALUES_FROM_FILENAME
     importing
       !IS_FILENAME type STRING
-    returning
-      value(EV_TABNAME) type TADIR-OBJ_NAME .
+    exporting
+      !EV_TABNAME type TADIR-OBJ_NAME
+      !EV_OBJ_KEY type /NEPTUNE/ARTIFACT_KEY .
   methods SET_SKIP_FIELDS .
   methods GET_SKIP_FIELDS
     returning
@@ -82,6 +85,7 @@ private section.
       !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
       !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
       !IR_DATA type ref to DATA
+      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
     raising
       ZCX_ABAPGIT_EXCEPTION .
   methods DESERIALIZE__EVTSCR
@@ -89,13 +93,15 @@ private section.
       !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
       !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
       !IR_DATA type ref to DATA
+      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
     exceptions
-      ZCX_ABAPG .
+      ZCX_ABAPGIT_EXCEPTION .
   methods DESERIALIZE_CSS
     importing
       !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
       !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
       !IR_DATA type ref to DATA
+      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
     raising
       ZCX_ABAPGIT_EXCEPTION .
   methods DESERIALIZE__CSS
@@ -103,6 +109,7 @@ private section.
       !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
       !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
       !IR_DATA type ref to DATA
+      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
     raising
       ZCX_ABAPGIT_EXCEPTION .
 ENDCLASS.
@@ -113,6 +120,55 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
 
 method DESERIALIZE_CSS.
+
+  data lt_lcl_css type ty_tt_lcl_css.
+  data ls_lcl_css like line of lt_lcl_css.
+
+  data lt_css type standard table of /neptune/css.
+  data ls_css like line of lt_css.
+
+  data lo_ajson type ref to zcl_abapgit_ajson.
+  data lx_ajson type ref to zcx_abapgit_ajson_error.
+
+  data ls_file like line of it_files.
+
+  data lt_code type string_table.
+  data lv_code type string.
+
+  field-symbols <lt_tab> type any table.
+
+  assign ir_data->* to <lt_tab>.
+
+  try.
+      lo_ajson = zcl_abapgit_ajson=>parse( zcl_abapgit_convert=>xstring_to_string_utf8( is_file-data ) ).
+      lo_ajson->zif_abapgit_ajson~to_abap( importing ev_container = lt_lcl_css ).
+    catch zcx_abapgit_ajson_error into lx_ajson.
+      zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
+  endtry.
+
+  loop at lt_lcl_css into ls_lcl_css.
+
+    move-corresponding ls_lcl_css to ls_css.
+
+    read table it_files into ls_file with key filename = ls_lcl_css-file_name.
+    if sy-subrc eq 0.
+
+      lv_code =  zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ) .
+
+      split lv_code at gc_crlf into table lt_code.
+      loop at lt_code into lv_code.
+        ls_css-applid = iv_key.
+        ls_css-seqnr  = sy-tabix.
+        ls_css-text   = lv_code.
+        append ls_css to lt_css.
+      endloop.
+
+
+    endif.
+  endloop.
+
+  <lt_tab> = lt_css.
+
 endmethod.
 
 
@@ -132,9 +188,9 @@ method deserialize_evtscr.
   data lt_code type string_table.
   data lv_code type string.
 
-  field-symbols <lg_tab> type any table.
+  field-symbols <lt_tab> type any table.
 
-  assign ir_data->* to <lg_tab>.
+  assign ir_data->* to <lt_tab>.
 
   try.
       lo_ajson = zcl_abapgit_ajson=>parse( zcl_abapgit_convert=>xstring_to_string_utf8( is_file-data ) ).
@@ -154,8 +210,9 @@ method deserialize_evtscr.
 
       split lv_code at gc_crlf into table lt_code.
       loop at lt_code into lv_code.
-        ls_evtscr-seqnr = sy-tabix.
-        ls_evtscr-text = lv_code.
+        ls_evtscr-applid = iv_key.
+        ls_evtscr-seqnr  = sy-tabix.
+        ls_evtscr-text   = lv_code.
         append ls_evtscr to lt_evtscr.
       endloop.
 
@@ -163,9 +220,7 @@ method deserialize_evtscr.
     endif.
   endloop.
 
-
-  <lg_tab> = lt_evtscr.
-
+  <lt_tab> = lt_evtscr.
 
 endmethod.
 
@@ -175,25 +230,152 @@ method deserialize_table.
   data lo_ajson type ref to zcl_abapgit_ajson.
   data lx_ajson type ref to zcx_abapgit_ajson_error.
 
-  field-symbols <lg_tab> type any table.
+  data lt_table_content type ref to data.
 
-  assign ir_data->* to <lg_tab>.
+  field-symbols <lt_tab> type any table.
+  field-symbols <ls_line> type any.
+  field-symbols <lv_field> type any.
+  field-symbols: <lt_standard_table> type standard table.
+**********************************************************************
+
+  assign ir_data->* to <lt_tab>.
+
+  create data lt_table_content type standard table of (iv_tabname) with non-unique default key.
+  assign lt_table_content->* to <lt_standard_table>.
 
   try.
       lo_ajson = zcl_abapgit_ajson=>parse( zcl_abapgit_convert=>xstring_to_string_utf8( is_file-data ) ).
-      lo_ajson->zif_abapgit_ajson~to_abap( importing ev_container = <lg_tab> ).
+
+      lo_ajson->zif_abapgit_ajson~to_abap( importing ev_container = <lt_standard_table> ).
     catch zcx_abapgit_ajson_error into lx_ajson.
       zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
   endtry.
 
+
+  loop at <lt_standard_table> assigning <ls_line>.
+    assign component 'APPLID' of structure <ls_line> to <lv_field>.
+    if <lv_field> is assigned.
+      <lv_field> = iv_key.
+      unassign <lv_field>.
+    endif.
+
+    assign component 'VERSION' of structure <ls_line> to <lv_field>.
+    if <lv_field> is assigned.
+      <lv_field> = 1.
+      unassign <lv_field>.
+    endif.
+
+  endloop.
+
+  <lt_tab> = <lt_standard_table>.
+
 endmethod.
 
 
-method DESERIALIZE__CSS.
+method deserialize__css.
+
+  data lt_lcl_css type ty_tt_lcl_css.
+  data ls_lcl_css like line of lt_lcl_css.
+
+  data lt_css type standard table of /neptune/_css_d.
+  data ls_css like line of lt_css.
+
+  data lo_ajson type ref to zcl_abapgit_ajson.
+  data lx_ajson type ref to zcx_abapgit_ajson_error.
+
+  data ls_file like line of it_files.
+
+  data lt_code type string_table.
+  data lv_code type string.
+
+  field-symbols <lt_tab> type any table.
+
+  assign ir_data->* to <lt_tab>.
+
+  try.
+      lo_ajson = zcl_abapgit_ajson=>parse( zcl_abapgit_convert=>xstring_to_string_utf8( is_file-data ) ).
+      lo_ajson->zif_abapgit_ajson~to_abap( importing ev_container = lt_lcl_css ).
+    catch zcx_abapgit_ajson_error into lx_ajson.
+      zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
+  endtry.
+
+  loop at lt_lcl_css into ls_lcl_css.
+
+    move-corresponding ls_lcl_css to ls_css.
+
+    read table it_files into ls_file with key filename = ls_lcl_css-file_name.
+    if sy-subrc eq 0.
+
+      lv_code =  zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ) .
+
+      split lv_code at gc_crlf into table lt_code.
+      loop at lt_code into lv_code.
+        ls_css-applid  = iv_key.
+        ls_css-version = 1.
+        ls_css-seqnr   = sy-tabix.
+        ls_css-text    = lv_code.
+        append ls_css to lt_css.
+      endloop.
+
+
+    endif.
+  endloop.
+
+  <lt_tab> = lt_css.
+
 endmethod.
 
 
-method DESERIALIZE__EVTSCR.
+method deserialize__evtscr.
+
+  data lt_lcl_evtscr type ty_tt_lcl_evtscr.
+  data ls_lcl_evtscr like line of lt_lcl_evtscr.
+
+  data lt_evtscr type standard table of /neptune/_evtscr.
+  data ls_evtscr like line of lt_evtscr.
+
+  data lo_ajson type ref to zcl_abapgit_ajson.
+  data lx_ajson type ref to zcx_abapgit_ajson_error.
+
+  data ls_file like line of it_files.
+
+  data lt_code type string_table.
+  data lv_code type string.
+
+  field-symbols <lt_tab> type any table.
+
+  assign ir_data->* to <lt_tab>.
+
+  try.
+      lo_ajson = zcl_abapgit_ajson=>parse( zcl_abapgit_convert=>xstring_to_string_utf8( is_file-data ) ).
+      lo_ajson->zif_abapgit_ajson~to_abap( importing ev_container = lt_lcl_evtscr ).
+    catch zcx_abapgit_ajson_error into lx_ajson.
+      zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
+  endtry.
+
+  loop at lt_lcl_evtscr into ls_lcl_evtscr.
+
+    move-corresponding ls_lcl_evtscr to ls_evtscr.
+
+    read table it_files into ls_file with key filename = ls_lcl_evtscr-file_name.
+    if sy-subrc eq 0.
+
+      lv_code =  zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ) .
+
+      split lv_code at gc_crlf into table lt_code.
+      loop at lt_code into lv_code.
+        ls_evtscr-applid = iv_key.
+        ls_evtscr-version = 1.
+        ls_evtscr-seqnr  = sy-tabix.
+        ls_evtscr-text   = lv_code.
+        append ls_evtscr to lt_evtscr.
+      endloop.
+
+    endif.
+  endloop.
+
+  <lt_tab> = lt_evtscr.
+
 endmethod.
 
 
@@ -204,12 +386,18 @@ method get_skip_fields.
 endmethod.
 
 
-method get_tabname_from_file.
+method get_values_from_filename.
 
   data lt_comp type standard table of string.
   data ls_comp like line of lt_comp.
 
   split is_filename at '.' into table lt_comp.
+
+  read table lt_comp into ls_comp index 1.
+  if sy-subrc eq 0.
+    translate ls_comp to upper case.
+    ev_obj_key = ls_comp.
+  endif.
 
   read table lt_comp into ls_comp index 3.
   if sy-subrc eq 0.
@@ -481,8 +669,8 @@ method serialize__evtscr.
   data lt_lcl_evtscr type ty_tt_lcl_evtscr.
   data ls_lcl_evtscr like line of lt_lcl_evtscr.
 
-  data lt__evtscr type standard table of /neptune/_evtscr.
-  data ls__evtscr like line of lt__evtscr.
+  data lt_evtscr type standard table of /neptune/_evtscr.
+  data ls_evtscr like line of lt_evtscr.
 
   data: lt_code type ty_tt_code,
         ls_code like line of lt_code.
@@ -495,22 +683,22 @@ method serialize__evtscr.
 
   assign is_table_content-table_content->* to <lt_standard_table>.
 
-  lt__evtscr = <lt_standard_table>.
-  loop at lt__evtscr into ls__evtscr.
+  lt_evtscr = <lt_standard_table>.
+  loop at lt_evtscr into ls_evtscr.
     at new event.
-      move-corresponding ls__evtscr to ls_lcl_evtscr.
+      move-corresponding ls_evtscr to ls_lcl_evtscr.
       clear ls_code.
     endat.
 
     if ls_code-code is initial.
-      ls_code-code = ls__evtscr-text.
+      ls_code-code = ls_evtscr-text.
     else.
-      concatenate ls_code-code ls__evtscr-text into ls_code-code separated by gc_crlf.
+      concatenate ls_code-code ls_evtscr-text into ls_code-code separated by gc_crlf.
     endif.
 
     at end of event.
-      read table it_obj into ls_obj with key applid = ls__evtscr-applid
-                                             field_id = ls__evtscr-field_id.
+      read table it_obj into ls_obj with key applid = ls_evtscr-applid
+                                             field_id = ls_evtscr-field_id.
       if sy-subrc eq 0.
         concatenate me->ms_item-obj_name
                     me->ms_item-obj_type
@@ -620,6 +808,7 @@ method zif_abapgit_object~deserialize.
 
   data lr_data    type ref to data.
   data lv_tabname type tadir-obj_name.
+  data lv_key     type /neptune/artifact_key.
 
 **********************************************************************
 
@@ -627,7 +816,13 @@ method zif_abapgit_object~deserialize.
 
   loop at lt_files into ls_files where filename cs '.json'.
 
-    lv_tabname = get_tabname_from_file( ls_files-filename ).
+    get_values_from_filename(
+      exporting
+        is_filename = ls_files-filename    " File Name
+      importing
+        ev_tabname  = lv_tabname           " Object Name in Object Directory
+        ev_obj_key  = lv_key               " Artifact table key
+    ).
 
     lr_data = zcl_abapgit_data_utils=>build_table_itab( lv_tabname ).
 
@@ -639,36 +834,50 @@ method zif_abapgit_object~deserialize.
             is_file  = ls_files
             it_files = lt_files
             ir_data  = lr_data
+            iv_key   = lv_key
         ).
 
 
       when '/NEPTUNE/_EVTSCR'.
 
-*        me->serialize__evtscr(
-*          exporting
-*            it_obj    = lt_obj
-*            is_table_content = ls_table_content ).
+        deserialize__evtscr(
+          exporting
+            is_file  = ls_files
+            it_files = lt_files
+            ir_data  = lr_data
+            iv_key   = lv_key
+        ).
 
       when '/NEPTUNE/CSS'.
 
-*        me->serialize_css(
-*          exporting
-*            is_table_content = ls_table_content ).
+        deserialize_css(
+          exporting
+            is_file  = ls_files
+            it_files = lt_files
+            ir_data  = lr_data
+            iv_key   = lv_key
+        ).
 
       when '/NEPTUNE/_CSS_D' or
            '/NEPTUNE/_CSS_P' or
            '/NEPTUNE/_CSS_T'.
 
-*        me->serialize__css(
-*          exporting
-*            is_table_content = ls_table_content ).
+        deserialize__css(
+          exporting
+            is_file  = ls_files
+            it_files = lt_files
+            ir_data  = lr_data
+            iv_key   = lv_key
+        ).
 
       when others.
 
         deserialize_table(
           exporting
-            is_file = ls_files
-            ir_data = lr_data ).
+            is_file    = ls_files
+            iv_tabname = lv_tabname
+            iv_key     = lv_key
+            ir_data    = lr_data ).
 
     endcase.
 
