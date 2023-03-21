@@ -7,8 +7,6 @@ class ZCL_ABAPGIT_OBJECT_ZN02 definition
 public section.
 
   interfaces ZIF_ABAPGIT_OBJECT .
-
-  constants GC_CRLF type ABAP_CR_LF value CL_ABAP_CHAR_UTILITIES=>CR_LF. "#EC NOTEXT
 protected section.
 private section.
 
@@ -50,11 +48,66 @@ private section.
   methods GET_SKIP_FIELDS
     returning
       value(RT_SKIP_PATHS) type STRING_TABLE .
+  methods DESERIALIZE_TABLE
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IR_DATA type ref to DATA
+      !IV_TABNAME type TADIR-OBJ_NAME
+      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods GET_VALUES_FROM_FILENAME
+    importing
+      !IS_FILENAME type STRING
+    exporting
+      !EV_TABNAME type TADIR-OBJ_NAME
+      !EV_OBJ_KEY type /NEPTUNE/ARTIFACT_KEY .
 ENDCLASS.
 
 
 
 CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
+
+
+method DESERIALIZE_TABLE.
+
+  data lo_ajson type ref to zcl_abapgit_ajson.
+  data lx_ajson type ref to zcx_abapgit_ajson_error.
+
+  data lt_table_content type ref to data.
+
+  field-symbols <lt_tab> type any table.
+  field-symbols <ls_line> type any.
+  field-symbols <lv_field> type any.
+  field-symbols: <lt_standard_table> type standard table.
+
+**********************************************************************
+
+  assign ir_data->* to <lt_tab>.
+
+  create data lt_table_content type standard table of (iv_tabname) with non-unique default key.
+  assign lt_table_content->* to <lt_standard_table>.
+
+  try.
+      lo_ajson = zcl_abapgit_ajson=>parse( zcl_abapgit_convert=>xstring_to_string_utf8( is_file-data ) ).
+
+      lo_ajson->zif_abapgit_ajson~to_abap( importing ev_container = <lt_standard_table> ).
+    catch zcx_abapgit_ajson_error into lx_ajson.
+      zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
+  endtry.
+
+
+  loop at <lt_standard_table> assigning <ls_line>.
+    assign component 'APIID' of structure <ls_line> to <lv_field>.
+    if <lv_field> is assigned.
+      <lv_field> = iv_key.
+      unassign <lv_field>.
+    endif.
+  endloop.
+
+  <lt_tab> = <lt_standard_table>.
+
+endmethod.
 
 
 method GET_SKIP_FIELDS.
@@ -64,10 +117,32 @@ method GET_SKIP_FIELDS.
 endmethod.
 
 
+method GET_VALUES_FROM_FILENAME.
+
+  data lt_comp type standard table of string.
+  data ls_comp like line of lt_comp.
+
+  split is_filename at '.' into table lt_comp.
+
+  read table lt_comp into ls_comp index 1.
+  if sy-subrc eq 0.
+    translate ls_comp to upper case.
+    ev_obj_key = ls_comp.
+  endif.
+
+  read table lt_comp into ls_comp index 3.
+  if sy-subrc eq 0.
+    replace all occurrences of '#' in ls_comp with '/'.
+    translate ls_comp to upper case.
+    ev_tabname = ls_comp.
+  endif.
+
+endmethod.
+
+
 method serialize_table.
 
-  data: lo_artifact      type ref to /neptune/if_artifact_type,
-        lo_ajson         type ref to zcl_abapgit_ajson,
+  data: lo_ajson         type ref to zcl_abapgit_ajson,
         lx_ajson         type ref to zcx_abapgit_ajson_error,
         lv_json          type string,
         ls_file          type zif_abapgit_git_definitions=>ty_file.
@@ -141,13 +216,13 @@ method ZIF_ABAPGIT_OBJECT~CHANGED_BY.
   data: lo_artifact type ref to /neptune/if_artifact_type,
         lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
         ls_table_content like line of lt_table_content,
-        lv_json          type string,
         lv_key           type /neptune/artifact_key.
+
+  data ls_api type /neptune/api.
 
   field-symbols <lt_standard_table> type standard table.
 
 **********************************************************************
-*    break andrec.
 
   lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = me->ms_item-obj_type ).
 
@@ -157,9 +232,16 @@ method ZIF_ABAPGIT_OBJECT~CHANGED_BY.
     exporting iv_key1          = lv_key
     importing et_table_content = lt_table_content ).
 
-  loop at lt_table_content into ls_table_content.
+  read table lt_table_content into ls_table_content with table key tabname = '/NEPTUNE/API'.
+  if sy-subrc eq 0.
     assign ls_table_content-table_content->* to <lt_standard_table>.
-  endloop.
+    read table <lt_standard_table> into ls_api index 1.
+    if ls_api-updnam is not initial.
+      rv_user = ls_api-updnam.
+    else.
+      rv_user = ls_api-crenam.
+    endif.
+  endif.
 
 endmethod.
 
@@ -168,12 +250,48 @@ method ZIF_ABAPGIT_OBJECT~DELETE.
 endmethod.
 
 
-method ZIF_ABAPGIT_OBJECT~DESERIALIZE.
+method zif_abapgit_object~deserialize.
 ** pick up logic from CLASS ZCL_ABAPGIT_DATA_DESERIALIZER
 
-  data lt_files type zif_abapgit_git_definitions=>ty_files_tt.
+  data: lt_files type zif_abapgit_git_definitions=>ty_files_tt,
+        ls_files like line of lt_files.
+
+  data: lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
+        ls_table_content like line of lt_table_content.
+
+  data lr_data    type ref to data.
+  data lv_tabname type tadir-obj_name.
+  data lv_key     type /neptune/artifact_key.
+
+**********************************************************************
 
   lt_files = zif_abapgit_object~mo_files->get_files( ).
+
+  loop at lt_files into ls_files where filename cs '.json'.
+
+    get_values_from_filename(
+      exporting
+        is_filename = ls_files-filename    " File Name
+      importing
+        ev_tabname  = lv_tabname           " Object Name in Object Directory
+        ev_obj_key  = lv_key               " Artifact table key
+    ).
+
+    lr_data = zcl_abapgit_data_utils=>build_table_itab( lv_tabname ).
+
+    deserialize_table(
+      exporting
+        is_file    = ls_files
+        iv_tabname = lv_tabname
+        iv_key     = lv_key
+        ir_data    = lr_data ).
+
+    ls_table_content-tabname = lv_tabname.
+    ls_table_content-table_content = lr_data.
+    append ls_table_content to lt_table_content.
+    clear ls_table_content.
+
+  endloop.
 
 endmethod.
 
@@ -217,9 +335,7 @@ method zif_abapgit_object~serialize.
         lx_ajson         type ref to zcx_abapgit_ajson_error,
         lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
         ls_table_content like line of lt_table_content,
-        lv_json          type string,
-        lv_key           type /neptune/artifact_key,
-        ls_file          type zif_abapgit_git_definitions=>ty_file.
+        lv_key           type /neptune/artifact_key.
 
   field-symbols: <lt_standard_table> type standard table.
 
