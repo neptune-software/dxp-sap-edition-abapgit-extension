@@ -331,8 +331,6 @@ endmethod.
 method zif_abapgit_object~serialize.
 
   data: lo_artifact      type ref to /neptune/if_artifact_type,
-        lo_ajson         type ref to zcl_abapgit_ajson,
-        lx_ajson         type ref to zcx_abapgit_ajson_error,
         lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
         ls_table_content like line of lt_table_content,
         lv_key           type /neptune/artifact_key.
