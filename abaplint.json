@@ -1,0 +1,85 @@
+{
+  "global": {
+    "files": "/src/**/*.*",
+    "skipGeneratedFunctionGroups": true
+  },
+  "dependencies": [
+    {
+      "url": "https://github.com/abaplint/deps",
+      "folder": "/deps1",
+      "files": "/src/**/*.*"
+    },
+    {
+      "url": "https://github.com/abapGit/abapGit",
+      "folder": "/deps2",
+      "files": "/src/**/*.*"
+    },
+    {
+      "url": "https://github.com/neptune-software/dxp-sap-edition-abap",
+      "folder": "/deps3",
+      "files": "/src/**/*.*"
+    }
+  ],
+  "syntax": {
+    "version": "v702",
+    "errorNamespace": "^(Z|Y|LCL_|(?!TY_BOOKINGS)TY_|LIF_|/NEPTUNE/|/NEP/)",
+    "globalConstants": [
+      "abap_func_changing",
+      "abap_func_exporting",
+      "abap_func_importing",
+      "abap_func_tables",
+      "alv_style_checkbox_checked",
+      "alv_style_checkbox_not_checked",
+      "alv_style2_no_border_left",
+      "cntb_btype_button",
+      "cntb_btype_sep",
+      "ihttp_auth_type_basic_auth",
+      "sana_tok_keyword",
+      "sana_tok_word",
+      "sctsc_states_all",
+      "sctsc_types_all",
+      "seoo_typtype_ref_to",
+      "slis_ev_top_of_page",
+      "sprx_const_state_realized",
+      "wizard_command_continue",
+      "wizard_screen_end",
+      "wizard_screen_start",
+      "wizard_true"
+    ],
+    "globalMacros": [
+      "swf_evaluate",
+      "swf_refresh",
+      "swf_okcode_get"
+    ]
+  },
+  "rules": {
+    "begin_end_names": true,
+    "check_ddic": true,
+    "check_include": {
+      "exclude": ["nad_toolsmac"]
+    },
+    "check_syntax": true,
+    "global_class": true,
+    "implement_methods": true,
+    "sicf_consistency": true,
+    "method_implemented_twice": true,
+    "parser_error": true,
+    "superclass_final": true,
+    "unknown_types": true,
+    "xml_consistency": true,
+    "unused_variables": true,
+    "forbidden_void_type": {
+      "severity": "Error",
+      "check": [
+        "DFIES_TAB",
+        "AEZEIT",
+        "ERZEIT",
+        "MATNR",
+        "MARA",
+        "MAKT",
+        "MARC",
+        "MARD"
+      ]
+    }
+  }
+}
