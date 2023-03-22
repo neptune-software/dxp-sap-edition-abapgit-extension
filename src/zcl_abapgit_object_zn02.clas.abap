@@ -52,7 +52,7 @@ private section.
     importing
       !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
       !IR_DATA type ref to DATA
-      !IV_TABNAME type TADIR-OBJ_NAME
+      !IV_TABNAME type CHAR40
       !IV_KEY type /NEPTUNE/ARTIFACT_KEY
     raising
       ZCX_ABAPGIT_EXCEPTION .
@@ -260,7 +260,7 @@ method zif_abapgit_object~deserialize.
         ls_table_content like line of lt_table_content.
 
   data lr_data    type ref to data.
-  data lv_tabname type tadir-obj_name.
+  data lv_tabname type char40.
   data lv_key     type /neptune/artifact_key.
 
 **********************************************************************

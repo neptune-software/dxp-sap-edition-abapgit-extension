@@ -74,7 +74,7 @@ private section.
     importing
       !IS_FILENAME type STRING
     exporting
-      !EV_TABNAME type TADIR-OBJ_NAME
+      !EV_TABNAME type CHAR40
       !EV_OBJ_KEY type /NEPTUNE/ARTIFACT_KEY .
   methods SET_SKIP_FIELDS .
   methods GET_SKIP_FIELDS
@@ -813,7 +813,7 @@ method zif_abapgit_object~deserialize.
         ls_table_content like line of lt_table_content.
 
   data lr_data    type ref to data.
-  data lv_tabname type tadir-obj_name.
+  data lv_tabname type char40.
   data lv_key     type /neptune/artifact_key.
 
 **********************************************************************
