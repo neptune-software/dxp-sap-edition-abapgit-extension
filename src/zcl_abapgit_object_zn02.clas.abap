@@ -126,7 +126,7 @@ method GET_VALUES_FROM_FILENAME.
 
   read table lt_comp into ls_comp index 1.
   if sy-subrc eq 0.
-    translate ls_comp to upper case.
+*    translate ls_comp to upper case.
     ev_obj_key = ls_comp.
   endif.
 
@@ -253,6 +253,8 @@ endmethod.
 method zif_abapgit_object~deserialize.
 ** pick up logic from CLASS ZCL_ABAPGIT_DATA_DESERIALIZER
 
+  data lo_artifact type ref to /neptune/if_artifact_type.
+
   data: lt_files type zif_abapgit_git_definitions=>ty_files_tt,
         ls_files like line of lt_files.
 
@@ -277,7 +279,10 @@ method zif_abapgit_object~deserialize.
         ev_obj_key  = lv_key               " Artifact table key
     ).
 
-    lr_data = zcl_abapgit_data_utils=>build_table_itab( lv_tabname ).
+    lv_key = me->ms_item-obj_name.
+
+*    lr_data = zcl_abapgit_data_utils=>build_table_itab( lv_tabname ).
+    create data lr_data type standard table of (lv_tabname) with non-unique default key.
 
     deserialize_table(
       exporting
@@ -292,6 +297,20 @@ method zif_abapgit_object~deserialize.
     clear ls_table_content.
 
   endloop.
+
+  if lt_table_content is not initial.
+
+    lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = me->ms_item-obj_type ).
+
+    lo_artifact->set_table_content(
+      exporting
+*        iv_mandt                =     " Client
+        iv_key1                 = lv_key    " Char 80
+        it_insert_table_content = lt_table_content
+        io_artifact             = lo_artifact
+    ).
+
+  endif.
 
 endmethod.
 
