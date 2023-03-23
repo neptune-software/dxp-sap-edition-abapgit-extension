@@ -816,6 +816,8 @@ method zif_abapgit_object~deserialize.
   data lv_tabname type char40.
   data lv_key     type /neptune/artifact_key.
 
+  data lo_artifact type ref to /neptune/if_artifact_type.
+
 **********************************************************************
 
   lt_files = zif_abapgit_object~mo_files->get_files( ).
@@ -830,7 +832,7 @@ method zif_abapgit_object~deserialize.
         ev_obj_key  = lv_key               " Artifact table key
     ).
 
-    lr_data = zcl_abapgit_data_utils=>build_table_itab( lv_tabname ).
+    create data lr_data type standard table of (lv_tabname) with non-unique default key.
 
     case lv_tabname.
       when '/NEPTUNE/EVTSCR'.
@@ -894,6 +896,20 @@ method zif_abapgit_object~deserialize.
 
 
   endloop.
+
+  if lt_table_content is not initial.
+
+    lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = me->ms_item-obj_type ).
+
+    lo_artifact->set_table_content(
+      exporting
+*        iv_mandt                =     " Client
+        iv_key1                 = lv_key    " Char 80
+        it_insert_table_content = lt_table_content
+        io_artifact             = lo_artifact
+    ).
+
+  endif.
 
 endmethod.
 

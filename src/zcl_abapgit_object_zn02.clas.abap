@@ -279,9 +279,6 @@ method zif_abapgit_object~deserialize.
         ev_obj_key  = lv_key               " Artifact table key
     ).
 
-    lv_key = me->ms_item-obj_name.
-
-*    lr_data = zcl_abapgit_data_utils=>build_table_itab( lv_tabname ).
     create data lr_data type standard table of (lv_tabname) with non-unique default key.
 
     deserialize_table(
