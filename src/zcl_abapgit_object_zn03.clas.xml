@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_CLAS" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <VSEOCLASS>
+    <CLSNAME>ZCL_ABAPGIT_OBJECT_ZN03</CLSNAME>
+    <LANGU>E</LANGU>
+    <DESCRIPT>ZN03 - Launchpad</DESCRIPT>
+    <STATE>1</STATE>
+    <CLSCCINCL>X</CLSCCINCL>
+    <FIXPT>X</FIXPT>
+    <UNICODE>X</UNICODE>
+   </VSEOCLASS>
+   <DESCRIPTIONS>
+    <SEOCOMPOTX>
+     <CMPNAME>SERIALIZE_TABLE</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Serialize General tables</DESCRIPT>
+    </SEOCOMPOTX>
+   </DESCRIPTIONS>
+   <DESCRIPTIONS_SUB>
+    <SEOSUBCOTX>
+     <CMPNAME>SERIALIZE_TABLE</CMPNAME>
+     <SCONAME>IV_TABNAME</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Table Name</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>SERIALIZE_TABLE</CMPNAME>
+     <SCONAME>ZCX_ABAPGIT_EXCEPTION</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>abapGit - Exception</DESCRIPT>
+    </SEOSUBCOTX>
+   </DESCRIPTIONS_SUB>
+  </asx:values>
+ </asx:abap>
+</abapGit>
