@@ -427,6 +427,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
     assign is_table_content-table_content->* to <lt_standard_table>.
 
+    check <lt_standard_table> is not initial.
+
     lt_css = <lt_standard_table>.
 
     sort lt_css.
@@ -490,6 +492,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 **********************************************************************\\
 
     assign is_table_content-table_content->* to <lt_standard_table>.
+
+    check <lt_standard_table> is not initial.
 
     lt_evtscr = <lt_standard_table>.
     loop at lt_evtscr into ls_evtscr.
@@ -618,6 +622,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
     assign is_table_content-table_content->* to <lt_standard_table>.
 
+    check <lt_standard_table> is not initial.
+
     lt_css = <lt_standard_table>.
 
     sort lt_css.
@@ -681,6 +687,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 **********************************************************************\\
 
     assign is_table_content-table_content->* to <lt_standard_table>.
+
+    check <lt_standard_table> is not initial.
 
     lt_evtscr = <lt_standard_table>.
     loop at lt_evtscr into ls_evtscr.
@@ -903,10 +911,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
       lo_artifact->set_table_content(
         exporting
-*        iv_mandt                =     " Client
           iv_key1                 = lv_key    " Char 80
           it_insert_table_content = lt_table_content
-          io_artifact             = lo_artifact
       ).
 
     endif.
@@ -1012,6 +1018,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
         when others.
 
           assign ls_table_content-table_content->* to <lt_standard_table>.
+
+          check <lt_standard_table> is not initial.
 
           me->serialize_table(
             exporting

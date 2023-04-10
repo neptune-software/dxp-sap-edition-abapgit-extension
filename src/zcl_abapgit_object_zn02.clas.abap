@@ -301,10 +301,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
 
       lo_artifact->set_table_content(
         exporting
-*        iv_mandt                =     " Client
           iv_key1                 = lv_key    " Char 80
           it_insert_table_content = lt_table_content
-          io_artifact             = lo_artifact
       ).
 
     endif.
@@ -370,6 +368,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
     loop at lt_table_content into ls_table_content.
 
       assign ls_table_content-table_content->* to <lt_standard_table>.
+
+      check <lt_standard_table> is not initial.
 
       me->serialize_table(
         exporting
