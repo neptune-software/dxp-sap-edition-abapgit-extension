@@ -1,4 +1,4 @@
-class ZCL_ABAPGIT_OBJECT_ZN02 definition
+class ZCL_ABAPGIT_OBJECT_ZN06 definition
   public
   inheriting from ZCL_ABAPGIT_OBJECTS_SUPER
   final
@@ -8,65 +8,39 @@ public section.
 
   interfaces ZIF_ABAPGIT_OBJECT .
   protected section.
-  private section.
+private section.
 
-    types:
-      begin of ty_lcl_evtscr,
-            applid    type /neptune/applid,
-            field_id  type /neptune/field_id,
-            version   type /neptune/version,
-            event     type /neptune/event_id,
-            file_name type string,
-           end of ty_lcl_evtscr .
-    types:
-      ty_tt_lcl_evtscr type standard table of ty_lcl_evtscr .
-    types:
-      begin of ty_lcl_css,
-            applid    type /neptune/applid,
-            version   type /neptune/version,
-            file_name type string,
-           end of ty_lcl_css .
-    types:
-      ty_tt_lcl_css type standard table of ty_lcl_css .
-    types:
-      begin of ty_code,
-            file_name type string,
-            code      type string,
-           end of ty_code .
-    types:
-      ty_tt_code type standard table of ty_code with non-unique key file_name .
+  data GT_SKIP_PATHS type STRING_TABLE .
 
-    data gt_skip_paths type string_table .
-
-    methods serialize_table
-      importing
-        !iv_tabname type tabname
-        !it_table type any
-      raising
-        zcx_abapgit_exception .
-    methods set_skip_fields .
-    methods get_skip_fields
-      returning
-        value(rt_skip_paths) type string_table .
-    methods deserialize_table
-      importing
-        !is_file type zif_abapgit_git_definitions=>ty_file
-        !ir_data type ref to data
-        !iv_tabname type tadir-obj_name
-        !iv_key type /neptune/artifact_key
-      raising
-        zcx_abapgit_exception .
-    methods get_values_from_filename
-      importing
-        !is_filename type string
-      exporting
-        !ev_tabname type tadir-obj_name
-        !ev_obj_key type /neptune/artifact_key .
+  methods SERIALIZE_TABLE
+    importing
+      !IV_TABNAME type TABNAME
+      !IT_TABLE type ANY
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods SET_SKIP_FIELDS .
+  methods GET_SKIP_FIELDS
+    returning
+      value(RT_SKIP_PATHS) type STRING_TABLE .
+  methods DESERIALIZE_TABLE
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IR_DATA type ref to DATA
+      !IV_TABNAME type TADIR-OBJ_NAME
+      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods GET_VALUES_FROM_FILENAME
+    importing
+      !IS_FILENAME type STRING
+    exporting
+      !EV_TABNAME type TADIR-OBJ_NAME
+      !EV_OBJ_KEY type /NEPTUNE/ARTIFACT_KEY .
 ENDCLASS.
 
 
 
-CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
+CLASS ZCL_ABAPGIT_OBJECT_ZN06 IMPLEMENTATION.
 
 
   method DESERIALIZE_TABLE.
@@ -97,13 +71,13 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
     endtry.
 
 
-    loop at <lt_standard_table> assigning <ls_line>.
-      assign component 'APIID' of structure <ls_line> to <lv_field>.
-      if <lv_field> is assigned.
-        <lv_field> = iv_key.
-        unassign <lv_field>.
-      endif.
-    endloop.
+*    loop at <lt_standard_table> assigning <ls_line>.
+*      assign component 'CONFIGURATION' of structure <ls_line> to <lv_field>.
+*      if <lv_field> is assigned.
+*        <lv_field> = iv_key.
+*        unassign <lv_field>.
+*      endif.
+*    endloop.
 
     <lt_tab> = <lt_standard_table>.
 
@@ -162,14 +136,14 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
           ii_filter = zcl_abapgit_ajson_filter_lib=>create_empty_filter( ) ).
 
 * Remove unwanted fields
-        it_skip_paths = get_skip_fields( ).
-        if it_skip_paths is not initial.
-          lo_ajson = zcl_abapgit_ajson=>create_from(
-            ii_source_json = lo_ajson
-            ii_filter = zcl_abapgit_ajson_filter_lib=>create_path_filter(
-                                                        it_skip_paths     = it_skip_paths
-                                                        iv_pattern_search = abap_true ) ).
-        endif.
+      it_skip_paths = get_skip_fields( ).
+      if it_skip_paths is not initial.
+        lo_ajson = zcl_abapgit_ajson=>create_from(
+          ii_source_json = lo_ajson
+          ii_filter = zcl_abapgit_ajson_filter_lib=>create_path_filter(
+                                                      it_skip_paths     = it_skip_paths
+                                                      iv_pattern_search = abap_true ) ).
+      endif.
 
         lv_json = lo_ajson->stringify( 2 ).
       catch zcx_abapgit_ajson_error into lx_ajson.
@@ -192,7 +166,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
 
     data: lv_skip type string.
 
-    lv_skip = '*APIID'.
+    lv_skip = '*MANDT'.
     append lv_skip to gt_skip_paths.
     lv_skip = '*CREDAT'.
     append lv_skip to gt_skip_paths.
@@ -211,14 +185,14 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~CHANGED_BY.
+  method zif_abapgit_object~changed_by.
 
     data: lo_artifact type ref to /neptune/if_artifact_type,
           lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
           ls_table_content like line of lt_table_content,
           lv_key           type /neptune/artifact_key.
 
-    data ls_api type /neptune/api.
+    data ls_policy type /neptune/policy.
 
     field-symbols <lt_standard_table> type standard table.
 
@@ -232,14 +206,14 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
       exporting iv_key1          = lv_key
       importing et_table_content = lt_table_content ).
 
-    read table lt_table_content into ls_table_content with table key tabname = '/NEPTUNE/API'.
+    read table lt_table_content into ls_table_content with table key tabname = '/NEPTUNE/POLICY'.
     if sy-subrc eq 0.
       assign ls_table_content-table_content->* to <lt_standard_table>.
-      read table <lt_standard_table> into ls_api index 1.
-      if ls_api-updnam is not initial.
-        rv_user = ls_api-updnam.
+      read table <lt_standard_table> into ls_policy index 1.
+      if ls_policy-updnam is not initial.
+        rv_user = ls_policy-updnam.
       else.
-        rv_user = ls_api-crenam.
+        rv_user = ls_policy-crenam.
       endif.
     endif.
 
@@ -251,6 +225,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
 
 
   method ZIF_ABAPGIT_OBJECT~DESERIALIZE.
+
 ** pick up logic from CLASS ZCL_ABAPGIT_DATA_DESERIALIZER
 
     data lo_artifact type ref to /neptune/if_artifact_type.
@@ -301,7 +276,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
 
       lo_artifact->set_table_content(
         exporting
-          iv_key1                 = lv_key    " Char 80
+          iv_key1                 = lv_key
           it_insert_table_content = lt_table_content
       ).
 

@@ -71,13 +71,13 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
     endtry.
 
 
-    loop at <lt_standard_table> assigning <ls_line>.
-      assign component 'CONFIGURATION' of structure <ls_line> to <lv_field>.
-      if <lv_field> is assigned.
-        <lv_field> = iv_key.
-        unassign <lv_field>.
-      endif.
-    endloop.
+*    loop at <lt_standard_table> assigning <ls_line>.
+*      assign component 'CONFIGURATION' of structure <ls_line> to <lv_field>.
+*      if <lv_field> is assigned.
+*        <lv_field> = iv_key.
+*        unassign <lv_field>.
+*      endif.
+*    endloop.
 
     <lt_tab> = <lt_standard_table>.
 

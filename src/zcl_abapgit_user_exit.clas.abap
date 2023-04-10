@@ -1,11 +1,11 @@
-class zcl_abapgit_user_exit definition
+class ZCL_ABAPGIT_USER_EXIT definition
   public
   final
   create public .
 
-  public section.
+public section.
 
-    interfaces zif_abapgit_exit .
+  interfaces ZIF_ABAPGIT_EXIT .
   protected section.
   private section.
 ENDCLASS.
@@ -15,42 +15,46 @@ ENDCLASS.
 CLASS ZCL_ABAPGIT_USER_EXIT IMPLEMENTATION.
 
 
-  method zif_abapgit_exit~adjust_display_commit_url.
+  method ZIF_ABAPGIT_EXIT~ADJUST_DISPLAY_COMMIT_URL.
     return. " todo, implement method
   endmethod.
 
 
-  method zif_abapgit_exit~adjust_display_filename.
+  method ZIF_ABAPGIT_EXIT~ADJUST_DISPLAY_FILENAME.
     return. " todo, implement method
   endmethod.
 
 
-  method zif_abapgit_exit~allow_sap_objects.
+  method ZIF_ABAPGIT_EXIT~ALLOW_SAP_OBJECTS.
     return. " todo, implement method
   endmethod.
 
 
-  method zif_abapgit_exit~change_local_host.
+  method ZIF_ABAPGIT_EXIT~CHANGE_LOCAL_HOST.
     return. " todo, implement method
   endmethod.
 
 
-  method zif_abapgit_exit~change_proxy_authentication.
+  method ZIF_ABAPGIT_EXIT~CHANGE_PROXY_AUTHENTICATION.
     return. " todo, implement method
   endmethod.
 
 
-  method zif_abapgit_exit~change_proxy_port.
+  method ZIF_ABAPGIT_EXIT~CHANGE_PROXY_PORT.
     return. " todo, implement method
   endmethod.
 
 
-  method zif_abapgit_exit~change_proxy_url.
+  method ZIF_ABAPGIT_EXIT~CHANGE_PROXY_URL.
     return. " todo, implement method
   endmethod.
 
 
-  method zif_abapgit_exit~change_supported_object_types.
+method ZIF_ABAPGIT_EXIT~CHANGE_SUPPORTED_DATA_OBJECTS.
+endmethod.
+
+
+  method ZIF_ABAPGIT_EXIT~CHANGE_SUPPORTED_OBJECT_TYPES.
 
     constants lc_tabname type c length 30 value '/NEPTUNE/ATY' ##no_text.
     constants lc_fieldname type c length 30 value 'OBJECT_TYPE' ##no_text.
@@ -85,7 +89,7 @@ CLASS ZCL_ABAPGIT_USER_EXIT IMPLEMENTATION.
   endmethod.
 
 
-  method zif_abapgit_exit~change_tadir.
+  method ZIF_ABAPGIT_EXIT~CHANGE_TADIR.
 
     data: lt_neptadir type /neptune/if_artifact_type=>ty_t_lcl_tadir.
 
@@ -167,67 +171,67 @@ CLASS ZCL_ABAPGIT_USER_EXIT IMPLEMENTATION.
   endmethod.
 
 
-  method zif_abapgit_exit~create_http_client.
+  method ZIF_ABAPGIT_EXIT~CREATE_HTTP_CLIENT.
     return. " todo, implement method
   endmethod.
 
 
-  method zif_abapgit_exit~custom_serialize_abap_clif.
+  method ZIF_ABAPGIT_EXIT~CUSTOM_SERIALIZE_ABAP_CLIF.
     return. " todo, implement method
   endmethod.
 
 
-  method zif_abapgit_exit~deserialize_postprocess.
+  method ZIF_ABAPGIT_EXIT~DESERIALIZE_POSTPROCESS.
     return. " todo, implement method
   endmethod.
 
 
-  method zif_abapgit_exit~determine_transport_request.
+  method ZIF_ABAPGIT_EXIT~DETERMINE_TRANSPORT_REQUEST.
     return. " todo, implement method
   endmethod.
 
 
-  method zif_abapgit_exit~get_ci_tests.
+  method ZIF_ABAPGIT_EXIT~GET_CI_TESTS.
     return. " todo, implement method
   endmethod.
 
 
-  method zif_abapgit_exit~get_ssl_id.
+  method ZIF_ABAPGIT_EXIT~GET_SSL_ID.
     return. " todo, implement method
   endmethod.
 
 
-  method zif_abapgit_exit~http_client.
+  method ZIF_ABAPGIT_EXIT~HTTP_CLIENT.
     return. " todo, implement method
   endmethod.
 
 
-  method zif_abapgit_exit~on_event.
+  method ZIF_ABAPGIT_EXIT~ON_EVENT.
     return. " todo, implement method
   endmethod.
 
 
-  method zif_abapgit_exit~pre_calculate_repo_status.
+  method ZIF_ABAPGIT_EXIT~PRE_CALCULATE_REPO_STATUS.
     return. " todo, implement method
   endmethod.
 
 
-  method zif_abapgit_exit~serialize_postprocess.
+  method ZIF_ABAPGIT_EXIT~SERIALIZE_POSTPROCESS.
     return. " todo, implement method
   endmethod.
 
 
-  method zif_abapgit_exit~validate_before_push.
+  method ZIF_ABAPGIT_EXIT~VALIDATE_BEFORE_PUSH.
     return. " todo, implement method
   endmethod.
 
 
-  method zif_abapgit_exit~wall_message_list.
+  method ZIF_ABAPGIT_EXIT~WALL_MESSAGE_LIST.
     return. " todo, implement method
   endmethod.
 
 
-  method zif_abapgit_exit~wall_message_repo.
+  method ZIF_ABAPGIT_EXIT~WALL_MESSAGE_REPO.
     return. " todo, implement method
   endmethod.
 ENDCLASS.

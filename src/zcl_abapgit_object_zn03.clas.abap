@@ -1,12 +1,12 @@
-class zcl_abapgit_object_zn03 definition
+class ZCL_ABAPGIT_OBJECT_ZN03 definition
   public
-  inheriting from zcl_abapgit_objects_super
+  inheriting from ZCL_ABAPGIT_OBJECTS_SUPER
   final
   create public .
 
-  public section.
+public section.
 
-    interfaces zif_abapgit_object .
+  interfaces ZIF_ABAPGIT_OBJECT .
   protected section.
 private section.
 
@@ -43,7 +43,7 @@ ENDCLASS.
 CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
 
 
-  method DESERIALIZE_TABLE.
+  method deserialize_table.
 
     data lo_ajson type ref to zcl_abapgit_ajson.
     data lx_ajson type ref to zcx_abapgit_ajson_error.
@@ -75,6 +75,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
       assign component 'CONFIGURATION' of structure <ls_line> to <lv_field>.
       if <lv_field> is assigned.
         <lv_field> = iv_key.
+        translate <lv_field> to upper case.
         unassign <lv_field>.
       endif.
     endloop.
@@ -114,7 +115,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
   endmethod.
 
 
-  method serialize_table.
+  method SERIALIZE_TABLE.
 
     data: lo_ajson         type ref to zcl_abapgit_ajson,
           lx_ajson         type ref to zcx_abapgit_ajson_error,
@@ -187,7 +188,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
   endmethod.
 
 
-  method zif_abapgit_object~changed_by.
+  method ZIF_ABAPGIT_OBJECT~CHANGED_BY.
 
     data: lo_artifact type ref to /neptune/if_artifact_type,
           lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
@@ -222,11 +223,11 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
   endmethod.
 
 
-  method zif_abapgit_object~delete.
+  method ZIF_ABAPGIT_OBJECT~DELETE.
   endmethod.
 
 
-  method zif_abapgit_object~deserialize.
+  method ZIF_ABAPGIT_OBJECT~DESERIALIZE.
 
 ** pick up logic from CLASS ZCL_ABAPGIT_DATA_DESERIALIZER
 
@@ -246,7 +247,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
 
     lt_files = zif_abapgit_object~mo_files->get_files( ).
 
-    loop at lt_files into ls_files where filename cs '.json'..
+    loop at lt_files into ls_files where filename cs '.json'.
 
       get_values_from_filename(
         exporting
@@ -287,39 +288,39 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
   endmethod.
 
 
-  method zif_abapgit_object~exists.
+  method ZIF_ABAPGIT_OBJECT~EXISTS.
     rv_bool = abap_true.
   endmethod.
 
 
-  method zif_abapgit_object~get_comparator.
+  method ZIF_ABAPGIT_OBJECT~GET_COMPARATOR.
     return.
   endmethod.
 
 
-  method zif_abapgit_object~get_deserialize_steps.
+  method ZIF_ABAPGIT_OBJECT~GET_DESERIALIZE_STEPS.
     append zif_abapgit_object=>gc_step_id-late to rt_steps.
   endmethod.
 
 
-  method zif_abapgit_object~get_metadata.
+  method ZIF_ABAPGIT_OBJECT~GET_METADATA.
   endmethod.
 
 
-  method zif_abapgit_object~is_active.
+  method ZIF_ABAPGIT_OBJECT~IS_ACTIVE.
     rv_active = abap_true.
   endmethod.
 
 
-  method zif_abapgit_object~is_locked.
+  method ZIF_ABAPGIT_OBJECT~IS_LOCKED.
   endmethod.
 
 
-  method zif_abapgit_object~jump.
+  method ZIF_ABAPGIT_OBJECT~JUMP.
   endmethod.
 
 
-  method zif_abapgit_object~serialize.
+  method ZIF_ABAPGIT_OBJECT~SERIALIZE.
 
     data: lo_artifact      type ref to /neptune/if_artifact_type,
           lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,

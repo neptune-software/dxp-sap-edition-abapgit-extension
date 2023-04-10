@@ -1,14 +1,14 @@
-class zcl_abapgit_object_zn01 definition
+class ZCL_ABAPGIT_OBJECT_ZN01 definition
   public
-  inheriting from zcl_abapgit_objects_super
+  inheriting from ZCL_ABAPGIT_OBJECTS_SUPER
   final
   create public .
 
-  public section.
+public section.
 
-    interfaces zif_abapgit_object .
+  interfaces ZIF_ABAPGIT_OBJECT .
 
-    constants gc_crlf type abap_cr_lf value cl_abap_char_utilities=>cr_lf. "#EC NOTEXT
+  constants GC_CRLF type ABAP_CR_LF value CL_ABAP_CHAR_UTILITIES=>CR_LF. "#EC NOTEXT
   protected section.
   private section.
 
@@ -119,7 +119,7 @@ ENDCLASS.
 CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
 
-  method deserialize_css.
+  method DESERIALIZE_CSS.
 
     data lt_lcl_css type ty_tt_lcl_css.
     data ls_lcl_css like line of lt_lcl_css.
@@ -172,7 +172,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
   endmethod.
 
 
-  method deserialize_evtscr.
+  method DESERIALIZE_EVTSCR.
 
     data lt_lcl_evtscr type ty_tt_lcl_evtscr.
     data ls_lcl_evtscr like line of lt_lcl_evtscr.
@@ -225,7 +225,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
   endmethod.
 
 
-  method deserialize_table.
+  method DESERIALIZE_TABLE.
 
     data lo_ajson type ref to zcl_abapgit_ajson.
     data lx_ajson type ref to zcx_abapgit_ajson_error.
@@ -272,7 +272,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
   endmethod.
 
 
-  method deserialize__css.
+  method DESERIALIZE__CSS.
 
     data lt_lcl_css type ty_tt_lcl_css.
     data ls_lcl_css like line of lt_lcl_css.
@@ -326,7 +326,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
   endmethod.
 
 
-  method deserialize__evtscr.
+  method DESERIALIZE__EVTSCR.
 
     data lt_lcl_evtscr type ty_tt_lcl_evtscr.
     data ls_lcl_evtscr like line of lt_lcl_evtscr.
@@ -379,14 +379,14 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
   endmethod.
 
 
-  method get_skip_fields.
+  method GET_SKIP_FIELDS.
 
     rt_skip_paths = gt_skip_paths.
 
   endmethod.
 
 
-  method get_values_from_filename.
+  method GET_VALUES_FROM_FILENAME.
 
     data lt_comp type standard table of string.
     data ls_comp like line of lt_comp.
@@ -409,7 +409,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
   endmethod.
 
 
-  method serialize_css.
+  method SERIALIZE_CSS.
 
     data ls_file type zif_abapgit_git_definitions=>ty_file.
     data lv_code type string.
@@ -472,7 +472,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
   endmethod.
 
 
-  method serialize_evtscr.
+  method SERIALIZE_EVTSCR.
 
     data ls_file type zif_abapgit_git_definitions=>ty_file.
 
@@ -554,7 +554,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
   endmethod.
 
 
-  method serialize_table.
+  method SERIALIZE_TABLE.
 
     data: lo_ajson         type ref to zcl_abapgit_ajson,
           lx_ajson         type ref to zcx_abapgit_ajson_error,
@@ -604,7 +604,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
   endmethod.
 
 
-  method serialize__css.
+  method SERIALIZE__CSS.
 
     data ls_file type zif_abapgit_git_definitions=>ty_file.
     data lv_code type string.
@@ -667,7 +667,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
   endmethod.
 
 
-  method serialize__evtscr.
+  method SERIALIZE__EVTSCR.
 
     data ls_file type zif_abapgit_git_definitions=>ty_file.
 
@@ -749,7 +749,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
   endmethod.
 
 
-  method set_skip_fields.
+  method SET_SKIP_FIELDS.
 
     data: lv_skip type string.
 
@@ -772,7 +772,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
   endmethod.
 
 
-  method zif_abapgit_object~changed_by.
+  method ZIF_ABAPGIT_OBJECT~CHANGED_BY.
 
     data: lo_artifact type ref to /neptune/if_artifact_type,
           lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
@@ -807,11 +807,11 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
   endmethod.
 
 
-  method zif_abapgit_object~delete.
+  method ZIF_ABAPGIT_OBJECT~DELETE.
   endmethod.
 
 
-  method zif_abapgit_object~deserialize.
+  method ZIF_ABAPGIT_OBJECT~DESERIALIZE.
 ** pick up logic from CLASS ZCL_ABAPGIT_DATA_DESERIALIZER
 
     data: lt_files type zif_abapgit_git_definitions=>ty_files_tt,
@@ -920,39 +920,39 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
   endmethod.
 
 
-  method zif_abapgit_object~exists.
+  method ZIF_ABAPGIT_OBJECT~EXISTS.
     rv_bool = abap_true.
   endmethod.
 
 
-  method zif_abapgit_object~get_comparator.
+  method ZIF_ABAPGIT_OBJECT~GET_COMPARATOR.
     return.
   endmethod.
 
 
-  method zif_abapgit_object~get_deserialize_steps.
+  method ZIF_ABAPGIT_OBJECT~GET_DESERIALIZE_STEPS.
     append zif_abapgit_object=>gc_step_id-late to rt_steps.
   endmethod.
 
 
-  method zif_abapgit_object~get_metadata.
+  method ZIF_ABAPGIT_OBJECT~GET_METADATA.
   endmethod.
 
 
-  method zif_abapgit_object~is_active.
+  method ZIF_ABAPGIT_OBJECT~IS_ACTIVE.
     rv_active = abap_true.
   endmethod.
 
 
-  method zif_abapgit_object~is_locked.
+  method ZIF_ABAPGIT_OBJECT~IS_LOCKED.
   endmethod.
 
 
-  method zif_abapgit_object~jump.
+  method ZIF_ABAPGIT_OBJECT~JUMP.
   endmethod.
 
 
-  method zif_abapgit_object~serialize.
+  method ZIF_ABAPGIT_OBJECT~SERIALIZE.
 
     data: lo_artifact      type ref to /neptune/if_artifact_type,
           lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
