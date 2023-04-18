@@ -51,8 +51,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN06 IMPLEMENTATION.
     data lt_table_content type ref to data.
 
     field-symbols <lt_tab> type any table.
-    field-symbols <ls_line> type any.
-    field-symbols <lv_field> type any.
+*    field-symbols <ls_line> type any.
+*    field-symbols <lv_field> type any.
     field-symbols: <lt_standard_table> type standard table.
 
 **********************************************************************
