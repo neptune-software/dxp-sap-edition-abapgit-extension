@@ -1,11 +1,19 @@
-class ZCL_ABAPGIT_USER_EXIT definition
+class zcl_abapgit_user_exit definition
   public
   final
   create public .
 
-public section.
+  public section.
 
-  interfaces ZIF_ABAPGIT_EXIT .
+    interfaces zif_abapgit_exit .
+
+    types: begin of ty_mapping,
+            object_type	  type /neptune/tadir_obj_type,
+            key1          type  /neptune/artifact_key,
+            artifact_name type /neptune/artifact_name,
+           end of ty_mapping.
+
+    class-data gt_mapping type standard table of ty_mapping with non-unique default key.
   protected section.
   private section.
 ENDCLASS.
@@ -130,7 +138,8 @@ endmethod.
             append initial line to lt_neptadir assigning <fs_neptadir>.
             <fs_neptadir>-artifact_type = 'API'.
             <fs_neptadir>-key_mandt     = '000'.
-            <fs_neptadir>-key1          = ls_api-apiid.
+            <fs_neptadir>-key1          = ls_api-name.
+*            <fs_neptadir>-key1          = ls_api-apiid.
             <fs_neptadir>-devclass      = ls_api-devclass.
             <fs_neptadir>-artifact_name = ls_api-name.
             <fs_neptadir>-object_type   = 'ZN02'. " API

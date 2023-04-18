@@ -97,13 +97,13 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
     endtry.
 
 
-    loop at <lt_standard_table> assigning <ls_line>.
-      assign component 'APIID' of structure <ls_line> to <lv_field>.
-      if <lv_field> is assigned.
-        <lv_field> = iv_key.
-        unassign <lv_field>.
-      endif.
-    endloop.
+*    loop at <lt_standard_table> assigning <ls_line>.
+*      assign component 'APIID' of structure <ls_line> to <lv_field>.
+*      if <lv_field> is assigned.
+*        <lv_field> = iv_key.
+*        unassign <lv_field>.
+*      endif.
+*    endloop.
 
     <lt_tab> = <lt_standard_table>.
 
@@ -192,8 +192,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
 
     data: lv_skip type string.
 
-    lv_skip = '*APIID'.
-    append lv_skip to gt_skip_paths.
+*    lv_skip = '*APIID'.
+*    append lv_skip to gt_skip_paths.
     lv_skip = '*CREDAT'.
     append lv_skip to gt_skip_paths.
     lv_skip = '*CRETIM'.

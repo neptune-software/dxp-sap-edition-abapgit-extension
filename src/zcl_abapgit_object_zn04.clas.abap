@@ -51,8 +51,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN04 IMPLEMENTATION.
     data lt_table_content type ref to data.
 
     field-symbols <lt_tab> type any table.
-    field-symbols <ls_line> type any.
-    field-symbols <lv_field> type any.
+*    field-symbols <ls_line> type any.
+*    field-symbols <lv_field> type any.
     field-symbols: <lt_standard_table> type standard table.
 
 **********************************************************************
@@ -70,9 +70,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN04 IMPLEMENTATION.
         zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
     endtry.
 
-
 *    loop at <lt_standard_table> assigning <ls_line>.
-*      assign component 'CONFIGURATION' of structure <ls_line> to <lv_field>.
+*      assign component 'GUID' of structure <ls_line> to <lv_field>.
 *      if <lv_field> is assigned.
 *        <lv_field> = iv_key.
 *        unassign <lv_field>.
