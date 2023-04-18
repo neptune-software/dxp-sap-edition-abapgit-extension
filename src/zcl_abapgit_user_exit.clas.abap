@@ -97,7 +97,7 @@ endmethod.
   endmethod.
 
 
-  method ZIF_ABAPGIT_EXIT~CHANGE_TADIR.
+  method zif_abapgit_exit~change_tadir.
 
     data: lt_neptadir type /neptune/if_artifact_type=>ty_t_lcl_tadir.
 
@@ -108,6 +108,8 @@ endmethod.
 
     field-symbols <fs_tadir> like line of ct_tadir.
     field-symbols <fs_neptadir> like line of lt_neptadir.
+
+    field-symbols <fs_mapping> like line of gt_mapping.
 
 **********************************************************************
 *    break andrec.
@@ -136,13 +138,21 @@ endmethod.
         if sy-subrc eq 0.
           loop at lt_api into ls_api.
             append initial line to lt_neptadir assigning <fs_neptadir>.
-            <fs_neptadir>-artifact_type = 'API'.
-            <fs_neptadir>-key_mandt     = '000'.
-            <fs_neptadir>-key1          = ls_api-name.
+            if sy-subrc eq 0.
+              <fs_neptadir>-artifact_type = 'API'.
+              <fs_neptadir>-key_mandt     = '000'.
+              <fs_neptadir>-key1          = ls_api-name.
 *            <fs_neptadir>-key1          = ls_api-apiid.
-            <fs_neptadir>-devclass      = ls_api-devclass.
-            <fs_neptadir>-artifact_name = ls_api-name.
-            <fs_neptadir>-object_type   = 'ZN02'. " API
+              <fs_neptadir>-devclass      = ls_api-devclass.
+              <fs_neptadir>-artifact_name = ls_api-name.
+              <fs_neptadir>-object_type   = 'ZN02'. " API
+            endif.
+            append initial line to gt_mapping assigning <fs_mapping>.
+            if sy-subrc eq 0.
+              <fs_mapping>-artifact_name = ls_api-name.
+              <fs_mapping>-key1 = ls_api-apiid.
+              <fs_mapping>-object_type = 'ZN02'.
+            endif.
           endloop.
         endif.
 
@@ -153,12 +163,14 @@ endmethod.
         if sy-subrc eq 0.
           loop at lt_app into ls_app.
             append initial line to lt_neptadir assigning <fs_neptadir>.
-            <fs_neptadir>-artifact_type = 'APP'.
-            <fs_neptadir>-key_mandt     = '000'.
-            <fs_neptadir>-key1          = ls_app-applid.
-            <fs_neptadir>-devclass      = ls_app-devclass.
-            <fs_neptadir>-artifact_name = ls_app-applid.
-            <fs_neptadir>-object_type   = 'ZN01'. " APP
+            if sy-subrc eq 0.
+              <fs_neptadir>-artifact_type = 'APP'.
+              <fs_neptadir>-key_mandt     = '000'.
+              <fs_neptadir>-key1          = ls_app-applid.
+              <fs_neptadir>-devclass      = ls_app-devclass.
+              <fs_neptadir>-artifact_name = ls_app-applid.
+              <fs_neptadir>-object_type   = 'ZN01'. " APP
+            endif.
           endloop.
         endif.
 
@@ -169,10 +181,18 @@ endmethod.
       if sy-subrc eq 0.
         <fs_tadir>-pgmid     = 'R3TR'.
         <fs_tadir>-object    = <fs_neptadir>-object_type.
-        <fs_tadir>-obj_name  = <fs_neptadir>-key1.
+*        <fs_tadir>-obj_name  = <fs_neptadir>-key1.
+        <fs_tadir>-obj_name  = <fs_neptadir>-artifact_name.
         <fs_tadir>-devclass  = iv_package.
         <fs_tadir>-path      = '/src/' .
         <fs_tadir>-srcsystem = sy-sysid.
+      endif.
+
+      append initial line to gt_mapping assigning <fs_mapping>.
+      if sy-subrc eq 0.
+        <fs_mapping>-artifact_name = <fs_neptadir>-artifact_name.
+        <fs_mapping>-key1 = <fs_neptadir>-key1.
+        <fs_mapping>-object_type = <fs_neptadir>-object_type.
       endif.
 
     endloop.

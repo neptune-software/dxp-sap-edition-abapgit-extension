@@ -211,7 +211,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~CHANGED_BY.
+  method zif_abapgit_object~changed_by.
 
     data: lo_artifact type ref to /neptune/if_artifact_type,
           lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
@@ -220,13 +220,19 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
 
     data ls_api type /neptune/api.
 
+    data ls_mapping like line of zcl_abapgit_user_exit=>gt_mapping.
+
     field-symbols <lt_standard_table> type standard table.
 
 **********************************************************************
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = me->ms_item-obj_type ).
 
-    lv_key = me->ms_item-obj_name.
+    read table zcl_abapgit_user_exit=>gt_mapping into ls_mapping with key object_type = me->ms_item-obj_type
+                                                                          artifact_name = me->ms_item-obj_name.
+
+    lv_key = ls_mapping-key1.
+*    lv_key = me->ms_item-obj_name.
 
     lo_artifact->get_table_content(
       exporting iv_key1          = lv_key
@@ -349,13 +355,19 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
           ls_table_content like line of lt_table_content,
           lv_key           type /neptune/artifact_key.
 
+    data ls_mapping like line of zcl_abapgit_user_exit=>gt_mapping.
+
     field-symbols: <lt_standard_table> type standard table.
 
 **********************************************************************
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = me->ms_item-obj_type ).
 
-    lv_key = me->ms_item-obj_name.
+    read table zcl_abapgit_user_exit=>gt_mapping into ls_mapping with key object_type = me->ms_item-obj_type
+                                                                          artifact_name = me->ms_item-obj_name.
+
+    lv_key = ls_mapping-key1.
+*    lv_key = me->ms_item-obj_name.
 
     lo_artifact->get_table_content(
       exporting iv_key1          = lv_key
