@@ -1,19 +1,11 @@
-class zcl_abapgit_user_exit definition
+class ZCL_ABAPGIT_USER_EXIT definition
   public
   final
   create public .
 
-  public section.
+public section.
 
-    interfaces zif_abapgit_exit .
-
-    types: begin of ty_mapping,
-            object_type	  type /neptune/tadir_obj_type,
-            key1          type  /neptune/artifact_key,
-            artifact_name type /neptune/artifact_name,
-           end of ty_mapping.
-
-    class-data gt_mapping type standard table of ty_mapping with non-unique default key.
+  interfaces ZIF_ABAPGIT_EXIT .
   protected section.
   private section.
 ENDCLASS.
@@ -106,15 +98,18 @@ endmethod.
     data lt_app type standard table of /neptune/_app.
     data ls_app like line of lt_app.
 
+    data lo_mapping type ref to zif_abapgit_key_mapping.
+    data ls_mapping type zif_abapgit_key_mapping=>ty_mapping.
+
     field-symbols <fs_tadir> like line of ct_tadir.
     field-symbols <fs_neptadir> like line of lt_neptadir.
-
-    field-symbols <fs_mapping> like line of gt_mapping.
 
 **********************************************************************
 *    break andrec.
 
     check iv_package = '$NEPTUNE_GIT_TESTING'.
+
+    lo_mapping = zcl_abapgit_key_mapping=>get_instance( ).
 
     try.
         " Ongoing from DXP 23 fetch wie tadir framework (all artifacts can be assigned to a devclass)
@@ -146,12 +141,16 @@ endmethod.
               <fs_neptadir>-devclass      = ls_api-devclass.
               <fs_neptadir>-artifact_name = ls_api-name.
               <fs_neptadir>-object_type   = 'ZN02'. " API
-            endif.
-            append initial line to gt_mapping assigning <fs_mapping>.
-            if sy-subrc eq 0.
-              <fs_mapping>-artifact_name = ls_api-name.
-              <fs_mapping>-key1 = ls_api-apiid.
-              <fs_mapping>-object_type = 'ZN02'.
+
+              ls_mapping-object_type   = 'ZN02'.
+              ls_mapping-key1          = ls_api-apiid.
+              ls_mapping-artifact_name = ls_api-name.
+
+              lo_mapping->set_key(
+                exporting
+                  is_mapping = ls_mapping
+              ).
+
             endif.
           endloop.
         endif.
@@ -170,6 +169,16 @@ endmethod.
               <fs_neptadir>-devclass      = ls_app-devclass.
               <fs_neptadir>-artifact_name = ls_app-applid.
               <fs_neptadir>-object_type   = 'ZN01'. " APP
+
+              ls_mapping-object_type   = 'ZN01'.
+              ls_mapping-key1          = ls_app-applid.
+              ls_mapping-artifact_name = ls_app-applid.
+
+              lo_mapping->set_key(
+                exporting
+                  is_mapping = ls_mapping
+              ).
+
             endif.
           endloop.
         endif.
@@ -186,15 +195,17 @@ endmethod.
         <fs_tadir>-devclass  = iv_package.
         <fs_tadir>-path      = '/src/' .
         <fs_tadir>-srcsystem = sy-sysid.
-      endif.
 
-      append initial line to gt_mapping assigning <fs_mapping>.
-      if sy-subrc eq 0.
-        <fs_mapping>-artifact_name = <fs_neptadir>-artifact_name.
-        <fs_mapping>-key1 = <fs_neptadir>-key1.
-        <fs_mapping>-object_type = <fs_neptadir>-object_type.
-      endif.
+        ls_mapping-object_type   = <fs_neptadir>-object_type.
+        ls_mapping-key1          = <fs_neptadir>-key1.
+        ls_mapping-artifact_name = <fs_neptadir>-artifact_name.
 
+        lo_mapping->set_key(
+          exporting
+            is_mapping = ls_mapping
+        ).
+
+      endif.
     endloop.
 
   endmethod.
