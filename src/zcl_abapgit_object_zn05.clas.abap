@@ -297,6 +297,10 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
   endmethod.
 
 
+method ZIF_ABAPGIT_OBJECT~GET_DESERIALIZE_ORDER.
+endmethod.
+
+
   method ZIF_ABAPGIT_OBJECT~GET_DESERIALIZE_STEPS.
     append zif_abapgit_object=>gc_step_id-late to rt_steps.
   endmethod.

@@ -27,7 +27,6 @@ private section.
       !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
       !IR_DATA type ref to DATA
       !IV_TABNAME type TADIR-OBJ_NAME
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
     raising
       ZCX_ABAPGIT_EXCEPTION .
   methods GET_VALUES_FROM_FILENAME
@@ -69,6 +68,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN04 IMPLEMENTATION.
       catch zcx_abapgit_ajson_error into lx_ajson.
         zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
     endtry.
+
 
 *    loop at <lt_standard_table> assigning <ls_line>.
 *      assign component 'GUID' of structure <ls_line> to <lv_field>.
@@ -261,7 +261,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN04 IMPLEMENTATION.
         exporting
           is_file    = ls_files
           iv_tabname = lv_tabname
-          iv_key     = lv_key
+*          iv_key     = lv_key
           ir_data    = lr_data ).
 
       ls_table_content-tabname = lv_tabname.
@@ -294,6 +294,10 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN04 IMPLEMENTATION.
   method ZIF_ABAPGIT_OBJECT~GET_COMPARATOR.
     return.
   endmethod.
+
+
+method ZIF_ABAPGIT_OBJECT~GET_DESERIALIZE_ORDER.
+endmethod.
 
 
   method ZIF_ABAPGIT_OBJECT~GET_DESERIALIZE_STEPS.

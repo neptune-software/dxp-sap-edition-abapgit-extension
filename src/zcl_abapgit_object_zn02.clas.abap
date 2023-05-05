@@ -8,60 +8,59 @@ public section.
 
   interfaces ZIF_ABAPGIT_OBJECT .
   protected section.
-  private section.
+private section.
 
-    types:
-      begin of ty_lcl_evtscr,
+  types:
+    begin of ty_lcl_evtscr,
             applid    type /neptune/applid,
             field_id  type /neptune/field_id,
             version   type /neptune/version,
             event     type /neptune/event_id,
             file_name type string,
            end of ty_lcl_evtscr .
-    types:
-      ty_tt_lcl_evtscr type standard table of ty_lcl_evtscr .
-    types:
-      begin of ty_lcl_css,
+  types:
+    ty_tt_lcl_evtscr type standard table of ty_lcl_evtscr .
+  types:
+    begin of ty_lcl_css,
             applid    type /neptune/applid,
             version   type /neptune/version,
             file_name type string,
            end of ty_lcl_css .
-    types:
-      ty_tt_lcl_css type standard table of ty_lcl_css .
-    types:
-      begin of ty_code,
+  types:
+    ty_tt_lcl_css type standard table of ty_lcl_css .
+  types:
+    begin of ty_code,
             file_name type string,
             code      type string,
            end of ty_code .
-    types:
-      ty_tt_code type standard table of ty_code with non-unique key file_name .
+  types:
+    ty_tt_code type standard table of ty_code with non-unique key file_name .
 
-    data gt_skip_paths type string_table .
+  data GT_SKIP_PATHS type STRING_TABLE .
 
-    methods serialize_table
-      importing
-        !iv_tabname type tabname
-        !it_table type any
-      raising
-        zcx_abapgit_exception .
-    methods set_skip_fields .
-    methods get_skip_fields
-      returning
-        value(rt_skip_paths) type string_table .
-    methods deserialize_table
-      importing
-        !is_file type zif_abapgit_git_definitions=>ty_file
-        !ir_data type ref to data
-        !iv_tabname type tadir-obj_name
-        !iv_key type /neptune/artifact_key
-      raising
-        zcx_abapgit_exception .
-    methods get_values_from_filename
-      importing
-        !is_filename type string
-      exporting
-        !ev_tabname type tadir-obj_name
-        !ev_obj_key type /neptune/artifact_key .
+  methods SERIALIZE_TABLE
+    importing
+      !IV_TABNAME type TABNAME
+      !IT_TABLE type ANY
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods SET_SKIP_FIELDS .
+  methods GET_SKIP_FIELDS
+    returning
+      value(RT_SKIP_PATHS) type STRING_TABLE .
+  methods DESERIALIZE_TABLE
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IR_DATA type ref to DATA
+      !IV_TABNAME type TADIR-OBJ_NAME
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods GET_VALUES_FROM_FILENAME
+    importing
+      !IS_FILENAME type STRING
+    exporting
+      !EV_TABNAME type TADIR-OBJ_NAME
+      !EV_OBJ_KEY type /NEPTUNE/ARTIFACT_KEY .
 ENDCLASS.
 
 
@@ -293,7 +292,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
         exporting
           is_file    = ls_files
           iv_tabname = lv_tabname
-          iv_key     = lv_key
+*          iv_key     = lv_key
           ir_data    = lr_data ).
 
       ls_table_content-tabname = lv_tabname.
@@ -326,6 +325,10 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
   method ZIF_ABAPGIT_OBJECT~GET_COMPARATOR.
     return.
   endmethod.
+
+
+method ZIF_ABAPGIT_OBJECT~GET_DESERIALIZE_ORDER.
+endmethod.
 
 
   method ZIF_ABAPGIT_OBJECT~GET_DESERIALIZE_STEPS.
