@@ -220,31 +220,21 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
 
     data ls_api type /neptune/api.
 
-    data lo_mapping type ref to zif_abapgit_key_mapping.
-    data ls_mapping type zif_abapgit_key_mapping=>ty_mapping.
-    data lv_artifact_name type /neptune/artifact_name.
-
     field-symbols <lt_standard_table> type standard table.
 
 **********************************************************************
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = me->ms_item-obj_type ).
 
-    lo_mapping = zcl_abapgit_key_mapping=>get_instance( ).
+*    data lv_artifact_name type /neptune/artifact_name.
+*    lv_artifact_name = me->ms_item-obj_name.
+*    lv_key = lo_artifact->get_key_from_name(
+*        iv_object_type   = me->ms_item-obj_type    " Tadir Object Type for ABAPGIT
+*        iv_artifact_name = lv_artifact_name    " Artifact Name
+*        iv_devclass      = me->ms_item-devclass
+*    ).
 
-    lv_artifact_name =  me->ms_item-obj_name.
-
-    lo_mapping->get_key(
-      exporting
-        iv_object_type   = me->ms_item-obj_type     " Neptune Artifact Type
-        iv_artifact_name = lv_artifact_name     " Artifact Name
-      receiving
-        rv_key           = lv_key     " Artifact table key
-    ).
-
-    check lv_key is not initial.
-
-*    lv_key = me->ms_item-obj_name.
+    lv_key = me->ms_item-obj_name.
 
     lo_artifact->get_table_content(
       exporting iv_key1          = lv_key
@@ -360,6 +350,20 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
   endmethod.
 
 
+method ZIF_ABAPGIT_OBJECT~MAP_FILENAME_TO_OBJECT.
+  BREAK-POINT.
+  IF sy-uname eq 'ANDREC'.
+BREAK-POINT.
+  ENDIF.
+  return.
+endmethod.
+
+
+method ZIF_ABAPGIT_OBJECT~MAP_OBJECT_TO_FILENAME.
+  return.
+endmethod.
+
+
   method zif_abapgit_object~serialize.
 
     data: lo_artifact      type ref to /neptune/if_artifact_type,
@@ -367,31 +371,21 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
           ls_table_content like line of lt_table_content,
           lv_key           type /neptune/artifact_key.
 
-    data lo_mapping type ref to zif_abapgit_key_mapping.
-    data ls_mapping type zif_abapgit_key_mapping=>ty_mapping.
-    data lv_artifact_name type /neptune/artifact_name.
-
     field-symbols: <lt_standard_table> type standard table.
 
 **********************************************************************
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = me->ms_item-obj_type ).
 
-    lo_mapping = zcl_abapgit_key_mapping=>get_instance( ).
+*    data lv_artifact_name type /neptune/artifact_name.
+*    lv_artifact_name = me->ms_item-obj_name.
+*    lv_key = lo_artifact->get_key_from_name(
+*        iv_object_type   = me->ms_item-obj_type    " Tadir Object Type for ABAPGIT
+*        iv_artifact_name = lv_artifact_name    " Artifact Name
+*        iv_devclass      = me->ms_item-devclass
+*    ).
 
-    lv_artifact_name =  me->ms_item-obj_name.
-
-    lo_mapping->get_key(
-      exporting
-        iv_object_type   = me->ms_item-obj_type     " Neptune Artifact Type
-        iv_artifact_name = lv_artifact_name     " Artifact Name
-      receiving
-        rv_key           = lv_key     " Artifact table key
-    ).
-
-    check lv_key is not initial.
-
-*    lv_key = me->ms_item-obj_name.
+    lv_key = me->ms_item-obj_name.
 
     lo_artifact->get_table_content(
       exporting iv_key1          = lv_key

@@ -335,6 +335,14 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN07 IMPLEMENTATION.
   endmethod.
 
 
+method ZIF_ABAPGIT_OBJECT~MAP_FILENAME_TO_OBJECT.
+endmethod.
+
+
+method ZIF_ABAPGIT_OBJECT~MAP_OBJECT_TO_FILENAME.
+endmethod.
+
+
   method zif_abapgit_object~serialize.
 
     data: lo_artifact      type ref to /neptune/if_artifact_type,

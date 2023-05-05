@@ -319,7 +319,17 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~SERIALIZE.
+method ZIF_ABAPGIT_OBJECT~MAP_FILENAME_TO_OBJECT.
+  return.
+endmethod.
+
+
+method ZIF_ABAPGIT_OBJECT~MAP_OBJECT_TO_FILENAME.
+  return.
+endmethod.
+
+
+  method zif_abapgit_object~serialize.
 
     data: lo_artifact      type ref to /neptune/if_artifact_type,
           lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
@@ -332,6 +342,40 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = me->ms_item-obj_type ).
 
+    data lv_artifact_name type /neptune/artifact_name.
+    data lt_keys type /neptune/if_artifact_type=>ty_t_key.
+    data ls_key like line of lt_keys.
+    lv_artifact_name = me->ms_item-obj_name.
+    lt_keys = lo_artifact->get_key_from_name(
+        iv_object_type   = me->ms_item-obj_type    " Tadir Object Type for ABAPGIT
+        iv_artifact_name = lv_artifact_name    " Artifact Name
+        iv_devclass      = me->ms_item-devclass
+    ).
+
+*    loop at lt_keys into ls_key.
+*
+*      lo_artifact->get_table_content(
+*        exporting iv_key1          = ls_key-key1
+*        importing et_table_content = lt_table_content ).
+*
+** set fields that will be skipped in the serialization process
+*      set_skip_fields( ).
+*
+** serialize
+*      loop at lt_table_content into ls_table_content.
+*
+*        assign ls_table_content-table_content->* to <lt_standard_table>.
+*
+*        check <lt_standard_table> is not initial.
+*
+*        me->serialize_table(
+*          exporting
+*            iv_tabname = ls_table_content-tabname
+*            it_table   = <lt_standard_table> ).
+*      endloop.
+*      endloop.
+
+** ORIGINAL **
     lv_key = me->ms_item-obj_name.
 
     lo_artifact->get_table_content(
@@ -352,8 +396,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
         exporting
           iv_tabname = ls_table_content-tabname
           it_table   = <lt_standard_table> ).
-
     endloop.
+** ORIGINAL **
+
 
   endmethod.
 ENDCLASS.

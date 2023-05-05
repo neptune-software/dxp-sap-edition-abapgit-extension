@@ -930,6 +930,10 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
   endmethod.
 
 
+method ZIF_ABAPGIT_OBJECT~GET_DESERIALIZE_ORDER.
+endmethod.
+
+
   method ZIF_ABAPGIT_OBJECT~GET_DESERIALIZE_STEPS.
     append zif_abapgit_object=>gc_step_id-late to rt_steps.
   endmethod.
@@ -950,6 +954,16 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
   method ZIF_ABAPGIT_OBJECT~JUMP.
   endmethod.
+
+
+method ZIF_ABAPGIT_OBJECT~MAP_FILENAME_TO_OBJECT.
+  return.
+endmethod.
+
+
+method ZIF_ABAPGIT_OBJECT~MAP_OBJECT_TO_FILENAME.
+  return.
+endmethod.
 
 
   method ZIF_ABAPGIT_OBJECT~SERIALIZE.

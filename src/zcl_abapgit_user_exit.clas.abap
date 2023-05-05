@@ -98,9 +98,6 @@ endmethod.
     data lt_app type standard table of /neptune/_app.
     data ls_app like line of lt_app.
 
-    data lo_mapping type ref to zif_abapgit_key_mapping.
-    data ls_mapping type zif_abapgit_key_mapping=>ty_mapping.
-
     field-symbols <fs_tadir> like line of ct_tadir.
     field-symbols <fs_neptadir> like line of lt_neptadir.
 
@@ -108,8 +105,6 @@ endmethod.
 *    break andrec.
 
     check iv_package = '$NEPTUNE_GIT_TESTING'.
-
-    lo_mapping = zcl_abapgit_key_mapping=>get_instance( ).
 
     try.
         " Ongoing from DXP 23 fetch wie tadir framework (all artifacts can be assigned to a devclass)
@@ -137,19 +132,10 @@ endmethod.
               <fs_neptadir>-artifact_type = 'API'.
               <fs_neptadir>-key_mandt     = '000'.
               <fs_neptadir>-key1          = ls_api-name.
-*            <fs_neptadir>-key1          = ls_api-apiid.
-              <fs_neptadir>-devclass      = ls_api-devclass.
+              <fs_neptadir>-key1          = ls_api-apiid.
+*              <fs_neptadir>-devclass      = ls_api-devclass.
               <fs_neptadir>-artifact_name = ls_api-name.
               <fs_neptadir>-object_type   = 'ZN02'. " API
-
-              ls_mapping-object_type   = 'ZN02'.
-              ls_mapping-key1          = ls_api-apiid.
-              ls_mapping-artifact_name = ls_api-name.
-
-              lo_mapping->set_key(
-                exporting
-                  is_mapping = ls_mapping
-              ).
 
             endif.
           endloop.
@@ -170,15 +156,6 @@ endmethod.
               <fs_neptadir>-artifact_name = ls_app-applid.
               <fs_neptadir>-object_type   = 'ZN01'. " APP
 
-              ls_mapping-object_type   = 'ZN01'.
-              ls_mapping-key1          = ls_app-applid.
-              ls_mapping-artifact_name = ls_app-applid.
-
-              lo_mapping->set_key(
-                exporting
-                  is_mapping = ls_mapping
-              ).
-
             endif.
           endloop.
         endif.
@@ -190,21 +167,14 @@ endmethod.
       if sy-subrc eq 0.
         <fs_tadir>-pgmid     = 'R3TR'.
         <fs_tadir>-object    = <fs_neptadir>-object_type.
-*        <fs_tadir>-obj_name  = <fs_neptadir>-key1.
-        <fs_tadir>-obj_name  = <fs_neptadir>-artifact_name.
+*        if <fs_neptadir>-object_type ne 'ZN05'.
+          <fs_tadir>-obj_name  = <fs_neptadir>-key1.
+*        else.
+*          <fs_tadir>-obj_name  = <fs_neptadir>-artifact_name.
+*        endif.
         <fs_tadir>-devclass  = iv_package.
         <fs_tadir>-path      = '/src/' .
         <fs_tadir>-srcsystem = sy-sysid.
-
-        ls_mapping-object_type   = <fs_neptadir>-object_type.
-        ls_mapping-key1          = <fs_neptadir>-key1.
-        ls_mapping-artifact_name = <fs_neptadir>-artifact_name.
-
-        lo_mapping->set_key(
-          exporting
-            is_mapping = ls_mapping
-        ).
-
       endif.
     endloop.
 
@@ -229,6 +199,10 @@ endmethod.
   method ZIF_ABAPGIT_EXIT~DETERMINE_TRANSPORT_REQUEST.
     return. " todo, implement method
   endmethod.
+
+
+method ZIF_ABAPGIT_EXIT~ENHANCE_REPO_TOOLBAR.
+endmethod.
 
 
   method ZIF_ABAPGIT_EXIT~GET_CI_TESTS.
