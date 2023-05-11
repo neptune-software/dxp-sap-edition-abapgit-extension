@@ -145,7 +145,7 @@
     "align_parameters": true,
     "method_length": true,
     "unnecessary_chaining": true,
-    "remove_descriptions": true,
+    "remove_descriptions": false,
     "exporting": true,
     "prefix_is_current_class": true,
     "preferred_compare_operator": true,
