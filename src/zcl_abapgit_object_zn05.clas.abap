@@ -99,13 +99,13 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
     split is_filename at '.' into table lt_comp.
 
     read table lt_comp into ls_comp index 1.
-    if sy-subrc eq 0.
+    if sy-subrc = 0.
 *    translate ls_comp to upper case.
       ev_obj_key = ls_comp.
     endif.
 
     read table lt_comp into ls_comp index 3.
-    if sy-subrc eq 0.
+    if sy-subrc = 0.
       replace all occurrences of '#' in ls_comp with '/'.
       translate ls_comp to upper case.
       ev_tabname = ls_comp.
@@ -209,7 +209,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
       importing et_table_content = lt_table_content ).
 
     read table lt_table_content into ls_table_content with table key tabname = '/NEPTUNE/MENU'.
-    if sy-subrc eq 0.
+    if sy-subrc = 0.
       assign ls_table_content-table_content->* to <lt_standard_table>.
       read table <lt_standard_table> into ls_menu index 1.
       if ls_menu-updnam is not initial.
@@ -222,7 +222,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~DELETE.
+  method zif_abapgit_object~delete.
+    return.
   endmethod.
 
 
@@ -297,7 +298,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
   endmethod.
 
 
-method ZIF_ABAPGIT_OBJECT~GET_DESERIALIZE_ORDER.
+method zif_abapgit_object~get_deserialize_order.
+  return.
 endmethod.
 
 
@@ -306,7 +308,8 @@ endmethod.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~GET_METADATA.
+  method zif_abapgit_object~get_metadata.
+    return.
   endmethod.
 
 
@@ -315,15 +318,17 @@ endmethod.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~IS_LOCKED.
+  method zif_abapgit_object~is_locked.
+    return.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~JUMP.
+  method zif_abapgit_object~jump.
+    return.
   endmethod.
 
 
-method ZIF_ABAPGIT_OBJECT~MAP_FILENAME_TO_OBJECT.
+method zif_abapgit_object~map_filename_to_object.
   return.
 endmethod.
 

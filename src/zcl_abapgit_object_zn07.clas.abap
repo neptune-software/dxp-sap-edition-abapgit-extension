@@ -72,15 +72,15 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN07 IMPLEMENTATION.
         zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
     endtry.
 
-    if iv_tabname eq '/NEPTUNE/CUSLAY'. ##no_text
+    if iv_tabname = '/NEPTUNE/CUSLAY'. ##no_text
       read table <lt_standard_table> assigning <ls_line> index 1.
-      check sy-subrc eq 0.
+      check sy-subrc = 0.
 
       assign component 'CUSTOM_CSS' of structure <ls_line> to <lv_field>. ##no_text
-      check sy-subrc eq 0 and <lv_field> is not initial.
+      check sy-subrc = 0 and <lv_field> is not initial.
 
       read table it_files into ls_file with key filename = <lv_field>.
-      check sy-subrc eq 0.
+      check sy-subrc = 0.
 
       <lv_field> =  zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ) .
 
@@ -115,13 +115,13 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN07 IMPLEMENTATION.
     split is_filename at '.' into table lt_comp.
 
     read table lt_comp into ls_comp index 1.
-    if sy-subrc eq 0.
+    if sy-subrc = 0.
       translate ls_comp to upper case.
       ev_obj_key = ls_comp.
     endif.
 
     read table lt_comp into ls_comp index 3.
-    if sy-subrc eq 0.
+    if sy-subrc = 0.
       replace all occurrences of '#' in ls_comp with '/'.
       translate ls_comp to upper case.
       ev_tabname = ls_comp.
@@ -223,7 +223,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN07 IMPLEMENTATION.
       importing et_table_content = lt_table_content ).
 
     read table lt_table_content into ls_table_content with table key tabname = '/NEPTUNE/CUSLAY'.
-    if sy-subrc eq 0.
+    if sy-subrc = 0.
       assign ls_table_content-table_content->* to <lt_standard_table>.
       read table <lt_standard_table> into ls_cuslay index 1.
       if ls_cuslay-updnam is not initial.
@@ -236,7 +236,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN07 IMPLEMENTATION.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~DELETE.
+  method zif_abapgit_object~delete.
+    return.
   endmethod.
 
 
@@ -312,7 +313,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN07 IMPLEMENTATION.
   endmethod.
 
 
-method ZIF_ABAPGIT_OBJECT~GET_DESERIALIZE_ORDER.
+method zif_abapgit_object~get_deserialize_order.
+  return.
 endmethod.
 
 
@@ -321,28 +323,33 @@ endmethod.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~GET_METADATA.
+  method zif_abapgit_object~get_metadata.
+    return.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~IS_ACTIVE.
+  method zif_abapgit_object~is_active.
     rv_active = abap_true.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~IS_LOCKED.
+  method zif_abapgit_object~is_locked.
+    return.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~JUMP.
+  method zif_abapgit_object~jump.
+    return.
   endmethod.
 
 
-method ZIF_ABAPGIT_OBJECT~MAP_FILENAME_TO_OBJECT.
+method zif_abapgit_object~map_filename_to_object.
+  return.
 endmethod.
 
 
-method ZIF_ABAPGIT_OBJECT~MAP_OBJECT_TO_FILENAME.
+method zif_abapgit_object~map_object_to_filename.
+  return.
 endmethod.
 
 
@@ -378,12 +385,12 @@ endmethod.
 
       check <lt_standard_table> is not initial.
 
-      if ls_table_content-tabname eq '/NEPTUNE/CUSLAY'. ##no_text
+      if ls_table_content-tabname = '/NEPTUNE/CUSLAY'. ##no_text
 
         read table <lt_standard_table> assigning <ls_line> index 1.
-        if sy-subrc eq 0.
+        if sy-subrc = 0.
           assign component 'CUSTOM_CSS' of structure <ls_line> to <field_value>. ##no_text
-          if sy-subrc eq 0.
+          if sy-subrc = 0.
 
             concatenate me->ms_item-obj_name
                         me->ms_item-obj_type
