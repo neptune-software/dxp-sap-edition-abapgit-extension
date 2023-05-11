@@ -354,10 +354,6 @@ endmethod.
 
 
 method ZIF_ABAPGIT_OBJECT~MAP_FILENAME_TO_OBJECT.
-  BREAK-POINT.
-  IF sy-uname eq 'ANDREC'.
-BREAK-POINT.
-  ENDIF.
   return.
 endmethod.
 
