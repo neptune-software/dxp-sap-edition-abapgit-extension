@@ -99,13 +99,13 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
     split is_filename at '.' into table lt_comp.
 
     read table lt_comp into ls_comp index 1.
-    if sy-subrc eq 0.
+    if sy-subrc = 0.
 *    translate ls_comp to upper case.
       ev_obj_key = ls_comp.
     endif.
 
     read table lt_comp into ls_comp index 3.
-    if sy-subrc eq 0.
+    if sy-subrc = 0.
       replace all occurrences of '#' in ls_comp with '/'.
       translate ls_comp to upper case.
       ev_tabname = ls_comp.
@@ -209,7 +209,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
       importing et_table_content = lt_table_content ).
 
     read table lt_table_content into ls_table_content with table key tabname = '/NEPTUNE/MENU'.
-    if sy-subrc eq 0.
+    if sy-subrc = 0.
       assign ls_table_content-table_content->* to <lt_standard_table>.
       read table <lt_standard_table> into ls_menu index 1.
       if ls_menu-updnam is not initial.
@@ -222,7 +222,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~DELETE.
+  method zif_abapgit_object~delete.
+    return.
   endmethod.
 
 
@@ -297,12 +298,18 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
   endmethod.
 
 
+method zif_abapgit_object~get_deserialize_order.
+  return.
+endmethod.
+
+
   method ZIF_ABAPGIT_OBJECT~GET_DESERIALIZE_STEPS.
     append zif_abapgit_object=>gc_step_id-late to rt_steps.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~GET_METADATA.
+  method zif_abapgit_object~get_metadata.
+    return.
   endmethod.
 
 
@@ -311,15 +318,27 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~IS_LOCKED.
+  method zif_abapgit_object~is_locked.
+    return.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~JUMP.
+  method zif_abapgit_object~jump.
+    return.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~SERIALIZE.
+method zif_abapgit_object~map_filename_to_object.
+  return.
+endmethod.
+
+
+method ZIF_ABAPGIT_OBJECT~MAP_OBJECT_TO_FILENAME.
+  return.
+endmethod.
+
+
+  method zif_abapgit_object~serialize.
 
     data: lo_artifact      type ref to /neptune/if_artifact_type,
           lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
@@ -332,6 +351,40 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = me->ms_item-obj_type ).
 
+    data lv_artifact_name type /neptune/artifact_name.
+    data lt_keys type /neptune/if_artifact_type=>ty_t_key.
+    data ls_key like line of lt_keys.
+    lv_artifact_name = me->ms_item-obj_name.
+    lt_keys = lo_artifact->get_key_from_name(
+        iv_object_type   = me->ms_item-obj_type    " Tadir Object Type for ABAPGIT
+        iv_artifact_name = lv_artifact_name    " Artifact Name
+        iv_devclass      = me->ms_item-devclass
+    ).
+
+*    loop at lt_keys into ls_key.
+*
+*      lo_artifact->get_table_content(
+*        exporting iv_key1          = ls_key-key1
+*        importing et_table_content = lt_table_content ).
+*
+** set fields that will be skipped in the serialization process
+*      set_skip_fields( ).
+*
+** serialize
+*      loop at lt_table_content into ls_table_content.
+*
+*        assign ls_table_content-table_content->* to <lt_standard_table>.
+*
+*        check <lt_standard_table> is not initial.
+*
+*        me->serialize_table(
+*          exporting
+*            iv_tabname = ls_table_content-tabname
+*            it_table   = <lt_standard_table> ).
+*      endloop.
+*      endloop.
+
+** ORIGINAL **
     lv_key = me->ms_item-obj_name.
 
     lo_artifact->get_table_content(
@@ -352,8 +405,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
         exporting
           iv_tabname = ls_table_content-tabname
           it_table   = <lt_standard_table> ).
-
     endloop.
+** ORIGINAL **
+
 
   endmethod.
 ENDCLASS.

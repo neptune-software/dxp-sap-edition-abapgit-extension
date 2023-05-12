@@ -27,7 +27,6 @@ private section.
       !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
       !IR_DATA type ref to DATA
       !IV_TABNAME type TADIR-OBJ_NAME
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
     raising
       ZCX_ABAPGIT_EXCEPTION .
   methods GET_VALUES_FROM_FILENAME
@@ -70,6 +69,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN04 IMPLEMENTATION.
         zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
     endtry.
 
+
 *    loop at <lt_standard_table> assigning <ls_line>.
 *      assign component 'GUID' of structure <ls_line> to <lv_field>.
 *      if <lv_field> is assigned.
@@ -98,13 +98,13 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN04 IMPLEMENTATION.
     split is_filename at '.' into table lt_comp.
 
     read table lt_comp into ls_comp index 1.
-    if sy-subrc eq 0.
+    if sy-subrc = 0.
 *    translate ls_comp to upper case.
       ev_obj_key = ls_comp.
     endif.
 
     read table lt_comp into ls_comp index 3.
-    if sy-subrc eq 0.
+    if sy-subrc = 0.
       replace all occurrences of '#' in ls_comp with '/'.
       translate ls_comp to upper case.
       ev_tabname = ls_comp.
@@ -208,7 +208,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN04 IMPLEMENTATION.
       importing et_table_content = lt_table_content ).
 
     read table lt_table_content into ls_table_content with table key tabname = '/NEPTUNE/APPCACH'.
-    if sy-subrc eq 0.
+    if sy-subrc = 0.
       assign ls_table_content-table_content->* to <lt_standard_table>.
       read table <lt_standard_table> into ls_appcach index 1.
       if ls_appcach-updnam is not initial.
@@ -221,7 +221,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN04 IMPLEMENTATION.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~DELETE.
+  method zif_abapgit_object~delete.
+    return.
   endmethod.
 
 
@@ -261,7 +262,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN04 IMPLEMENTATION.
         exporting
           is_file    = ls_files
           iv_tabname = lv_tabname
-          iv_key     = lv_key
+*          iv_key     = lv_key
           ir_data    = lr_data ).
 
       ls_table_content-tabname = lv_tabname.
@@ -296,12 +297,18 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN04 IMPLEMENTATION.
   endmethod.
 
 
+method zif_abapgit_object~get_deserialize_order.
+  return.
+endmethod.
+
+
   method ZIF_ABAPGIT_OBJECT~GET_DESERIALIZE_STEPS.
     append zif_abapgit_object=>gc_step_id-late to rt_steps.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~GET_METADATA.
+  method zif_abapgit_object~get_metadata.
+    return.
   endmethod.
 
 
@@ -310,12 +317,24 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN04 IMPLEMENTATION.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~IS_LOCKED.
+  method zif_abapgit_object~is_locked.
+    return.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~JUMP.
+  method zif_abapgit_object~jump.
+    return.
   endmethod.
+
+
+method zif_abapgit_object~map_filename_to_object.
+  return.
+endmethod.
+
+
+method zif_abapgit_object~map_object_to_filename.
+  return.
+endmethod.
 
 
   method ZIF_ABAPGIT_OBJECT~SERIALIZE.
