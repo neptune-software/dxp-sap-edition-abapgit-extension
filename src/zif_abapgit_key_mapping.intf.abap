@@ -4,7 +4,7 @@ interface zif_abapgit_key_mapping
 
   types:
     begin of ty_mapping,
-            object_type	  type /neptune/tadir_obj_type,
+            object_type   type /neptune/tadir_obj_type,
             key1          type /neptune/artifact_key,
             artifact_name type /neptune/artifact_name,
            end of ty_mapping .

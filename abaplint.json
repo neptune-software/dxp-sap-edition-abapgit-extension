@@ -127,7 +127,7 @@
     "double_space": true,
     "space_before_dot": true,
     "class_attribute_names": true,
-    "unnecessary_return": true,
+    "unnecessary_return": false,
     "local_variable_names": true,
     "uncaught_exception": true,
     "unnecessary_pragma": true,
@@ -150,6 +150,18 @@
     "prefix_is_current_class": true,
     "preferred_compare_operator": true,
     "check_comments": true,
-    "check_subrc": true
+    "check_subrc": true,
+    "keyword_case": {
+      "exclude": [],
+      "severity": "Error",
+      "style": "lower",
+      "ignoreExceptions": true,
+      "ignoreLowerClassImplmentationStatement": true,
+      "ignoreGlobalClassDefinition": true,
+      "ignoreGlobalInterface": true,
+      "ignoreFunctionModuleName": false,
+      "ignoreGlobalClassBoundaries": true,
+      "ignoreKeywords": []
+    }
   }
 }
