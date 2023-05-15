@@ -1,58 +1,58 @@
-class ZCL_ABAPGIT_USER_EXIT definition
+class zcl_abapgit_user_exit definition
   public
   final
   create public .
 
-public section.
+  public section.
 
-  interfaces ZIF_ABAPGIT_EXIT .
+    interfaces zif_abapgit_exit .
   protected section.
   private section.
-ENDCLASS.
+endclass.
 
 
 
-CLASS ZCL_ABAPGIT_USER_EXIT IMPLEMENTATION.
+class zcl_abapgit_user_exit implementation.
 
 
-  method ZIF_ABAPGIT_EXIT~ADJUST_DISPLAY_COMMIT_URL.
+  method zif_abapgit_exit~adjust_display_commit_url.
     return.
   endmethod.
 
 
-  method ZIF_ABAPGIT_EXIT~ADJUST_DISPLAY_FILENAME.
+  method zif_abapgit_exit~adjust_display_filename.
     return.
   endmethod.
 
 
-  method ZIF_ABAPGIT_EXIT~ALLOW_SAP_OBJECTS.
+  method zif_abapgit_exit~allow_sap_objects.
     return.
   endmethod.
 
 
-  method ZIF_ABAPGIT_EXIT~CHANGE_LOCAL_HOST.
+  method zif_abapgit_exit~change_local_host.
     return.
   endmethod.
 
 
-  method ZIF_ABAPGIT_EXIT~CHANGE_PROXY_AUTHENTICATION.
+  method zif_abapgit_exit~change_proxy_authentication.
     return.
   endmethod.
 
 
-  method ZIF_ABAPGIT_EXIT~CHANGE_PROXY_PORT.
+  method zif_abapgit_exit~change_proxy_port.
     return.
   endmethod.
 
 
-  method ZIF_ABAPGIT_EXIT~CHANGE_PROXY_URL.
+  method zif_abapgit_exit~change_proxy_url.
     return.
   endmethod.
 
 
-method zif_abapgit_exit~change_supported_data_objects.
-  return.
-endmethod.
+  method zif_abapgit_exit~change_supported_data_objects.
+    return.
+  endmethod.
 
 
   method zif_abapgit_exit~change_supported_object_types.
@@ -88,72 +88,72 @@ endmethod.
   endmethod.
 
 
-  method ZIF_ABAPGIT_EXIT~CREATE_HTTP_CLIENT.
+  method zif_abapgit_exit~create_http_client.
     return.
   endmethod.
 
 
-  method ZIF_ABAPGIT_EXIT~CUSTOM_SERIALIZE_ABAP_CLIF.
+  method zif_abapgit_exit~custom_serialize_abap_clif.
     return.
   endmethod.
 
 
-  method ZIF_ABAPGIT_EXIT~DESERIALIZE_POSTPROCESS.
+  method zif_abapgit_exit~deserialize_postprocess.
     return.
   endmethod.
 
 
-  method ZIF_ABAPGIT_EXIT~DETERMINE_TRANSPORT_REQUEST.
+  method zif_abapgit_exit~determine_transport_request.
     return.
   endmethod.
 
 
-method ZIF_ABAPGIT_EXIT~ENHANCE_REPO_TOOLBAR.
-  return.
-endmethod.
-
-
-  method ZIF_ABAPGIT_EXIT~GET_CI_TESTS.
+  method zif_abapgit_exit~enhance_repo_toolbar.
     return.
   endmethod.
 
 
-  method ZIF_ABAPGIT_EXIT~GET_SSL_ID.
+  method zif_abapgit_exit~get_ci_tests.
     return.
   endmethod.
 
 
-  method ZIF_ABAPGIT_EXIT~HTTP_CLIENT.
+  method zif_abapgit_exit~get_ssl_id.
     return.
   endmethod.
 
 
-  method ZIF_ABAPGIT_EXIT~ON_EVENT.
+  method zif_abapgit_exit~http_client.
     return.
   endmethod.
 
 
-  method ZIF_ABAPGIT_EXIT~PRE_CALCULATE_REPO_STATUS.
+  method zif_abapgit_exit~on_event.
     return.
   endmethod.
 
 
-  method ZIF_ABAPGIT_EXIT~SERIALIZE_POSTPROCESS.
+  method zif_abapgit_exit~pre_calculate_repo_status.
     return.
   endmethod.
 
 
-  method ZIF_ABAPGIT_EXIT~VALIDATE_BEFORE_PUSH.
+  method zif_abapgit_exit~serialize_postprocess.
     return.
   endmethod.
 
 
-  method ZIF_ABAPGIT_EXIT~WALL_MESSAGE_LIST.
+  method zif_abapgit_exit~validate_before_push.
     return.
   endmethod.
 
 
-  method ZIF_ABAPGIT_EXIT~WALL_MESSAGE_REPO.
+  method zif_abapgit_exit~wall_message_list.
     return.
   endmethod.
-ENDCLASS.
+
+
+  method zif_abapgit_exit~wall_message_repo.
+    return.
+  endmethod.
+endclass.
