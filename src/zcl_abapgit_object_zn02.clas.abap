@@ -35,11 +35,11 @@ class zcl_abapgit_object_zn02 definition
       exporting
         !ev_tabname type tadir-obj_name
         !ev_obj_key type /neptune/artifact_key .
-endclass.
+ENDCLASS.
 
 
 
-class zcl_abapgit_object_zn02 implementation.
+CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
 
 
   method deserialize_table.
@@ -233,9 +233,9 @@ class zcl_abapgit_object_zn02 implementation.
 
       get_values_from_filename(
         exporting
-          is_filename = ls_files-filename    
+          is_filename = ls_files-filename
         importing
-          ev_tabname  = lv_tabname           
+          ev_tabname  = lv_tabname
           ev_obj_key  = lv_key ).
 
       create data lr_data type standard table of (lv_tabname) with non-unique default key.
@@ -257,7 +257,7 @@ class zcl_abapgit_object_zn02 implementation.
       lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
 
       lo_artifact->set_table_content(
-        iv_key1                 = lv_key    
+        iv_key1                 = lv_key
         it_insert_table_content = lt_table_content ).
 
     endif.
@@ -306,6 +306,13 @@ class zcl_abapgit_object_zn02 implementation.
 
 
   method zif_abapgit_object~map_filename_to_object.
+**********************************************************************
+** THIS CODE IS JUST AN EXAMPLE AS OF NOW
+**********************************************************************
+*    if iv_filename eq '2f8aa4c4-ea06-4920-dcd9-8ac425fa50e1.zn02.#neptune#app.json'.
+*      cs_item-obj_name = '2f8aa4c4-ea06-4920-dcd9-8ac425fa50e1'.
+*      cs_item-obj_name = 'ZN02.Some.Object'.
+*    endif.
     return.
   endmethod.
 
@@ -348,4 +355,4 @@ class zcl_abapgit_object_zn02 implementation.
     endloop.
 
   endmethod.
-endclass.
+ENDCLASS.

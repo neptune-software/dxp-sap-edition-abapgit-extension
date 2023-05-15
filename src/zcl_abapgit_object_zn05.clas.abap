@@ -329,6 +329,14 @@ endmethod.
 
 
 method zif_abapgit_object~map_filename_to_object.
+**********************************************************************
+** THIS CODE IS JUST AN EXAMPLE AS OF NOW
+**********************************************************************
+*    if iv_filename CS '37e4476489dfac6fe10000000adc9967'.
+*      cs_item-obj_name = '37e4476489dfac6fe10000000adc9967'.
+*      cs_item-obj_name = 'ZN05.Some.Object'.
+*      TRANSLATE cs_item-obj_name to UPPER CASE.
+*    endif.
   return.
 endmethod.
 
