@@ -15,10 +15,10 @@ private section.
             key type tadir-obj_name,
             name type string,
            end of ty_mapping .
-  types:
+  types
     ty_mapping_tt type standard table of ty_mapping with key key .
 
-  constants:
+  constants
     mc_name_separator(1) type c value '@'.                  "#EC NOTEXT
   class-data mt_mapping type ty_mapping_tt .
   data mt_skip_paths type string_table .
@@ -336,7 +336,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
 
   method zif_abapgit_object~map_filename_to_object.
 
-    data lt_parts type standard table of string.
+    data lt_parts type standard table of string with default key.
     data: lv_artifact_name type string,
           lv_key type string,
           lv_filename type string.
@@ -345,6 +345,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
     split iv_filename at mc_name_separator into lv_artifact_name lv_filename.
     split lv_filename at '.' into table lt_parts.
     read table lt_parts into lv_key index 1.
+    check sy-subrc = 0.
 
     if lv_artifact_name is not initial.
       translate lv_key to upper case.
@@ -373,13 +374,13 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
 
     try.
         " Ongoing from DXP 23 fetch wie tadir framework (all artifacts can be assigned to a devclass)
-        call method ('/NEPTUNE/CL_TADIR')=>('GET_ARTIFACT_ENTRY') ##called
+        call method ('/NEPTUNE/CL_TADIR')=>('GET_ARTIFACT_ENTRY')
 *          call method  /neptune/cl_tadir=>get_artifact_entry
           exporting
             iv_key      =  lv_key
             iv_devclass =  is_item-devclass
           receiving
-            rs_tadir    = ls_tadir.
+            rs_tadir    = ls_tadir          ##CALLED .
 
       catch cx_sy_dyn_call_illegal_class
             cx_sy_dyn_call_illegal_method.
@@ -392,7 +393,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
       concatenate ls_tadir-artifact_name cv_filename into cv_filename separated by mc_name_separator.
     else.
       read table mt_mapping into ls_mapping with key key = is_item-obj_name.
-      if sy-subrc eq 0.
+      if sy-subrc = 0.
         concatenate ls_mapping-name cv_filename into cv_filename separated by mc_name_separator.
       endif.
     endif.
