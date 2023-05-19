@@ -254,9 +254,9 @@ class zcl_abapgit_object_zn07 implementation.
 
       get_values_from_filename(
         exporting
-          is_filename = ls_files-filename    
+          is_filename = ls_files-filename
         importing
-          ev_tabname  = lv_tabname           
+          ev_tabname  = lv_tabname
           ev_obj_key  = lv_key ).
 
       create data lr_data type standard table of (lv_tabname) with non-unique default key.

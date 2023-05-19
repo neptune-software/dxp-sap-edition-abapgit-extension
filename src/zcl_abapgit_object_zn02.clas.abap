@@ -306,13 +306,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
 
 
   method zif_abapgit_object~map_filename_to_object.
-**********************************************************************
-** THIS CODE IS JUST AN EXAMPLE AS OF NOW
-**********************************************************************
-*    if iv_filename eq '2f8aa4c4-ea06-4920-dcd9-8ac425fa50e1.zn02.#neptune#app.json'.
-*      cs_item-obj_name = '2f8aa4c4-ea06-4920-dcd9-8ac425fa50e1'.
-*      cs_item-obj_name = 'ZN02.Some.Object'.
-*    endif.
     return.
   endmethod.
 
