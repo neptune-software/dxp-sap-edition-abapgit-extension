@@ -15,10 +15,10 @@ private section.
               key type tadir-obj_name,
               name type string,
              end of ty_mapping .
-  types:
+  types
     ty_mapping_tt type standard table of ty_mapping with key key .
 
-  constants:
+  constants
     mc_name_separator(1) type c value '@'.                  "#EC NOTEXT
   class-data mt_mapping type ty_mapping_tt .
   data mt_skip_paths type string_table .

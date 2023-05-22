@@ -96,25 +96,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
 
   method get_values_from_filename.
 
-*    data lt_comp type standard table of string with default key.
-*    data ls_comp like line of lt_comp.
-*
-*    split is_filename at '.' into table lt_comp.
-*
-*    read table lt_comp into ls_comp index 1.
-*    if sy-subrc = 0.
-*      ev_obj_key = ls_comp.
-*    endif.
-*
-*    read table lt_comp into ls_comp index 3.
-*    if sy-subrc = 0.
-*      replace all occurrences of '#' in ls_comp with '/'.
-*      translate ls_comp to upper case.
-*      ev_tabname = ls_comp.
-*    endif.
-
-
-
     data lt_comp type standard table of string with default key.
     data ls_comp like line of lt_comp.
     data lv_key type /neptune/artifact_key.
