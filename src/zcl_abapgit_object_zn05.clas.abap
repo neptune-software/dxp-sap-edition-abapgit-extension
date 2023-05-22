@@ -361,6 +361,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
       append ls_mapping to mt_mapping.
 
     endif.
+
   endmethod.
 
 
@@ -399,7 +400,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
         concatenate ls_mapping-name cv_filename into cv_filename separated by mc_name_separator.
       endif.
     endif.
-
 
   endmethod.
 
