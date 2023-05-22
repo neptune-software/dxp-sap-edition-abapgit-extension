@@ -137,7 +137,7 @@
       "allowExit": false,
       "allowCheck": true
     },
-    "pragma_style": true,
+    "pragma_style": false,
     "fully_type_itabs": true,
     "in_statement_indentation": true,
     "line_only_punc": true,
