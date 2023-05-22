@@ -20,7 +20,7 @@ private section.
 
   constants
     mc_name_separator(1) type c value '@'.                  "#EC NOTEXT
-  class-data mt_mapping type ty_mapping_tt .
+  class-data mt_mapping type ty_mapping_tt.
   data mt_skip_paths type string_table .
 
   methods serialize_table
@@ -286,11 +286,11 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
         iv_key1                 = lv_key
         it_insert_table_content = lt_table_content ).
 
-
       lo_artifact->update_tadir_entry(
           iv_key1          = lv_key
           iv_devclass      = ms_item-devclass
           iv_artifact_name = lv_name ).
+
     endif.
 
   endmethod.
