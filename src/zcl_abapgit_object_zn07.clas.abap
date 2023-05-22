@@ -15,40 +15,40 @@ private section.
             key type tadir-obj_name,
             name type string,
            end of ty_mapping .
-  types:
+  types
     ty_mapping_tt type standard table of ty_mapping with key key .
 
-  constants:
-    mc_name_separator(1) type c value '@'. "#EC NOTEXT
-  class-data MT_MAPPING type TY_MAPPING_TT .
-  data MT_SKIP_PATHS type STRING_TABLE .
+  constants
+    mc_name_separator(1) type c value '@'.                  "#EC NOTEXT
+  class-data mt_mapping type ty_mapping_tt .
+  data mt_skip_paths type string_table .
 
-  methods SERIALIZE_TABLE
+  methods serialize_table
     importing
-      !IV_TABNAME type TABNAME
-      !IT_TABLE type ANY
+      !iv_tabname type tabname
+      !it_table type any
     raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods SET_SKIP_FIELDS .
-  methods GET_SKIP_FIELDS
+      zcx_abapgit_exception .
+  methods set_skip_fields .
+  methods get_skip_fields
     returning
-      value(RT_SKIP_PATHS) type STRING_TABLE .
-  interface ZIF_ABAPGIT_GIT_DEFINITIONS load .
-  methods DESERIALIZE_TABLE
+      value(rt_skip_paths) type string_table .
+  interface zif_abapgit_git_definitions load .
+  methods deserialize_table
     importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IR_DATA type ref to DATA
-      !IV_TABNAME type TADIR-OBJ_NAME
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
+      !is_file type zif_abapgit_git_definitions=>ty_file
+      !ir_data type ref to data
+      !iv_tabname type tadir-obj_name
+      !it_files type zif_abapgit_git_definitions=>ty_files_tt
     raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods GET_VALUES_FROM_FILENAME
+      zcx_abapgit_exception .
+  methods get_values_from_filename
     importing
-      !IS_FILENAME type STRING
+      !is_filename type string
     exporting
-      !EV_TABNAME type TADIR-OBJ_NAME
-      !EV_OBJ_KEY type /NEPTUNE/ARTIFACT_KEY
-      !EV_NAME type /NEPTUNE/ARTIFACT_NAME .
+      !ev_tabname type tadir-obj_name
+      !ev_obj_key type /neptune/artifact_key
+      !ev_name type /neptune/artifact_name .
 ENDCLASS.
 
 
@@ -113,24 +113,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN07 IMPLEMENTATION.
 
   method get_values_from_filename.
 
-*    data lt_comp type standard table of string with default key.
-*    data ls_comp like line of lt_comp.
-*
-*    split is_filename at '.' into table lt_comp.
-*
-*    read table lt_comp into ls_comp index 1.
-*    if sy-subrc = 0.
-*      translate ls_comp to upper case.
-*      ev_obj_key = ls_comp.
-*    endif.
-*
-*    read table lt_comp into ls_comp index 3.
-*    if sy-subrc = 0.
-*      replace all occurrences of '#' in ls_comp with '/'.
-*      translate ls_comp to upper case.
-*      ev_tabname = ls_comp.
-*    endif.
-
     data lt_comp type standard table of string with default key.
     data ls_comp like line of lt_comp.
     data lv_key type /neptune/artifact_key.
@@ -153,7 +135,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN07 IMPLEMENTATION.
       translate ls_comp to upper case.
       ev_tabname = ls_comp.
     endif.
-
 
   endmethod.
 
@@ -478,7 +459,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN07 IMPLEMENTATION.
           if sy-subrc = 0 and <lv_field_value> is not initial.
 
             assign component 'NAME' of structure <ls_line> to <lv_name> casting type /neptune/cuslay-name.
-            check sy-subrc eq 0.
+            check sy-subrc = 0.
 
             concatenate ms_item-obj_name
                         ms_item-obj_type
