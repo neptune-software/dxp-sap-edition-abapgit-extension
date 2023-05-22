@@ -103,6 +103,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
     read table lt_comp into ls_comp index 1.
     if sy-subrc = 0.
       split ls_comp at mc_name_separator into lv_name lv_key.
+      translate lv_key to upper case.
+      translate lv_name to upper case.
       ev_obj_key = lv_key.
       ev_name = lv_name.
     endif.
@@ -380,7 +382,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
             iv_key      =  lv_key
             iv_devclass =  is_item-devclass
           receiving
-            rs_tadir    = ls_tadir          ##CALLED .
+            rs_tadir    = ls_tadir          ##CALLED.
 
       catch cx_sy_dyn_call_illegal_class
             cx_sy_dyn_call_illegal_method.
