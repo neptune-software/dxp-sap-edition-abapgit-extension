@@ -199,7 +199,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN04 IMPLEMENTATION.
           ls_table_content like line of lt_table_content,
           lv_key           type /neptune/artifact_key.
 
-    data ls_appcach type /neptune/appcach.
+    data ls_categor type /neptune/categor.
 
     field-symbols <lt_standard_table> type standard table.
 
@@ -211,15 +211,13 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN04 IMPLEMENTATION.
       exporting iv_key1          = lv_key
       importing et_table_content = lt_table_content ).
 
-    read table lt_table_content into ls_table_content with table key tabname = '/NEPTUNE/APPCACH'.
+    read table lt_table_content into ls_table_content with table key tabname = '/NEPTUNE/CATEGOR'.
     if sy-subrc = 0.
       assign ls_table_content-table_content->* to <lt_standard_table>.
       check sy-subrc = 0.
-      read table <lt_standard_table> into ls_appcach index 1.
-      if sy-subrc = 0 and ls_appcach-updnam is not initial.
-        rv_user = ls_appcach-updnam.
-      else.
-        rv_user = ls_appcach-crenam.
+      read table <lt_standard_table> into ls_categor index 1.
+      if sy-subrc = 0 and ls_categor-updnam is not initial.
+        rv_user = ls_categor-updnam.
       endif.
     endif.
 
