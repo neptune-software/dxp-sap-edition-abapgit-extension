@@ -8,38 +8,51 @@ class zcl_abapgit_object_zn02 definition
 
     interfaces zif_abapgit_object .
   protected section.
-  private section.
+private section.
 
-    data mt_skip_paths type string_table .
+  types:
+    begin of ty_mapping,
+            key type tadir-obj_name,
+            name type string,
+           end of ty_mapping .
+  types
+    ty_mapping_tt type standard table of ty_mapping with key key .
 
-    methods serialize_table
-      importing
-        !iv_tabname type tabname
-        !it_table type any
-      raising
-        zcx_abapgit_exception .
-    methods set_skip_fields .
-    methods get_skip_fields
-      returning
-        value(rt_skip_paths) type string_table .
-    methods deserialize_table
-      importing
-        !is_file type zif_abapgit_git_definitions=>ty_file
-        !ir_data type ref to data
-        !iv_tabname type tadir-obj_name
-      raising
-        zcx_abapgit_exception .
-    methods get_values_from_filename
-      importing
-        !is_filename type string
-      exporting
-        !ev_tabname type tadir-obj_name
-        !ev_obj_key type /neptune/artifact_key .
-endclass.
+  constants
+    mc_name_separator(1) type c value '@'.                  "#EC NOTEXT
+  class-data mt_mapping type ty_mapping_tt .
+
+  data mt_skip_paths type string_table .
+
+  methods serialize_table
+    importing
+      !iv_tabname type tabname
+      !it_table type any
+    raising
+      zcx_abapgit_exception .
+  methods set_skip_fields .
+  methods get_skip_fields
+    returning
+      value(rt_skip_paths) type string_table .
+  methods deserialize_table
+    importing
+      !is_file type zif_abapgit_git_definitions=>ty_file
+      !ir_data type ref to data
+      !iv_tabname type tadir-obj_name
+    raising
+      zcx_abapgit_exception .
+  methods get_values_from_filename
+    importing
+      !is_filename type string
+    exporting
+      !ev_tabname type tadir-obj_name
+      !ev_obj_key type /neptune/artifact_key
+      !ev_name type /neptune/artifact_name .
+ENDCLASS.
 
 
 
-class zcl_abapgit_object_zn02 implementation.
+CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
 
 
   method deserialize_table.
@@ -85,13 +98,17 @@ class zcl_abapgit_object_zn02 implementation.
 
     data lt_comp type standard table of string with default key.
     data ls_comp like line of lt_comp.
+    data lv_key type /neptune/artifact_key.
+    data lv_name type string.
 
     split is_filename at '.' into table lt_comp.
 
     read table lt_comp into ls_comp index 1.
     if sy-subrc = 0.
-      " translate ls_comp to upper case.
-      ev_obj_key = ls_comp.
+      split ls_comp at mc_name_separator into lv_name lv_key.
+      translate lv_name to upper case.
+      ev_obj_key = lv_key.
+      ev_name = lv_name.
     endif.
 
     read table lt_comp into ls_comp index 3.
@@ -226,6 +243,7 @@ class zcl_abapgit_object_zn02 implementation.
     data lr_data    type ref to data.
     data lv_tabname type tadir-obj_name.
     data lv_key     type /neptune/artifact_key.
+    data lv_name    type /neptune/artifact_name.
 
     lt_files = zif_abapgit_object~mo_files->get_files( ).
 
@@ -233,10 +251,11 @@ class zcl_abapgit_object_zn02 implementation.
 
       get_values_from_filename(
         exporting
-          is_filename = ls_files-filename    
+          is_filename = ls_files-filename
         importing
-          ev_tabname  = lv_tabname           
-          ev_obj_key  = lv_key ).
+          ev_tabname  = lv_tabname
+          ev_obj_key  = lv_key
+          ev_name     = lv_name ).
 
       create data lr_data type standard table of (lv_tabname) with non-unique default key.
 
@@ -257,8 +276,13 @@ class zcl_abapgit_object_zn02 implementation.
       lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
 
       lo_artifact->set_table_content(
-        iv_key1                 = lv_key    
+        iv_key1                 = lv_key
         it_insert_table_content = lt_table_content ).
+
+      lo_artifact->update_tadir_entry(
+          iv_key1          = lv_key
+          iv_devclass      = ms_item-devclass
+          iv_artifact_name = lv_name ).
 
     endif.
 
@@ -306,12 +330,70 @@ class zcl_abapgit_object_zn02 implementation.
 
 
   method zif_abapgit_object~map_filename_to_object.
-    return.
+
+    data lt_parts type standard table of string with default key.
+    data: lv_artifact_name type string,
+          lv_key type string,
+          lv_filename type string.
+    data ls_mapping like line of mt_mapping.
+
+    split iv_filename at mc_name_separator into lv_artifact_name lv_filename.
+    split lv_filename at '.' into table lt_parts.
+    read table lt_parts into lv_key index 1.
+    check sy-subrc = 0.
+
+    if lv_artifact_name is not initial.
+      translate lv_key to upper case.
+      cs_item-obj_name = lv_key.
+
+      read table mt_mapping transporting no fields with key key = lv_key.
+      check sy-subrc <> 0.
+
+      ls_mapping-key = lv_key.
+      ls_mapping-name = lv_artifact_name.
+      append ls_mapping to mt_mapping.
+
+    endif.
+
   endmethod.
 
 
   method zif_abapgit_object~map_object_to_filename.
-    return.
+
+    data ls_mapping like line of mt_mapping.
+    data ls_tadir type /neptune/if_artifact_type=>ty_lcl_tadir.
+    data lv_key type /neptune/artifact_key.
+
+    check is_item-devclass is not initial.
+
+    lv_key = is_item-obj_name.
+
+    try.
+        " Ongoing from DXP 23 fetch wie tadir framework (all artifacts can be assigned to a devclass)
+        call method ('/NEPTUNE/CL_TADIR')=>('GET_ARTIFACT_ENTRY')
+*          call method  /neptune/cl_tadir=>get_artifact_entry
+          exporting
+            iv_key      =  lv_key
+            iv_devclass =  is_item-devclass
+          receiving
+            rs_tadir    = ls_tadir          ##called.
+
+      catch cx_sy_dyn_call_illegal_class
+            cx_sy_dyn_call_illegal_method.
+
+        return.
+
+    endtry.
+
+    if ls_tadir is not initial.
+      concatenate ls_tadir-artifact_name cv_filename into cv_filename separated by mc_name_separator.
+    else.
+      read table mt_mapping into ls_mapping with key key = is_item-obj_name.
+      if sy-subrc = 0.
+        concatenate ls_mapping-name cv_filename into cv_filename separated by mc_name_separator.
+      endif.
+    endif.
+
   endmethod.
 
 
@@ -348,4 +430,4 @@ class zcl_abapgit_object_zn02 implementation.
     endloop.
 
   endmethod.
-endclass.
+ENDCLASS.
