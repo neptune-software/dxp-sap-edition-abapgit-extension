@@ -1,4 +1,4 @@
-class zcl_abapgit_object_zn05 definition
+class zcl_abapgit_object_zn11 definition
   public
   inheriting from zcl_abapgit_objects_super
   final
@@ -8,50 +8,52 @@ class zcl_abapgit_object_zn05 definition
 
     interfaces zif_abapgit_object .
   protected section.
-private section.
+  private section.
 
-  types:
-    begin of ty_mapping,
-            key type tadir-obj_name,
-            name type string,
-           end of ty_mapping .
-  types
-    ty_mapping_tt type standard table of ty_mapping with key key .
+    types:
+      begin of ty_mapping,
+              key type tadir-obj_name,
+              name type string,
+             end of ty_mapping .
+    types
+      ty_mapping_tt type standard table of ty_mapping with key key .
 
-  constants
-    mc_name_separator(1) type c value '@'.                  "#EC NOTEXT
-  class-data gt_mapping type ty_mapping_tt.
-  data mt_skip_paths type string_table .
+    constants
+      mc_name_separator(1) type c value '@'.                "#EC NOTEXT
+    class-data gt_mapping type ty_mapping_tt .
+    data mt_skip_paths type string_table .
 
-  methods serialize_table
-    importing
-      !iv_tabname type tabname
-      !it_table type any
-    raising
-      zcx_abapgit_exception .
-  methods set_skip_fields .
-  methods get_skip_fields
-    returning
-      value(rt_skip_paths) type string_table .
-  methods deserialize_table
-    importing
-      !is_file type zif_abapgit_git_definitions=>ty_file
-      !ir_data type ref to data
-      !iv_tabname type tadir-obj_name
-    raising
-      zcx_abapgit_exception .
-  methods get_values_from_filename
-    importing
-      !is_filename type string
-    exporting
-      !ev_tabname type tadir-obj_name
-      !ev_obj_key type /neptune/artifact_key
-      !ev_name type /neptune/artifact_name .
-ENDCLASS.
+    methods serialize_table
+      importing
+        !iv_tabname type tabname
+        !it_table type any
+      raising
+        zcx_abapgit_exception .
+    methods set_skip_fields .
+    methods get_skip_fields
+      returning
+        value(rt_skip_paths) type string_table .
+    interface zif_abapgit_git_definitions load .
+    methods deserialize_table
+      importing
+        !is_file type zif_abapgit_git_definitions=>ty_file
+        !ir_data type ref to data
+        !iv_tabname type tadir-obj_name
+        !it_files type zif_abapgit_git_definitions=>ty_files_tt
+      raising
+        zcx_abapgit_exception .
+    methods get_values_from_filename
+      importing
+        !is_filename type string
+      exporting
+        !ev_tabname type tadir-obj_name
+        !ev_obj_key type /neptune/artifact_key
+        !ev_name type /neptune/artifact_name .
+endclass.
 
 
 
-CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
+class zcl_abapgit_object_zn11 implementation.
 
 
   method deserialize_table.
@@ -60,8 +62,11 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
     data lx_ajson type ref to zcx_abapgit_ajson_error.
 
     data lt_table_content type ref to data.
+    data ls_file like line of it_files.
 
     field-symbols <lt_tab> type any table.
+    field-symbols <ls_line> type any.
+    field-symbols <lv_field> type any.
     field-symbols <lt_standard_table> type standard table.
 
     assign ir_data->* to <lt_tab>.
@@ -78,6 +83,21 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
       catch zcx_abapgit_ajson_error into lx_ajson.
         zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
     endtry.
+
+    if iv_tabname = '/NEPTUNE/CUSBANN' ##NO_TEXT.
+      read table <lt_standard_table> assigning <ls_line> index 1.
+      check sy-subrc = 0.
+
+      assign component 'CONTENT' of structure <ls_line> to <lv_field> ##NO_TEXT.
+      check sy-subrc = 0 and <lv_field> is not initial.
+
+      read table it_files into ls_file with key filename = <lv_field>.
+      check sy-subrc = 0.
+
+      <lv_field> = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
+
+    endif.
+
 
     <lt_tab> = <lt_standard_table>.
 
@@ -137,8 +157,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
 
 * Remove fields that have initial value
         lo_ajson = zcl_abapgit_ajson=>create_from(
-          ii_source_json = lo_ajson
-          ii_filter      = zcl_abapgit_ajson_filter_lib=>create_empty_filter( ) ).
+                      ii_source_json = lo_ajson
+                      ii_filter      = zcl_abapgit_ajson_filter_lib=>create_empty_filter( ) ).
 
 * Remove unwanted fields
         lt_skip_paths = get_skip_fields( ).
@@ -146,8 +166,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
           lo_ajson = zcl_abapgit_ajson=>create_from(
                         ii_source_json = lo_ajson
                         ii_filter      = zcl_abapgit_ajson_filter_lib=>create_path_filter(
-                                             it_skip_paths     = lt_skip_paths
-                                             iv_pattern_search = abap_true ) ).
+                                            it_skip_paths     = lt_skip_paths
+                                            iv_pattern_search = abap_true ) ).
         endif.
 
         lv_json = lo_ajson->stringify( 2 ).
@@ -171,21 +191,19 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
 
     data lv_skip type string.
 
-    lv_skip = '*MANDT'.
+    lv_skip = '*MANDT' ##NO_TEXT.
     append lv_skip to mt_skip_paths.
-    lv_skip = '*CONFIGURATION'.
+    lv_skip = '*CREDAT' ##NO_TEXT.
     append lv_skip to mt_skip_paths.
-    lv_skip = '*CREDAT'.
+    lv_skip = '*CRETIM' ##NO_TEXT.
     append lv_skip to mt_skip_paths.
-    lv_skip = '*CRETIM'.
+    lv_skip = '*CRENAM' ##NO_TEXT.
     append lv_skip to mt_skip_paths.
-    lv_skip = '*CRENAM'.
+    lv_skip = '*UPDDAT' ##NO_TEXT.
     append lv_skip to mt_skip_paths.
-    lv_skip = '*UPDDAT'.
+    lv_skip = '*UPDTIM' ##NO_TEXT.
     append lv_skip to mt_skip_paths.
-    lv_skip = '*UPDTIM'.
-    append lv_skip to mt_skip_paths.
-    lv_skip = '*UPDNAM'.
+    lv_skip = '*UPDNAM' ##NO_TEXT.
     append lv_skip to mt_skip_paths.
 
 
@@ -199,11 +217,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
           ls_table_content like line of lt_table_content,
           lv_key           type /neptune/artifact_key.
 
-    data ls_menu type /neptune/menu.
+    data ls_cusbann type /neptune/cusbann.
 
     field-symbols <lt_standard_table> type standard table.
-
-**********************************************************************
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
 
@@ -213,15 +229,15 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
       exporting iv_key1          = lv_key
       importing et_table_content = lt_table_content ).
 
-    read table lt_table_content into ls_table_content with table key tabname = '/NEPTUNE/MENU'.
+    read table lt_table_content into ls_table_content with table key tabname = '/NEPTUNE/CUSBANN'.
     if sy-subrc = 0.
       assign ls_table_content-table_content->* to <lt_standard_table>.
       check sy-subrc = 0.
-      read table <lt_standard_table> into ls_menu index 1.
-      if sy-subrc = 0 and ls_menu-updnam is not initial.
-        rv_user = ls_menu-updnam.
+      read table <lt_standard_table> into ls_cusbann index 1.
+      if sy-subrc = 0 and ls_cusbann-updnam is not initial.
+        rv_user = ls_cusbann-updnam.
       else.
-        rv_user = ls_menu-crenam.
+        rv_user = ls_cusbann-crenam.
       endif.
     endif.
 
@@ -262,14 +278,13 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
           ev_obj_key  = lv_key
           ev_name     = lv_name ).
 
-      translate lv_key to upper case.
-
       create data lr_data type standard table of (lv_tabname) with non-unique default key.
 
       deserialize_table(
         is_file    = ls_files
         iv_tabname = lv_tabname
-        ir_data    = lr_data ).
+        ir_data    = lr_data
+        it_files   = lt_files ).
 
       ls_table_content-tabname = lv_tabname.
       ls_table_content-table_content = lr_data.
@@ -383,7 +398,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
             iv_key      =  lv_key
             iv_devclass =  is_item-devclass
           receiving
-            rs_tadir    = ls_tadir          ##CALLED.
+            rs_tadir    = ls_tadir          ##called.
 
       catch cx_sy_dyn_call_illegal_class
             cx_sy_dyn_call_illegal_method.
@@ -409,9 +424,15 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
     data: lo_artifact      type ref to /neptune/if_artifact_type,
           lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
           ls_table_content like line of lt_table_content,
-          lv_key           type /neptune/artifact_key.
+          lv_key           type /neptune/artifact_key,
+          ls_file          type zif_abapgit_git_definitions=>ty_file.
 
-    field-symbols <lt_standard_table> type standard table.
+    field-symbols: <lt_standard_table> type standard table,
+                   <ls_line>           type any,
+                   <lv_field_value>    type any,
+                   <lv_name>           type any.
+
+**********************************************************************
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
 
@@ -431,10 +452,39 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
 
       check sy-subrc = 0 and <lt_standard_table> is not initial.
 
+      if ls_table_content-tabname = '/NEPTUNE/CUSBANN'.
+        read table <lt_standard_table> assigning <ls_line> index 1.
+        if sy-subrc = 0.
+          assign component 'CONTENT' of structure <ls_line> to <lv_field_value>.
+          if sy-subrc = 0 and <lv_field_value> is not initial.
+
+            assign component 'NAME' of structure <ls_line> to <lv_name> casting type /neptune/cusbann-name.
+            check sy-subrc = 0.
+
+            concatenate ms_item-obj_name
+                        ms_item-obj_type
+                        ls_table_content-tabname
+                        'html' into ls_file-filename separated by '.'.
+
+            replace all occurrences of '/' in ls_file-filename with '#'.
+            concatenate <lv_name> ls_file-filename into ls_file-filename separated by mc_name_separator.
+            translate ls_file-filename to lower case.
+
+            ls_file-path = '/'.
+            ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( <lv_field_value> ).
+
+            zif_abapgit_object~mo_files->add( ls_file ).
+
+            <lv_field_value> = ls_file-filename.
+          endif.
+        endif.
+      endif.
+
       serialize_table(
         iv_tabname = ls_table_content-tabname
         it_table   = <lt_standard_table> ).
+
     endloop.
 
   endmethod.
-ENDCLASS.
+endclass.

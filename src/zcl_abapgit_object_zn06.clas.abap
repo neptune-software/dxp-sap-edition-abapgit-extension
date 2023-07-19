@@ -20,7 +20,7 @@ private section.
 
   constants
     mc_name_separator(1) type c value '@'.                  "#EC NOTEXT
-  class-data mt_mapping type ty_mapping_tt .
+  class-data gt_mapping type ty_mapping_tt .
   data mt_skip_paths type string_table .
 
   methods serialize_table
@@ -336,7 +336,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN06 IMPLEMENTATION.
     data: lv_artifact_name type string,
           lv_key type string,
           lv_filename type string.
-    data ls_mapping like line of mt_mapping.
+    data ls_mapping like line of gt_mapping.
 
     split iv_filename at mc_name_separator into lv_artifact_name lv_filename.
     split lv_filename at '.' into table lt_parts.
@@ -347,12 +347,12 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN06 IMPLEMENTATION.
       translate lv_key to upper case.
       cs_item-obj_name = lv_key.
 
-      read table mt_mapping transporting no fields with key key = lv_key.
+      read table gt_mapping transporting no fields with key key = lv_key.
       check sy-subrc <> 0.
 
       ls_mapping-key = lv_key.
       ls_mapping-name = lv_artifact_name.
-      append ls_mapping to mt_mapping.
+      append ls_mapping to gt_mapping.
 
     endif.
 
@@ -361,7 +361,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN06 IMPLEMENTATION.
 
   method zif_abapgit_object~map_object_to_filename.
 
-    data ls_mapping like line of mt_mapping.
+    data ls_mapping like line of gt_mapping.
     data ls_tadir type /neptune/if_artifact_type=>ty_lcl_tadir.
     data lv_key type /neptune/artifact_key.
 
@@ -389,7 +389,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN06 IMPLEMENTATION.
     if ls_tadir is not initial.
       concatenate ls_tadir-artifact_name cv_filename into cv_filename separated by mc_name_separator.
     else.
-      read table mt_mapping into ls_mapping with key key = is_item-obj_name.
+      read table gt_mapping into ls_mapping with key key = is_item-obj_name.
       if sy-subrc = 0.
         concatenate ls_mapping-name cv_filename into cv_filename separated by mc_name_separator.
       endif.
