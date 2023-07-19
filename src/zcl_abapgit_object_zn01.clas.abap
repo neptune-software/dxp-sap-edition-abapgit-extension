@@ -112,11 +112,11 @@ class zcl_abapgit_object_zn01 definition
         !iv_key type /neptune/artifact_key
       raising
         zcx_abapgit_exception .
-ENDCLASS.
+endclass.
 
 
 
-CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
+class zcl_abapgit_object_zn01 implementation.
 
 
   method deserialize_css.
@@ -915,8 +915,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
         it_insert_table_content = lt_table_content ).
 
       lo_artifact->update_tadir_entry(
-          iv_key1          = lv_key
-          iv_devclass      = ms_item-devclass ).
+          iv_key1     = lv_key
+          iv_devclass = ms_item-devclass ).
 
     endif.
 
@@ -1044,4 +1044,4 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
     endloop.
 
   endmethod.
-ENDCLASS.
+endclass.

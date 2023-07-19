@@ -36,11 +36,11 @@ class zcl_abapgit_object_zn03 definition
       exporting
         !ev_tabname type tadir-obj_name
         !ev_obj_key type /neptune/artifact_key .
-ENDCLASS.
+endclass.
 
 
 
-CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
+class zcl_abapgit_object_zn03 implementation.
 
 
   method deserialize_table.
@@ -280,8 +280,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
         it_insert_table_content = lt_table_content ).
 
       lo_artifact->update_tadir_entry(
-          iv_key1          = lv_key
-          iv_devclass      = ms_item-devclass ).
+          iv_key1     = lv_key
+          iv_devclass = ms_item-devclass ).
 
     endif.
 
@@ -371,4 +371,4 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
     endloop.
 
   endmethod.
-ENDCLASS.
+endclass.
