@@ -47,11 +47,11 @@ class zcl_abapgit_object_zn17 definition
         !ev_tabname type tadir-obj_name
         !ev_obj_key type /neptune/artifact_key
         !ev_name type /neptune/artifact_name .
-ENDCLASS.
+endclass.
 
 
 
-CLASS ZCL_ABAPGIT_OBJECT_ZN17 IMPLEMENTATION.
+class zcl_abapgit_object_zn17 implementation.
 
 
   method deserialize_table.
@@ -434,4 +434,4 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN17 IMPLEMENTATION.
     endloop.
 
   endmethod.
-ENDCLASS.
+endclass.

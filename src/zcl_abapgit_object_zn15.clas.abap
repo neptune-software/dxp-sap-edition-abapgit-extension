@@ -17,19 +17,19 @@ class zcl_abapgit_object_zn15 definition
                 key type tadir-obj_name,
                 name type string,
                end of ty_mapping .
-    types:
+    types
       ty_mapping_tt type standard table of ty_mapping with key key .
     types:
       begin of ty_lcl_jshlptx,
           guid type /neptune/jshlptx-guid,
           file_name   type string,
          end of ty_lcl_jshlptx .
-    types:
+    types
       ty_tt_lcl_jshlptx type standard table of ty_lcl_jshlptx .
-    types:
+    types
       ty_tt_jshlpgr type standard table of /neptune/jshlpgr with default key .
 
-    constants:
+    constants
       mc_name_separator(1) type c value '@'.                "#EC NOTEXT
     class-data gt_mapping type ty_mapping_tt .
     data mt_skip_paths type string_table .
@@ -80,11 +80,11 @@ class zcl_abapgit_object_zn15 definition
         !it_table_content type /neptune/if_artifact_type=>ty_t_table_content
       returning
         value(rv_key) type /neptune/artifact_key .
-ENDCLASS.
+endclass.
 
 
 
-CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
+class zcl_abapgit_object_zn15 implementation.
 
 
   method deserialize_jshlptx.
@@ -176,9 +176,15 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
 
   method get_jshelper_groups.
 
+    data lt_jshlpgr type standard table of /neptune/jshlpgr.
+
     select *
       from /neptune/jshlpgr
-      into table rt_jshlpgr.
+      into table lt_jshlpgr
+      order by primary key.
+    check sy-subrc = 0.
+    
+    rt_jshlpgr = lt_jshlpgr.
 
   endmethod.
 
@@ -206,13 +212,14 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
     check sy-subrc = 0.
     split ls_table_setting-keys at /neptune/if_artifact_type=>gc_separator into table lt_keys.
     read table lt_keys into ls_key index 1.
-    check ls_key is not initial.
+    check sy-subrc = 0 and ls_key is not initial.
 
     assign ls_table_content-table_content->* to <lt_standard_table>.
     check sy-subrc = 0.
     read table <lt_standard_table> assigning <ls_line> index 1.
+    check sy-subrc = 0 and <ls_line> is assigned.
     assign component ls_key of structure <ls_line> to <lv_key>.
-    if sy-subrc = 0..
+    if sy-subrc = 0.
       rv_key = <lv_key>.
     endif.
 
@@ -278,7 +285,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
       if sy-tabix = 1.
         clear lv_code.
         move-corresponding ls_jshlptx to ls_lcl_jshlptx.
-      endif..
+      endif.
 
       if lv_code is initial.
         lv_code = ls_jshlptx-text.
@@ -467,7 +474,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
             iv_name = 'key'
           changing
             cg_data = lv_key ).
-      catch zcx_abapgit_exception.    " abapGit - Exception
+      catch zcx_abapgit_exception.
     endtry.
 
     lt_files = zif_abapgit_object~mo_files->get_files( ).
@@ -508,9 +515,10 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
 
       if lv_tabname = '/NEPTUNE/JSHLPSC'.
         assign lr_data->* to <lt_standard_table>.
+        check sy-subrc = 0.
         if <lt_standard_table> is not initial.
 
-          lt_jshlpgr_db = me->get_jshelper_groups( ).
+          lt_jshlpgr_db = get_jshelper_groups( ).
 
           loop at <lt_standard_table> assigning <ls_jshlpsc>.
             read table lt_jshlpgr_db transporting no fields with key grouping = <ls_jshlpsc>-grouping.
@@ -527,6 +535,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
 
           create data lr_data type standard table of (lc_jshlpgr) with non-unique default key.
           assign lr_data->* to <lt_standard_table>.
+          check sy-subrc = 0.
           <lt_standard_table> = lt_jshlpgr.
 
           ls_table_content-tabname = lc_jshlpgr.
@@ -677,7 +686,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
           lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
           ls_table_content like line of lt_table_content,
           lv_key           type /neptune/artifact_key,
-          ls_file          type zif_abapgit_git_definitions=>ty_file,
           lv_name          type /neptune/jshlpsc-descr.
 
     field-symbols: <lt_standard_table> type standard table,
@@ -685,15 +693,11 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
                    <lv_name>           type any.
 
 **********************************************************************
-    data ls_metadata 	type zif_abapgit_definitions=>ty_metadata.
-*    ls_metadata = super->get_metadata( ).
-
     try.
         io_xml->add(
-          exporting
-            iv_name = 'key'
-            ig_data = ms_item-obj_name ).
-      catch zcx_abapgit_exception.    " abapGit - Exception
+          iv_name = 'key'
+          ig_data = ms_item-obj_name ).
+      catch zcx_abapgit_exception.
     endtry.
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
@@ -711,6 +715,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
     read table lt_table_content into ls_table_content with key tabname = '/NEPTUNE/JSHLPSC'.
     if sy-subrc = 0.
       assign ls_table_content-table_content->* to <lt_standard_table>.
+      check sy-subrc = 0 and <lt_standard_table> is assigned.
       read table <lt_standard_table> assigning <ls_line> index 1.
       if sy-subrc = 0.
         assign component 'DESCR' of structure <ls_line> to <lv_name> casting type /neptune/jshlpsc-descr.
@@ -748,4 +753,4 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
     endloop.
 
   endmethod.
-ENDCLASS.
+endclass.

@@ -15,10 +15,10 @@ class zcl_abapgit_object_zn16 definition
                 key type tadir-obj_name,
                 name type string,
                end of ty_mapping .
-    types:
+    types
       ty_mapping_tt type standard table of ty_mapping with key key .
 
-    constants:
+    constants
       mc_name_separator(1) type c value '@'.                "#EC NOTEXT
     class-data gt_mapping type ty_mapping_tt .
     data mt_skip_paths type string_table .
@@ -50,11 +50,11 @@ class zcl_abapgit_object_zn16 definition
         !ev_tabname type tadir-obj_name
         !ev_obj_key type /neptune/artifact_key
         !ev_name type /neptune/artifact_name .
-ENDCLASS.
+endclass.
 
 
 
-CLASS ZCL_ABAPGIT_OBJECT_ZN16 IMPLEMENTATION.
+class zcl_abapgit_object_zn16 implementation.
 
 
   method deserialize_table.
@@ -121,28 +121,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN16 IMPLEMENTATION.
 
   method get_values_from_filename.
 
-*    data lt_comp type standard table of string with default key.
-*    data ls_comp like line of lt_comp.
-*    data lv_key type /neptune/artifact_key.
-*    data lv_name type string.
-*
-*    split is_filename at '.' into table lt_comp.
-*
-*    read table lt_comp into ls_comp index 1.
-*    if sy-subrc = 0.
-*      split ls_comp at mc_name_separator into lv_name lv_key.
-*      translate lv_key to upper case.
-*      translate lv_name to upper case.
-*      ev_obj_key = lv_key.
-*      ev_name = lv_name.
-*    endif.
-*
-*    read table lt_comp into ls_comp index 3.
-*    if sy-subrc = 0.
-*      replace all occurrences of '#' in ls_comp with '/'.
-*      translate ls_comp to upper case.
-*      ev_tabname = ls_comp.
-*    endif.
+
 
     data lt_comp type standard table of string with default key.
     data ls_comp like line of lt_comp.
@@ -382,68 +361,14 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN16 IMPLEMENTATION.
 
   method zif_abapgit_object~map_filename_to_object.
 
-*    data lt_parts type standard table of string with default key.
-*    data: lv_artifact_name type string,
-*          lv_key type string,
-*          lv_filename type string.
-*    data ls_mapping like line of gt_mapping.
-*
-*    split iv_filename at mc_name_separator into lv_artifact_name lv_filename.
-*    split lv_filename at '.' into table lt_parts.
-*    read table lt_parts into lv_key index 1.
-*    check sy-subrc = 0.
-*
-*    if lv_artifact_name is not initial.
-*      translate lv_key to upper case.
-*      cs_item-obj_name = lv_key.
-*
-*      read table gt_mapping transporting no fields with key key = lv_key.
-*      check sy-subrc <> 0.
-*
-*      ls_mapping-key = lv_key.
-*      ls_mapping-name = lv_artifact_name.
-*      append ls_mapping to gt_mapping.
-*
-*    endif.
+
     return.
   endmethod.
 
 
   method zif_abapgit_object~map_object_to_filename.
 
-*    data ls_mapping like line of gt_mapping.
-*    data ls_tadir type /neptune/if_artifact_type=>ty_lcl_tadir.
-*    data lv_key type /neptune/artifact_key.
-*
-*    check is_item-devclass is not initial.
-*
-*    lv_key = is_item-obj_name.
-*
-*    try.
-*        " Ongoing from DXP 23 fetch wie tadir framework (all artifacts can be assigned to a devclass)
-*        call method ('/NEPTUNE/CL_TADIR')=>('GET_ARTIFACT_ENTRY')
-**          call method  /neptune/cl_tadir=>get_artifact_entry
-*          exporting
-*            iv_key      =  lv_key
-*            iv_devclass =  is_item-devclass
-*          receiving
-*            rs_tadir    = ls_tadir          ##called.
-*
-*      catch cx_sy_dyn_call_illegal_class
-*            cx_sy_dyn_call_illegal_method.
-*
-*        return.
-*
-*    endtry.
-*
-*    if ls_tadir is not initial.
-*      concatenate ls_tadir-artifact_name cv_filename into cv_filename separated by mc_name_separator.
-*    else.
-*      read table gt_mapping into ls_mapping with key key = is_item-obj_name.
-*      if sy-subrc = 0.
-*        concatenate ls_mapping-name cv_filename into cv_filename separated by mc_name_separator.
-*      endif.
-*    endif.
+
     return.
   endmethod.
 
@@ -485,7 +410,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN16 IMPLEMENTATION.
 
       if ls_table_content-tabname = '/NEPTUNE/DOC_H'.
         loop at <lt_standard_table> assigning <ls_line>.
-*        if sy-subrc = 0.
+
           assign component 'DOC_TEXT' of structure <ls_line> to <lv_field_value>.
           if sy-subrc = 0 and <lv_field_value> is not initial.
 
@@ -505,7 +430,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN16 IMPLEMENTATION.
 
             replace all occurrences of '/' in ls_file-filename with '#'.
 
-*            concatenate lv_name ls_file-filename into ls_file-filename separated by mc_name_separator.
+
             translate ls_file-filename to lower case.
 
             ls_file-path = '/'.
@@ -515,7 +440,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN16 IMPLEMENTATION.
 
             <lv_field_value> = ls_file-filename.
           endif.
-*        endif.
+
         endloop.
       endif.
 
@@ -526,4 +451,4 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN16 IMPLEMENTATION.
     endloop.
 
   endmethod.
-ENDCLASS.
+endclass.
