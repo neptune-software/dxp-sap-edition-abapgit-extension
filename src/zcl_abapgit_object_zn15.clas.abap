@@ -1,85 +1,85 @@
-class ZCL_ABAPGIT_OBJECT_ZN15 definition
+class zcl_abapgit_object_zn15 definition
   public
-  inheriting from ZCL_ABAPGIT_OBJECTS_SUPER
+  inheriting from zcl_abapgit_objects_super
   final
   create public .
 
-public section.
+  public section.
 
-  interfaces ZIF_ABAPGIT_OBJECT .
+    interfaces zif_abapgit_object .
 
-  constants GC_CRLF type ABAP_CR_LF value CL_ABAP_CHAR_UTILITIES=>CR_LF. "#EC NOTEXT
+    constants gc_crlf type abap_cr_lf value cl_abap_char_utilities=>cr_lf. "#EC NOTEXT
   protected section.
-private section.
+  private section.
 
-  types:
-    begin of ty_mapping,
-              key type tadir-obj_name,
-              name type string,
-             end of ty_mapping .
-  types:
-    ty_mapping_tt type standard table of ty_mapping with key key .
-  types:
-    begin of ty_lcl_jshlptx,
-        guid type /neptune/jshlptx-guid,
-        file_name   type string,
-       end of ty_lcl_jshlptx .
-  types:
-    ty_tt_lcl_jshlptx type standard table of ty_lcl_jshlptx .
-  types:
-    ty_tt_jshlpgr type standard table of /neptune/jshlpgr with default key .
+    types:
+      begin of ty_mapping,
+                key type tadir-obj_name,
+                name type string,
+               end of ty_mapping .
+    types:
+      ty_mapping_tt type standard table of ty_mapping with key key .
+    types:
+      begin of ty_lcl_jshlptx,
+          guid type /neptune/jshlptx-guid,
+          file_name   type string,
+         end of ty_lcl_jshlptx .
+    types:
+      ty_tt_lcl_jshlptx type standard table of ty_lcl_jshlptx .
+    types:
+      ty_tt_jshlpgr type standard table of /neptune/jshlpgr with default key .
 
-  constants:
-    mc_name_separator(1) type c value '@'. "#EC NOTEXT
-  class-data GT_MAPPING type TY_MAPPING_TT .
-  data MT_SKIP_PATHS type STRING_TABLE .
+    constants:
+      mc_name_separator(1) type c value '@'.                "#EC NOTEXT
+    class-data gt_mapping type ty_mapping_tt .
+    data mt_skip_paths type string_table .
 
-  methods SERIALIZE_TABLE
-    importing
-      !IV_TABNAME type TABNAME
-      !IT_TABLE type ANY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods SET_SKIP_FIELDS .
-  methods GET_SKIP_FIELDS
-    returning
-      value(RT_SKIP_PATHS) type STRING_TABLE .
-  interface ZIF_ABAPGIT_GIT_DEFINITIONS load .
-  methods DESERIALIZE_TABLE
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IR_DATA type ref to DATA
-      !IV_TABNAME type TADIR-OBJ_NAME
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods GET_VALUES_FROM_FILENAME
-    importing
-      !IS_FILENAME type STRING
-    exporting
-      !EV_TABNAME type TADIR-OBJ_NAME
-      !EV_OBJ_KEY type /NEPTUNE/ARTIFACT_KEY
-      !EV_NAME type /NEPTUNE/ARTIFACT_NAME .
-  interface /NEPTUNE/IF_ARTIFACT_TYPE load .
-  methods SERIALIZE_JSHLPTX
-    importing
-      !IV_NAME type /NEPTUNE/JSHLPSC-DESCR
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
-  methods DESERIALIZE_JSHLPTX
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
-      !IR_DATA type ref to DATA
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods GET_JSHELPER_GROUPS
-    returning
-      value(RT_JSHLPGR) type TY_TT_JSHLPGR .
-  methods GET_KEY_FROM_TABLE
-    importing
-      !IO_ARTIFACT type ref to /NEPTUNE/IF_ARTIFACT_TYPE
-      !IT_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_T_TABLE_CONTENT
-    returning
-      value(RV_KEY) type /NEPTUNE/ARTIFACT_KEY .
+    methods serialize_table
+      importing
+        !iv_tabname type tabname
+        !it_table type any
+      raising
+        zcx_abapgit_exception .
+    methods set_skip_fields .
+    methods get_skip_fields
+      returning
+        value(rt_skip_paths) type string_table .
+    interface zif_abapgit_git_definitions load .
+    methods deserialize_table
+      importing
+        !is_file type zif_abapgit_git_definitions=>ty_file
+        !ir_data type ref to data
+        !iv_tabname type tadir-obj_name
+      raising
+        zcx_abapgit_exception .
+    methods get_values_from_filename
+      importing
+        !is_filename type string
+      exporting
+        !ev_tabname type tadir-obj_name
+        !ev_obj_key type /neptune/artifact_key
+        !ev_name type /neptune/artifact_name .
+    interface /neptune/if_artifact_type load .
+    methods serialize_jshlptx
+      importing
+        !iv_name type /neptune/jshlpsc-descr
+        !is_table_content type /neptune/if_artifact_type=>ty_table_content .
+    methods deserialize_jshlptx
+      importing
+        !is_file type zif_abapgit_git_definitions=>ty_file
+        !it_files type zif_abapgit_git_definitions=>ty_files_tt
+        !ir_data type ref to data
+      raising
+        zcx_abapgit_exception .
+    methods get_jshelper_groups
+      returning
+        value(rt_jshlpgr) type ty_tt_jshlpgr .
+    methods get_key_from_table
+      importing
+        !io_artifact type ref to /neptune/if_artifact_type
+        !it_table_content type /neptune/if_artifact_type=>ty_t_table_content
+      returning
+        value(rv_key) type /neptune/artifact_key .
 ENDCLASS.
 
 
@@ -144,7 +144,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
   endmethod.
 
 
-  method DESERIALIZE_TABLE.
+  method deserialize_table.
 
     data lo_ajson type ref to zcl_abapgit_ajson.
     data lx_ajson type ref to zcx_abapgit_ajson_error.
@@ -174,59 +174,59 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
   endmethod.
 
 
-method get_jshelper_groups.
+  method get_jshelper_groups.
 
-  select *
-    from /neptune/jshlpgr
-    into table rt_jshlpgr.
+    select *
+      from /neptune/jshlpgr
+      into table rt_jshlpgr.
 
-endmethod.
-
-
-method get_key_from_table.
-
-  data: ls_settings type /neptune/aty,
-        ls_table_content like line of it_table_content,
-        lt_table_names type /neptune/if_artifact_type=>ty_t_table_names,
-        ls_table_setting like line of lt_table_names,
-        lt_keys type standard table of char30,
-        ls_key like line of  lt_keys.
-
-  field-symbols: <lt_standard_table> type standard table,
-                 <ls_line> type any,
-                 <lv_key> type any.
-
-  ls_settings = io_artifact->get_settings( ).
-  lt_table_names = io_artifact->get_table_names( ).
-
-  read table it_table_content into ls_table_content with key tabname = ls_settings-main_table_name.
-  check sy-subrc = 0.
-
-  read table lt_table_names into ls_table_setting with key tabname = ls_settings-main_table_name.
-  check sy-subrc = 0.
-  split ls_table_setting-keys at /neptune/if_artifact_type=>gc_separator into table lt_keys.
-  read table lt_keys into ls_key index 1.
-  check ls_key is not initial.
-
-  assign ls_table_content-table_content->* to <lt_standard_table>.
-  check sy-subrc = 0.
-  read table <lt_standard_table> assigning <ls_line> index 1.
-  assign component ls_key of structure <ls_line> to <lv_key>.
-  if sy-subrc = 0..
-    rv_key = <lv_key>.
-  endif.
-
-endmethod.
+  endmethod.
 
 
-  method GET_SKIP_FIELDS.
+  method get_key_from_table.
+
+    data: ls_settings type /neptune/aty,
+          ls_table_content like line of it_table_content,
+          lt_table_names type /neptune/if_artifact_type=>ty_t_table_names,
+          ls_table_setting like line of lt_table_names,
+          lt_keys type standard table of char30,
+          ls_key like line of  lt_keys.
+
+    field-symbols: <lt_standard_table> type standard table,
+                   <ls_line> type any,
+                   <lv_key> type any.
+
+    ls_settings = io_artifact->get_settings( ).
+    lt_table_names = io_artifact->get_table_names( ).
+
+    read table it_table_content into ls_table_content with key tabname = ls_settings-main_table_name.
+    check sy-subrc = 0.
+
+    read table lt_table_names into ls_table_setting with key tabname = ls_settings-main_table_name.
+    check sy-subrc = 0.
+    split ls_table_setting-keys at /neptune/if_artifact_type=>gc_separator into table lt_keys.
+    read table lt_keys into ls_key index 1.
+    check ls_key is not initial.
+
+    assign ls_table_content-table_content->* to <lt_standard_table>.
+    check sy-subrc = 0.
+    read table <lt_standard_table> assigning <ls_line> index 1.
+    assign component ls_key of structure <ls_line> to <lv_key>.
+    if sy-subrc = 0..
+      rv_key = <lv_key>.
+    endif.
+
+  endmethod.
+
+
+  method get_skip_fields.
 
     rt_skip_paths = mt_skip_paths.
 
   endmethod.
 
 
-  method GET_VALUES_FROM_FILENAME.
+  method get_values_from_filename.
 
     data lt_comp type standard table of string with default key.
     data ls_comp like line of lt_comp.
@@ -323,7 +323,7 @@ endmethod.
   endmethod.
 
 
-  method SERIALIZE_TABLE.
+  method serialize_table.
 
     data: lo_ajson         type ref to zcl_abapgit_ajson,
           lx_ajson         type ref to zcx_abapgit_ajson_error,
@@ -430,7 +430,7 @@ endmethod.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~DELETE.
+  method zif_abapgit_object~delete.
     return.
   endmethod.
 
@@ -562,47 +562,47 @@ endmethod.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~EXISTS.
+  method zif_abapgit_object~exists.
     rv_bool = abap_true.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~GET_COMPARATOR.
+  method zif_abapgit_object~get_comparator.
     return.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~GET_DESERIALIZE_ORDER.
+  method zif_abapgit_object~get_deserialize_order.
     return.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~GET_DESERIALIZE_STEPS.
+  method zif_abapgit_object~get_deserialize_steps.
     append zif_abapgit_object=>gc_step_id-late to rt_steps.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~GET_METADATA.
+  method zif_abapgit_object~get_metadata.
     return.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~IS_ACTIVE.
+  method zif_abapgit_object~is_active.
     rv_active = abap_true.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~IS_LOCKED.
+  method zif_abapgit_object~is_locked.
     return.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~JUMP.
+  method zif_abapgit_object~jump.
     return.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~MAP_FILENAME_TO_OBJECT.
+  method zif_abapgit_object~map_filename_to_object.
 
     data lt_parts type standard table of string with default key.
     data: lv_artifact_name type string,
@@ -631,7 +631,7 @@ endmethod.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~MAP_OBJECT_TO_FILENAME.
+  method zif_abapgit_object~map_object_to_filename.
 
     data ls_mapping like line of gt_mapping.
     data ls_tadir type /neptune/if_artifact_type=>ty_lcl_tadir.

@@ -1,52 +1,52 @@
-class ZCL_ABAPGIT_OBJECT_ZN17 definition
+class zcl_abapgit_object_zn17 definition
   public
-  inheriting from ZCL_ABAPGIT_OBJECTS_SUPER
+  inheriting from zcl_abapgit_objects_super
   final
   create public .
 
-public section.
+  public section.
 
-  interfaces ZIF_ABAPGIT_OBJECT .
+    interfaces zif_abapgit_object .
   protected section.
-private section.
+  private section.
 
-  types:
-    begin of ty_mapping,
-              key type tadir-obj_name,
-              name type string,
-             end of ty_mapping .
-  types
-    ty_mapping_tt type standard table of ty_mapping with key key .
+    types:
+      begin of ty_mapping,
+                key type tadir-obj_name,
+                name type string,
+               end of ty_mapping .
+    types
+      ty_mapping_tt type standard table of ty_mapping with key key .
 
-  constants
-    mc_name_separator(1) type c value '@'.                  "#EC NOTEXT
-  class-data gt_mapping type ty_mapping_tt .
-  data mt_skip_paths type string_table .
+    constants
+      mc_name_separator(1) type c value '@'.                "#EC NOTEXT
+    class-data gt_mapping type ty_mapping_tt .
+    data mt_skip_paths type string_table .
 
-  methods serialize_table
-    importing
-      !iv_tabname type tabname
-      !it_table type any
-    raising
-      zcx_abapgit_exception .
-  methods set_skip_fields .
-  methods get_skip_fields
-    returning
-      value(rt_skip_paths) type string_table .
-  methods deserialize_table
-    importing
-      !is_file type zif_abapgit_git_definitions=>ty_file
-      !ir_data type ref to data
-      !iv_tabname type tadir-obj_name
-    raising
-      zcx_abapgit_exception .
-  methods get_values_from_filename
-    importing
-      !is_filename type string
-    exporting
-      !ev_tabname type tadir-obj_name
-      !ev_obj_key type /neptune/artifact_key
-      !ev_name type /neptune/artifact_name .
+    methods serialize_table
+      importing
+        !iv_tabname type tabname
+        !it_table type any
+      raising
+        zcx_abapgit_exception .
+    methods set_skip_fields .
+    methods get_skip_fields
+      returning
+        value(rt_skip_paths) type string_table .
+    methods deserialize_table
+      importing
+        !is_file type zif_abapgit_git_definitions=>ty_file
+        !ir_data type ref to data
+        !iv_tabname type tadir-obj_name
+      raising
+        zcx_abapgit_exception .
+    methods get_values_from_filename
+      importing
+        !is_filename type string
+      exporting
+        !ev_tabname type tadir-obj_name
+        !ev_obj_key type /neptune/artifact_key
+        !ev_name type /neptune/artifact_name .
 ENDCLASS.
 
 
@@ -54,7 +54,7 @@ ENDCLASS.
 CLASS ZCL_ABAPGIT_OBJECT_ZN17 IMPLEMENTATION.
 
 
-  method DESERIALIZE_TABLE.
+  method deserialize_table.
 
     data lo_ajson type ref to zcl_abapgit_ajson.
     data lx_ajson type ref to zcx_abapgit_ajson_error.
@@ -84,14 +84,14 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN17 IMPLEMENTATION.
   endmethod.
 
 
-  method GET_SKIP_FIELDS.
+  method get_skip_fields.
 
     rt_skip_paths = mt_skip_paths.
 
   endmethod.
 
 
-  method GET_VALUES_FROM_FILENAME.
+  method get_values_from_filename.
 
     data lt_comp type standard table of string with default key.
     data ls_comp like line of lt_comp.
@@ -119,7 +119,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN17 IMPLEMENTATION.
   endmethod.
 
 
-  method SERIALIZE_TABLE.
+  method serialize_table.
 
     data: lo_ajson         type ref to zcl_abapgit_ajson,
           lx_ajson         type ref to zcx_abapgit_ajson_error,
@@ -167,7 +167,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN17 IMPLEMENTATION.
   endmethod.
 
 
-  method SET_SKIP_FIELDS.
+  method set_skip_fields.
 
     data lv_skip type string.
 
@@ -192,7 +192,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN17 IMPLEMENTATION.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~CHANGED_BY.
+  method zif_abapgit_object~changed_by.
 
     data: lo_artifact type ref to /neptune/if_artifact_type,
           lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
@@ -224,12 +224,12 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN17 IMPLEMENTATION.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~DELETE.
+  method zif_abapgit_object~delete.
     return.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~DESERIALIZE.
+  method zif_abapgit_object~deserialize.
 
 ** pick up logic from CLASS ZCL_ABAPGIT_DATA_DESERIALIZER
 
@@ -290,47 +290,47 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN17 IMPLEMENTATION.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~EXISTS.
+  method zif_abapgit_object~exists.
     rv_bool = abap_true.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~GET_COMPARATOR.
+  method zif_abapgit_object~get_comparator.
     return.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~GET_DESERIALIZE_ORDER.
+  method zif_abapgit_object~get_deserialize_order.
     return.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~GET_DESERIALIZE_STEPS.
+  method zif_abapgit_object~get_deserialize_steps.
     append zif_abapgit_object=>gc_step_id-late to rt_steps.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~GET_METADATA.
+  method zif_abapgit_object~get_metadata.
     return.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~IS_ACTIVE.
+  method zif_abapgit_object~is_active.
     rv_active = abap_true.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~IS_LOCKED.
+  method zif_abapgit_object~is_locked.
     return.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~JUMP.
+  method zif_abapgit_object~jump.
     return.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~MAP_FILENAME_TO_OBJECT.
+  method zif_abapgit_object~map_filename_to_object.
 
     data lt_parts type standard table of string with default key.
     data: lv_artifact_name type string,
@@ -359,7 +359,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN17 IMPLEMENTATION.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~MAP_OBJECT_TO_FILENAME.
+  method zif_abapgit_object~map_object_to_filename.
 
     data ls_mapping like line of gt_mapping.
     data ls_tadir type /neptune/if_artifact_type=>ty_lcl_tadir.
@@ -399,7 +399,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN17 IMPLEMENTATION.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~SERIALIZE.
+  method zif_abapgit_object~serialize.
 
     data: lo_artifact      type ref to /neptune/if_artifact_type,
           lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
