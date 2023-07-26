@@ -49,11 +49,11 @@ class zcl_abapgit_object_zn10 definition
       !ev_tabname type tadir-obj_name
       !ev_obj_key type /neptune/artifact_key
       !ev_name type /neptune/artifact_name .
-endclass.
+ENDCLASS.
 
 
 
-class zcl_abapgit_object_zn10 implementation.
+CLASS ZCL_ABAPGIT_OBJECT_ZN10 IMPLEMENTATION.
 
 
   method deserialize_table.
@@ -375,8 +375,9 @@ class zcl_abapgit_object_zn10 implementation.
         call method ('/NEPTUNE/CL_TADIR')=>('GET_ARTIFACT_ENTRY')
 *          call method  /neptune/cl_tadir=>get_artifact_entry
           exporting
-            iv_key      =  lv_key
-            iv_devclass =  is_item-devclass
+            iv_key           = lv_key
+            iv_devclass      = is_item-devclass
+            iv_artifact_type = /neptune/if_artifact_type=>gc_artifact_type-login_screen
           receiving
             rs_tadir    = ls_tadir          ##called.
 
@@ -431,4 +432,4 @@ class zcl_abapgit_object_zn10 implementation.
     endloop.
 
   endmethod.
-endclass.
+ENDCLASS.

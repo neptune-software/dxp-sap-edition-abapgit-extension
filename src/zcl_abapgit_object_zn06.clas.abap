@@ -374,8 +374,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN06 IMPLEMENTATION.
         call method ('/NEPTUNE/CL_TADIR')=>('GET_ARTIFACT_ENTRY')
 *          call method  /neptune/cl_tadir=>get_artifact_entry
           exporting
-            iv_key      =  lv_key
-            iv_devclass =  is_item-devclass
+            iv_key           = lv_key
+            iv_devclass      = is_item-devclass
+            iv_artifact_type = /neptune/if_artifact_type=>gc_artifact_type-policy
           receiving
             rs_tadir    = ls_tadir          ##called.
 

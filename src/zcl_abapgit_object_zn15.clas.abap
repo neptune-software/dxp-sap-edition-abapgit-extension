@@ -1,4 +1,4 @@
-class zcl_abapgit_object_zn09 definition
+class zcl_abapgit_object_zn15 definition
   public
   inheriting from zcl_abapgit_objects_super
   final
@@ -10,79 +10,90 @@ class zcl_abapgit_object_zn09 definition
 
     constants gc_crlf type abap_cr_lf value cl_abap_char_utilities=>cr_lf. "#EC NOTEXT
   protected section.
-  private section.
+private section.
 
-    types:
-      begin of ty_mapping,
+  types:
+    begin of ty_mapping,
               key type tadir-obj_name,
               name type string,
              end of ty_mapping .
-    types
-      ty_mapping_tt type standard table of ty_mapping with key key .
-    types:
-      begin of ty_lcl_enhtext,
-          enhancement type /neptune/enhancement,
-          spot        type /neptune/enhancement_spot,
-          file_name   type string,
-         end of ty_lcl_enhtext .
-    types
-      ty_tt_lcl_enhtext type standard table of ty_lcl_enhtext .
+  types:
+    ty_mapping_tt type standard table of ty_mapping with key key .
+  types:
+    begin of ty_lcl_jshlptx,
+        guid type /neptune/jshlptx-guid,
+        file_name   type string,
+       end of ty_lcl_jshlptx .
+  types:
+    ty_tt_lcl_jshlptx type standard table of ty_lcl_jshlptx .
+  types:
+    ty_tt_jshlpgr type standard table of /neptune/jshlpgr with default key .
 
-    constants
-      mc_name_separator(1) type c value '@'. "#EC NOTEXT
-    class-data gt_mapping type ty_mapping_tt .
-    data mt_skip_paths type string_table .
+  constants:
+    mc_name_separator(1) type c value '@'. "#EC NOTEXT
+  class-data GT_MAPPING type TY_MAPPING_TT .
+  data MT_SKIP_PATHS type STRING_TABLE .
 
-    methods serialize_table
-      importing
-      !iv_tabname type tabname
-      !it_table type any
-      raising
-      zcx_abapgit_exception .
-    methods set_skip_fields .
-    methods get_skip_fields
-      returning
-      value(rt_skip_paths) type string_table .
-    interface zif_abapgit_git_definitions load .
-    methods deserialize_table
-      importing
-      !is_file type zif_abapgit_git_definitions=>ty_file
-      !ir_data type ref to data
-      !iv_tabname type tadir-obj_name
-      raising
-      zcx_abapgit_exception .
-    methods serialize_enhtext
-      importing
-      !iv_name type /neptune/enhance-descr
-      !is_table_content type /neptune/if_artifact_type=>ty_table_content .
-    methods get_values_from_filename
-      importing
-      !is_filename type string
-      exporting
-      !ev_tabname type tadir-obj_name
-      !ev_obj_key type /neptune/artifact_key
-      !ev_name type /neptune/artifact_name .
-    methods deserialize_enhtext
-      importing
-      !is_file type zif_abapgit_git_definitions=>ty_file
-      !it_files type zif_abapgit_git_definitions=>ty_files_tt
-      !ir_data type ref to data
-      raising
-      zcx_abapgit_exception .
+  methods SERIALIZE_TABLE
+    importing
+      !IV_TABNAME type TABNAME
+      !IT_TABLE type ANY
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods SET_SKIP_FIELDS .
+  methods GET_SKIP_FIELDS
+    returning
+      value(RT_SKIP_PATHS) type STRING_TABLE .
+  interface ZIF_ABAPGIT_GIT_DEFINITIONS load .
+  methods DESERIALIZE_TABLE
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IR_DATA type ref to DATA
+      !IV_TABNAME type TADIR-OBJ_NAME
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods GET_VALUES_FROM_FILENAME
+    importing
+      !IS_FILENAME type STRING
+    exporting
+      !EV_TABNAME type TADIR-OBJ_NAME
+      !EV_OBJ_KEY type /NEPTUNE/ARTIFACT_KEY
+      !EV_NAME type /NEPTUNE/ARTIFACT_NAME .
+  interface /NEPTUNE/IF_ARTIFACT_TYPE load .
+  methods SERIALIZE_JSHLPTX
+    importing
+      !IV_NAME type /NEPTUNE/JSHLPSC-DESCR
+      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
+  methods DESERIALIZE_JSHLPTX
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
+      !IR_DATA type ref to DATA
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods GET_JSHELPER_GROUPS
+    returning
+      value(RT_JSHLPGR) type TY_TT_JSHLPGR .
+  methods GET_KEY_FROM_TABLE
+    importing
+      !IO_ARTIFACT type ref to /NEPTUNE/IF_ARTIFACT_TYPE
+      !IT_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_T_TABLE_CONTENT
+    returning
+      value(RV_KEY) type /NEPTUNE/ARTIFACT_KEY .
 ENDCLASS.
 
 
 
-CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
+CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
 
 
-  method deserialize_enhtext.
+  method deserialize_jshlptx.
 
-    data lt_lcl_enhtext type ty_tt_lcl_enhtext.
-    data ls_lcl_enhtext like line of lt_lcl_enhtext.
+    data lt_lcl_jshlptx type ty_tt_lcl_jshlptx.
+    data ls_lcl_jshlptx like line of lt_lcl_jshlptx.
 
-    data lt_enhtext type standard table of /neptune/enhtext with default key.
-    data ls_enhtext like line of lt_enhtext.
+    data lt_jshlptx type standard table of /neptune/jshlptx with default key.
+    data ls_jshlptx like line of lt_jshlptx.
 
     data lo_ajson type ref to zcl_abapgit_ajson.
     data lx_ajson type ref to zcx_abapgit_ajson_error.
@@ -92,7 +103,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
     data lt_code type string_table.
     data lv_code type string.
 
-    data lv_seqnr type /neptune/enhtext-seqnr value 0.
+    data lv_seqnr type /neptune/jshlptx-seqnr value 0.
 
     field-symbols <lt_tab> type any table.
 
@@ -101,16 +112,16 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
 
     try.
         lo_ajson = zcl_abapgit_ajson=>parse( zcl_abapgit_convert=>xstring_to_string_utf8( is_file-data ) ).
-        lo_ajson->zif_abapgit_ajson~to_abap( importing ev_container = lt_lcl_enhtext ).
+        lo_ajson->zif_abapgit_ajson~to_abap( importing ev_container = lt_lcl_jshlptx ).
       catch zcx_abapgit_ajson_error into lx_ajson.
         zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
     endtry.
 
-    loop at lt_lcl_enhtext into ls_lcl_enhtext.
+    loop at lt_lcl_jshlptx into ls_lcl_jshlptx.
 
-      move-corresponding ls_lcl_enhtext to ls_enhtext.
+      move-corresponding ls_lcl_jshlptx to ls_jshlptx.
 
-      read table it_files into ls_file with key filename = ls_lcl_enhtext-file_name.
+      read table it_files into ls_file with key filename = ls_lcl_jshlptx-file_name.
       if sy-subrc = 0.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
@@ -119,21 +130,21 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
         loop at lt_code into lv_code.
           lv_seqnr = lv_seqnr + 1.
 
-          ls_enhtext-seqnr  = lv_seqnr.
-          ls_enhtext-text   = lv_code.
-          append ls_enhtext to lt_enhtext.
+          ls_jshlptx-seqnr  = lv_seqnr.
+          ls_jshlptx-text   = lv_code.
+          append ls_jshlptx to lt_jshlptx.
         endloop.
 *
 *
       endif.
     endloop.
 *
-    <lt_tab> = lt_enhtext.
+    <lt_tab> = lt_jshlptx.
 *
   endmethod.
 
 
-  method deserialize_table.
+  method DESERIALIZE_TABLE.
 
     data lo_ajson type ref to zcl_abapgit_ajson.
     data lx_ajson type ref to zcx_abapgit_ajson_error.
@@ -163,14 +174,59 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
   endmethod.
 
 
-  method get_skip_fields.
+method get_jshelper_groups.
+
+  select *
+    from /neptune/jshlpgr
+    into table rt_jshlpgr.
+
+endmethod.
+
+
+method get_key_from_table.
+
+  data: ls_settings type /neptune/aty,
+        ls_table_content like line of it_table_content,
+        lt_table_names type /neptune/if_artifact_type=>ty_t_table_names,
+        ls_table_setting like line of lt_table_names,
+        lt_keys type standard table of char30,
+        ls_key like line of  lt_keys.
+
+  field-symbols: <lt_standard_table> type standard table,
+                 <ls_line> type any,
+                 <lv_key> type any.
+
+  ls_settings = io_artifact->get_settings( ).
+  lt_table_names = io_artifact->get_table_names( ).
+
+  read table it_table_content into ls_table_content with key tabname = ls_settings-main_table_name.
+  check sy-subrc = 0.
+
+  read table lt_table_names into ls_table_setting with key tabname = ls_settings-main_table_name.
+  check sy-subrc = 0.
+  split ls_table_setting-keys at /neptune/if_artifact_type=>gc_separator into table lt_keys.
+  read table lt_keys into ls_key index 1.
+  check ls_key is not initial.
+
+  assign ls_table_content-table_content->* to <lt_standard_table>.
+  check sy-subrc = 0.
+  read table <lt_standard_table> assigning <ls_line> index 1.
+  assign component ls_key of structure <ls_line> to <lv_key>.
+  if sy-subrc = 0..
+    rv_key = <lv_key>.
+  endif.
+
+endmethod.
+
+
+  method GET_SKIP_FIELDS.
 
     rt_skip_paths = mt_skip_paths.
 
   endmethod.
 
 
-  method get_values_from_filename.
+  method GET_VALUES_FROM_FILENAME.
 
     data lt_comp type standard table of string with default key.
     data ls_comp like line of lt_comp.
@@ -198,71 +254,68 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
   endmethod.
 
 
-  method serialize_enhtext.
+  method serialize_jshlptx.
 
     data ls_file type zif_abapgit_git_definitions=>ty_file.
     data lv_code type string.
 
-    data lt_lcl_enhtext type ty_tt_lcl_enhtext.
-    data ls_lcl_enhtext like line of lt_lcl_enhtext.
+    data lt_lcl_jshlptx type ty_tt_lcl_jshlptx.
+    data ls_lcl_jshlptx like line of lt_lcl_jshlptx.
 
-    data lt_enhtext type standard table of /neptune/enhtext with default key.
-    data ls_enhtext like line of lt_enhtext.
+    data lt_jshlptx type standard table of /neptune/jshlptx with default key.
+    data ls_jshlptx like line of lt_jshlptx.
 
     field-symbols <lt_standard_table> type standard table.
 
     assign is_table_content-table_content->* to <lt_standard_table>.
     check sy-subrc = 0 and <lt_standard_table> is not initial.
 
-    lt_enhtext = <lt_standard_table>.
+    lt_jshlptx = <lt_standard_table>.
 
-    sort lt_enhtext.
+    sort lt_jshlptx.
 
-    loop at lt_enhtext into ls_enhtext.
-      at new spot.
+    loop at lt_jshlptx into ls_jshlptx.
+      if sy-tabix = 1.
         clear lv_code.
-        move-corresponding ls_enhtext to ls_lcl_enhtext.
-      endat.
+        move-corresponding ls_jshlptx to ls_lcl_jshlptx.
+      endif..
+
       if lv_code is initial.
-        lv_code = ls_enhtext-text.
+        lv_code = ls_jshlptx-text.
       else.
-        concatenate lv_code ls_enhtext-text into lv_code separated by gc_crlf.
+        concatenate lv_code ls_jshlptx-text into lv_code separated by gc_crlf.
       endif.
 
-      at end of spot.
-
-        concatenate me->ms_item-obj_name
-                    me->ms_item-obj_type
-                    is_table_content-tabname
-                    ls_enhtext-spot
-                    'js' into ls_lcl_enhtext-file_name separated by '.'.
-
-        replace all occurrences of '/' in ls_lcl_enhtext-file_name with '#'.
-        concatenate iv_name ls_lcl_enhtext-file_name into ls_lcl_enhtext-file_name separated by mc_name_separator.
-        translate ls_lcl_enhtext-file_name to lower case.
-        append ls_lcl_enhtext to lt_lcl_enhtext.
-
-        try.
-** loop at code table to add each entry as a file
-            ls_file-path = '/'.
-
-            ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_code ).
-          catch zcx_abapgit_exception.
-        endtry.
-
-        ls_file-filename = ls_lcl_enhtext-file_name.
-
-        zif_abapgit_object~mo_files->add( ls_file ).
-
-      endat.
     endloop.
 
-    if lt_lcl_enhtext is not initial.
+    concatenate me->ms_item-obj_name
+                me->ms_item-obj_type
+                is_table_content-tabname
+                'js' into ls_lcl_jshlptx-file_name separated by '.'.
+
+    replace all occurrences of '/' in ls_lcl_jshlptx-file_name with '#'.
+    concatenate iv_name ls_lcl_jshlptx-file_name into ls_lcl_jshlptx-file_name separated by mc_name_separator.
+    translate ls_lcl_jshlptx-file_name to lower case.
+    append ls_lcl_jshlptx to lt_lcl_jshlptx.
+
+    try.
+** loop at code table to add each entry as a file
+        ls_file-path = '/'.
+
+        ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_code ).
+      catch zcx_abapgit_exception.
+    endtry.
+
+    ls_file-filename = ls_lcl_jshlptx-file_name.
+
+    zif_abapgit_object~mo_files->add( ls_file ).
+
+    if lt_lcl_jshlptx is not initial.
       try.
 ** Add adjusted table to files
           serialize_table(
             iv_tabname = is_table_content-tabname
-            it_table   = lt_lcl_enhtext ).
+            it_table   = lt_lcl_jshlptx ).
 
         catch zcx_abapgit_exception.
       endtry.
@@ -270,7 +323,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
   endmethod.
 
 
-  method serialize_table.
+  method SERIALIZE_TABLE.
 
     data: lo_ajson         type ref to zcl_abapgit_ajson,
           lx_ajson         type ref to zcx_abapgit_ajson_error,
@@ -336,6 +389,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
     append lv_skip to mt_skip_paths.
     lv_skip = '*UPDNAM' ##NO_TEXT.
     append lv_skip to mt_skip_paths.
+    lv_skip = '*SEQNR' ##NO_TEXT.
+    append lv_skip to mt_skip_paths.
 
 
   endmethod.
@@ -348,7 +403,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
           ls_table_content like line of lt_table_content,
           lv_key           type /neptune/artifact_key.
 
-    data ls_enhance type /neptune/enhance.
+    data ls_jshlpsc type /neptune/jshlpsc.
 
     field-symbols <lt_standard_table> type standard table.
 
@@ -360,22 +415,22 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
       exporting iv_key1          = lv_key
       importing et_table_content = lt_table_content ).
 
-    read table lt_table_content into ls_table_content with table key tabname = '/NEPTUNE/ENHANCE'.
+    read table lt_table_content into ls_table_content with table key tabname = '/NEPTUNE/JSHLPSC'.
     if sy-subrc = 0.
       assign ls_table_content-table_content->* to <lt_standard_table>.
       check sy-subrc = 0.
-      read table <lt_standard_table> into ls_enhance index 1.
-      if sy-subrc = 0 and ls_enhance-updnam is not initial.
-        rv_user = ls_enhance-updnam.
+      read table <lt_standard_table> into ls_jshlpsc index 1.
+      if sy-subrc = 0 and ls_jshlpsc-updnam is not initial.
+        rv_user = ls_jshlpsc-updnam.
       else.
-        rv_user = ls_enhance-crenam.
+        rv_user = ls_jshlpsc-crenam.
       endif.
     endif.
 
   endmethod.
 
 
-  method zif_abapgit_object~delete.
+  method ZIF_ABAPGIT_OBJECT~DELETE.
     return.
   endmethod.
 
@@ -383,6 +438,10 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
   method zif_abapgit_object~deserialize.
 
 ** pick up logic from CLASS ZCL_ABAPGIT_DATA_DESERIALIZER
+
+    constants lc_jshlpgr type tadir-obj_name value '/NEPTUNE/JSHLPGR'.
+
+    data lo_artifact type ref to /neptune/if_artifact_type.
 
     data: lt_files type zif_abapgit_git_definitions=>ty_files_tt,
           ls_files like line of lt_files.
@@ -393,10 +452,14 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
     data lr_data    type ref to data.
     data lv_tabname type tadir-obj_name.
     data lv_key     type /neptune/artifact_key.
+    data lv_name    type /neptune/artifact_name.
 
-    data lo_artifact type ref to /neptune/if_artifact_type.
+    data: lt_jshlpgr type standard table of /neptune/jshlpgr,
+          lt_jshlpgr_db type standard table of /neptune/jshlpgr,
+          ls_jshlpgr like line of lt_jshlpgr.
 
-**********************************************************************
+    field-symbols: <lt_standard_table> type standard table,
+                   <ls_jshlpsc> type /neptune/jshlpsc.
 
     lt_files = zif_abapgit_object~mo_files->get_files( ).
 
@@ -407,14 +470,15 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
           is_filename = ls_files-filename
         importing
           ev_tabname  = lv_tabname
-          ev_obj_key  = lv_key ).
+          ev_obj_key  = lv_key
+          ev_name     = lv_name ).
 
       create data lr_data type standard table of (lv_tabname) with non-unique default key.
 
       case lv_tabname.
-        when '/NEPTUNE/ENHTEXT'.
+        when '/NEPTUNE/JSHLPTX'.
 
-          deserialize_enhtext(
+          deserialize_jshlptx(
             is_file  = ls_files
             it_files = lt_files
             ir_data  = lr_data ).
@@ -433,6 +497,35 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
       append ls_table_content to lt_table_content.
       clear ls_table_content.
 
+      if lv_tabname = '/NEPTUNE/JSHLPSC'.
+        assign lr_data->* to <lt_standard_table>.
+        if <lt_standard_table> is not initial.
+
+          lt_jshlpgr_db = me->get_jshelper_groups( ).
+
+          loop at <lt_standard_table> assigning <ls_jshlpsc>.
+            read table lt_jshlpgr_db transporting no fields with key grouping = <ls_jshlpsc>-grouping.
+            if sy-subrc <> 0.
+              ls_jshlpgr-grouping = <ls_jshlpsc>-grouping.
+              append ls_jshlpgr to lt_jshlpgr.
+            endif.
+          endloop.
+
+          unassign: <ls_jshlpsc>, <lt_standard_table>.
+          free lr_data.
+
+          check lt_jshlpgr is not initial.
+
+          create data lr_data type standard table of (lc_jshlpgr) with non-unique default key.
+          assign lr_data->* to <lt_standard_table>.
+          <lt_standard_table> = lt_jshlpgr.
+
+          ls_table_content-tabname = lc_jshlpgr.
+          ls_table_content-table_content = lr_data.
+          append ls_table_content to lt_table_content.
+          clear ls_table_content.
+        endif.
+      endif.
 
     endloop.
 
@@ -440,60 +533,67 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
 
       lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
 
+      check sy-uname eq 'ANDREC'.
+
+      lv_key = get_key_from_table(
+          io_artifact      = lo_artifact    " Neptune Artifact Type
+          it_table_content = lt_table_content ).
+
       lo_artifact->set_table_content(
         iv_key1                 = lv_key
         it_insert_table_content = lt_table_content ).
 
       lo_artifact->update_tadir_entry(
-          iv_key1     = lv_key
-          iv_devclass = ms_item-devclass ).
+          iv_key1          = lv_key
+          iv_devclass      = ms_item-devclass
+          iv_artifact_name = lv_name ).
 
     endif.
 
   endmethod.
 
 
-  method zif_abapgit_object~exists.
+  method ZIF_ABAPGIT_OBJECT~EXISTS.
     rv_bool = abap_true.
   endmethod.
 
 
-  method zif_abapgit_object~get_comparator.
+  method ZIF_ABAPGIT_OBJECT~GET_COMPARATOR.
     return.
   endmethod.
 
 
-  method zif_abapgit_object~get_deserialize_order.
+  method ZIF_ABAPGIT_OBJECT~GET_DESERIALIZE_ORDER.
     return.
   endmethod.
 
 
-  method zif_abapgit_object~get_deserialize_steps.
+  method ZIF_ABAPGIT_OBJECT~GET_DESERIALIZE_STEPS.
     append zif_abapgit_object=>gc_step_id-late to rt_steps.
   endmethod.
 
 
-  method zif_abapgit_object~get_metadata.
+  method ZIF_ABAPGIT_OBJECT~GET_METADATA.
     return.
   endmethod.
 
 
-  method zif_abapgit_object~is_active.
+  method ZIF_ABAPGIT_OBJECT~IS_ACTIVE.
     rv_active = abap_true.
   endmethod.
 
 
-  method zif_abapgit_object~is_locked.
+  method ZIF_ABAPGIT_OBJECT~IS_LOCKED.
     return.
   endmethod.
 
 
-  method zif_abapgit_object~jump.
+  method ZIF_ABAPGIT_OBJECT~JUMP.
     return.
   endmethod.
 
 
-  method zif_abapgit_object~map_filename_to_object.
+  method ZIF_ABAPGIT_OBJECT~MAP_FILENAME_TO_OBJECT.
 
     data lt_parts type standard table of string with default key.
     data: lv_artifact_name type string,
@@ -522,7 +622,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
   endmethod.
 
 
-  method zif_abapgit_object~map_object_to_filename.
+  method ZIF_ABAPGIT_OBJECT~MAP_OBJECT_TO_FILENAME.
 
     data ls_mapping like line of gt_mapping.
     data ls_tadir type /neptune/if_artifact_type=>ty_lcl_tadir.
@@ -539,7 +639,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
           exporting
             iv_key           = lv_key
             iv_devclass      = is_item-devclass
-            iv_artifact_type = /neptune/if_artifact_type=>gc_artifact_type-enhancement
+            iv_artifact_type = /neptune/if_artifact_type=>gc_artifact_type-js_helper
           receiving
             rs_tadir    = ls_tadir          ##called.
 
@@ -567,11 +667,15 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
     data: lo_artifact      type ref to /neptune/if_artifact_type,
           lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
           ls_table_content like line of lt_table_content,
-          lv_key           type /neptune/artifact_key.
+          lv_key           type /neptune/artifact_key,
+          ls_file          type zif_abapgit_git_definitions=>ty_file,
+          lv_name          type /neptune/jshlpsc-descr.
 
     field-symbols: <lt_standard_table> type standard table,
                    <ls_line>           type any,
-                   <lv_field_value>    type any.
+                   <lv_name>           type any.
+
+**********************************************************************
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
 
@@ -584,25 +688,30 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
 * set fields that will be skipped in the serialization process
     set_skip_fields( ).
 
-    read table lt_table_content into ls_table_content with key tabname = '/NEPTUNE/ENHANCE'.
+*get name, required for naming the file with the code
+    read table lt_table_content into ls_table_content with key tabname = '/NEPTUNE/JSHLPSC'.
     if sy-subrc = 0.
       assign ls_table_content-table_content->* to <lt_standard_table>.
-      check sy-subrc = 0 and <lt_standard_table> is not initial.
       read table <lt_standard_table> assigning <ls_line> index 1.
-      check sy-subrc = 0.
-      assign component 'DESCR' of structure <ls_line> to <lv_field_value> casting type /neptune/enhance-descr.
-      check sy-subrc = 0 and <lv_field_value> is not initial.
+      if sy-subrc = 0.
+        assign component 'DESCR' of structure <ls_line> to <lv_name> casting type /neptune/jshlpsc-descr.
+        if sy-subrc = 0 and <lv_name> is not initial.
+          lv_name = <lv_name>.
+          unassign: <lv_name>,
+                    <ls_line>,
+                    <lt_standard_table>.
+        endif.
+      endif.
     endif.
-
 
 * serialize
     loop at lt_table_content into ls_table_content.
 
       case ls_table_content-tabname.
-        when '/NEPTUNE/ENHTEXT'.
+        when '/NEPTUNE/JSHLPTX'.
 
-          serialize_enhtext(
-            iv_name          = <lv_field_value>
+          serialize_jshlptx(
+            iv_name          = lv_name
             is_table_content = ls_table_content ).
 
         when others.
