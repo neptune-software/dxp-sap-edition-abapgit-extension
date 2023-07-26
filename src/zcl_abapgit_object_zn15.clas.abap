@@ -1,14 +1,14 @@
-class zcl_abapgit_object_zn15 definition
+class ZCL_ABAPGIT_OBJECT_ZN15 definition
   public
-  inheriting from zcl_abapgit_objects_super
+  inheriting from ZCL_ABAPGIT_OBJECTS_SUPER
   final
   create public .
 
-  public section.
+public section.
 
-    interfaces zif_abapgit_object .
+  interfaces ZIF_ABAPGIT_OBJECT .
 
-    constants gc_crlf type abap_cr_lf value cl_abap_char_utilities=>cr_lf. "#EC NOTEXT
+  constants GC_CRLF type ABAP_CR_LF value CL_ABAP_CHAR_UTILITIES=>CR_LF. "#EC NOTEXT
   protected section.
 private section.
 
@@ -461,6 +461,15 @@ endmethod.
     field-symbols: <lt_standard_table> type standard table,
                    <ls_jshlpsc> type /neptune/jshlpsc.
 
+    try.
+        io_xml->read(
+          exporting
+            iv_name = 'key'
+          changing
+            cg_data = lv_key ).
+      catch zcx_abapgit_exception.    " abapGit - Exception
+    endtry.
+
     lt_files = zif_abapgit_object~mo_files->get_files( ).
 
     loop at lt_files into ls_files where filename cs '.json'.
@@ -533,12 +542,12 @@ endmethod.
 
       lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
 
-      check sy-uname eq 'ANDREC'.
-
-      lv_key = get_key_from_table(
-          io_artifact      = lo_artifact    " Neptune Artifact Type
-          it_table_content = lt_table_content ).
-
+*      check sy-uname eq 'ANDREC'.
+*
+*      lv_key = get_key_from_table(
+*          io_artifact      = lo_artifact    " Neptune Artifact Type
+*          it_table_content = lt_table_content ).
+*
       lo_artifact->set_table_content(
         iv_key1                 = lv_key
         it_insert_table_content = lt_table_content ).
@@ -676,6 +685,16 @@ endmethod.
                    <lv_name>           type any.
 
 **********************************************************************
+    data ls_metadata 	type zif_abapgit_definitions=>ty_metadata.
+*    ls_metadata = super->get_metadata( ).
+
+    try.
+        io_xml->add(
+          exporting
+            iv_name = 'key'
+            ig_data = ms_item-obj_name ).
+      catch zcx_abapgit_exception.    " abapGit - Exception
+    endtry.
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
 
