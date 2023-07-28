@@ -36,11 +36,11 @@ class zcl_abapgit_object_zn03 definition
       exporting
         !ev_tabname type tadir-obj_name
         !ev_obj_key type /neptune/artifact_key .
-endclass.
+ENDCLASS.
 
 
 
-class zcl_abapgit_object_zn03 implementation.
+CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
 
 
   method deserialize_table.
@@ -245,6 +245,15 @@ class zcl_abapgit_object_zn03 implementation.
     data lv_tabname type tadir-obj_name.
     data lv_key     type /neptune/artifact_key.
 
+    try.
+        io_xml->read(
+          exporting
+            iv_name = 'key'
+          changing
+            cg_data = lv_key ).
+      catch zcx_abapgit_exception.
+    endtry.
+
     lt_files = zif_abapgit_object~mo_files->get_files( ).
 
     loop at lt_files into ls_files where filename cs '.json'.
@@ -349,6 +358,13 @@ class zcl_abapgit_object_zn03 implementation.
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
 
+    try.
+        io_xml->add(
+          iv_name = 'key'
+          ig_data = ms_item-obj_name ).
+      catch zcx_abapgit_exception.
+    endtry.
+
     lv_key = ms_item-obj_name.
 
     lo_artifact->get_table_content(
@@ -371,4 +387,4 @@ class zcl_abapgit_object_zn03 implementation.
     endloop.
 
   endmethod.
-endclass.
+ENDCLASS.

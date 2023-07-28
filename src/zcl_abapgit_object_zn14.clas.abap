@@ -49,11 +49,11 @@ class zcl_abapgit_object_zn14 definition
       !ev_tabname type tadir-obj_name
       !ev_obj_key type /neptune/artifact_key
       !ev_name type /neptune/artifact_name .
-endclass.
+ENDCLASS.
 
 
 
-class zcl_abapgit_object_zn14 implementation.
+CLASS ZCL_ABAPGIT_OBJECT_ZN14 IMPLEMENTATION.
 
 
   method deserialize_table.
@@ -247,7 +247,14 @@ class zcl_abapgit_object_zn14 implementation.
 
     data lo_artifact type ref to /neptune/if_artifact_type.
 
-**********************************************************************
+    try.
+        io_xml->read(
+          exporting
+            iv_name = 'key'
+          changing
+            cg_data = lv_key ).
+      catch zcx_abapgit_exception.
+    endtry.
 
     lt_files = zif_abapgit_object~mo_files->get_files( ).
 
@@ -375,8 +382,9 @@ class zcl_abapgit_object_zn14 implementation.
         call method ('/NEPTUNE/CL_TADIR')=>('GET_ARTIFACT_ENTRY')
 *          call method  /neptune/cl_tadir=>get_artifact_entry
           exporting
-            iv_key      =  lv_key
-            iv_devclass =  is_item-devclass
+            iv_key           = lv_key
+            iv_devclass      = is_item-devclass
+            iv_artifact_type = /neptune/if_artifact_type=>gc_artifact_type-rt_template
           receiving
             rs_tadir    = ls_tadir          ##called.
 
@@ -410,6 +418,13 @@ class zcl_abapgit_object_zn14 implementation.
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
 
+    try.
+        io_xml->add(
+          iv_name = 'key'
+          ig_data = ms_item-obj_name ).
+      catch zcx_abapgit_exception.
+    endtry.
+
     lv_key = ms_item-obj_name.
 
     lo_artifact->get_table_content(
@@ -431,4 +446,4 @@ class zcl_abapgit_object_zn14 implementation.
     endloop.
 
   endmethod.
-endclass.
+ENDCLASS.
