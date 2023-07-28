@@ -37,13 +37,12 @@ class zcl_abapgit_object_zn16 definition
         !is_filename type string
       exporting
         !ev_tabname type tadir-obj_name
-        !ev_obj_key type /neptune/artifact_key
         !ev_name type /neptune/artifact_name .
-endclass.
+ENDCLASS.
 
 
 
-class zcl_abapgit_object_zn16 implementation.
+CLASS ZCL_ABAPGIT_OBJECT_ZN16 IMPLEMENTATION.
 
 
   method deserialize_table.
@@ -118,7 +117,7 @@ class zcl_abapgit_object_zn16 implementation.
     read table lt_comp into ls_comp index 1.
     if sy-subrc = 0.
       translate ls_comp to upper case.
-      ev_obj_key = ev_name = ls_comp.
+      ev_name = ls_comp.
     endif.
 
     read table lt_comp into ls_comp index 3.
@@ -278,7 +277,6 @@ class zcl_abapgit_object_zn16 implementation.
           is_filename = ls_files-filename
         importing
           ev_tabname  = lv_tabname
-          ev_obj_key  = lv_key
           ev_name     = lv_name ).
 
       create data lr_data type standard table of (lv_tabname) with non-unique default key.
@@ -448,4 +446,4 @@ class zcl_abapgit_object_zn16 implementation.
     endloop.
 
   endmethod.
-endclass.
+ENDCLASS.
