@@ -10,17 +10,6 @@ class zcl_abapgit_object_zn16 definition
   protected section.
   private section.
 
-    types:
-      begin of ty_mapping,
-                key type tadir-obj_name,
-                name type string,
-               end of ty_mapping .
-    types
-      ty_mapping_tt type standard table of ty_mapping with key key .
-
-    constants
-      mc_name_separator(1) type c value '@'.                "#EC NOTEXT
-    class-data gt_mapping type ty_mapping_tt .
     data mt_skip_paths type string_table .
 
     methods serialize_table
@@ -50,11 +39,11 @@ class zcl_abapgit_object_zn16 definition
         !ev_tabname type tadir-obj_name
         !ev_obj_key type /neptune/artifact_key
         !ev_name type /neptune/artifact_name .
-ENDCLASS.
+endclass.
 
 
 
-CLASS ZCL_ABAPGIT_OBJECT_ZN16 IMPLEMENTATION.
+class zcl_abapgit_object_zn16 implementation.
 
 
   method deserialize_table.
@@ -459,4 +448,4 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN16 IMPLEMENTATION.
     endloop.
 
   endmethod.
-ENDCLASS.
+endclass.
