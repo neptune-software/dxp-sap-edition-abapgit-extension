@@ -266,6 +266,15 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN07 IMPLEMENTATION.
     data lv_key     type /neptune/artifact_key.
     data lv_name    type /neptune/artifact_name.
 
+    try.
+        io_xml->read(
+          exporting
+            iv_name = 'key'
+          changing
+            cg_data = lv_key ).
+      catch zcx_abapgit_exception.
+    endtry.
+
     lt_files = zif_abapgit_object~mo_files->get_files( ).
 
     loop at lt_files into ls_files where filename cs '.json'.
@@ -433,9 +442,14 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN07 IMPLEMENTATION.
                    <lv_field_value>    type any,
                    <lv_name>           type any.
 
-**********************************************************************
-
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
+
+    try.
+        io_xml->add(
+          iv_name = 'key'
+          ig_data = ms_item-obj_name ).
+      catch zcx_abapgit_exception.
+    endtry.
 
     lv_key = ms_item-obj_name.
 

@@ -112,11 +112,11 @@ class zcl_abapgit_object_zn01 definition
         !iv_key type /neptune/artifact_key
       raising
         zcx_abapgit_exception .
-endclass.
+ENDCLASS.
 
 
 
-class zcl_abapgit_object_zn01 implementation.
+CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
 
   method deserialize_css.
@@ -837,7 +837,14 @@ class zcl_abapgit_object_zn01 implementation.
 
     data lo_artifact type ref to /neptune/if_artifact_type.
 
-**********************************************************************
+    try.
+        io_xml->read(
+          exporting
+            iv_name = 'key'
+          changing
+            cg_data = lv_key ).
+      catch zcx_abapgit_exception.
+    endtry.
 
     lt_files = zif_abapgit_object~mo_files->get_files( ).
 
@@ -986,6 +993,13 @@ class zcl_abapgit_object_zn01 implementation.
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
 
+    try.
+        io_xml->add(
+          iv_name = 'key'
+          ig_data = ms_item-obj_name ).
+      catch zcx_abapgit_exception.
+    endtry.
+
     lv_key = ms_item-obj_name.
 
     lo_artifact->get_table_content(
@@ -1044,4 +1058,4 @@ class zcl_abapgit_object_zn01 implementation.
     endloop.
 
   endmethod.
-endclass.
+ENDCLASS.

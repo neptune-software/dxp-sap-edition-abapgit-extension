@@ -80,11 +80,11 @@ class zcl_abapgit_object_zn15 definition
         !it_table_content type /neptune/if_artifact_type=>ty_t_table_content
       returning
         value(rv_key) type /neptune/artifact_key .
-endclass.
+ENDCLASS.
 
 
 
-class zcl_abapgit_object_zn15 implementation.
+CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
 
 
   method deserialize_jshlptx.
@@ -183,7 +183,7 @@ class zcl_abapgit_object_zn15 implementation.
       into table lt_jshlpgr
       order by primary key.
     check sy-subrc = 0.
-    
+
     rt_jshlpgr = lt_jshlpgr.
 
   endmethod.
@@ -692,15 +692,14 @@ class zcl_abapgit_object_zn15 implementation.
                    <ls_line>           type any,
                    <lv_name>           type any.
 
-**********************************************************************
+    lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
+
     try.
         io_xml->add(
           iv_name = 'key'
           ig_data = ms_item-obj_name ).
       catch zcx_abapgit_exception.
     endtry.
-
-    lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
 
     lv_key = ms_item-obj_name.
 
@@ -753,4 +752,4 @@ class zcl_abapgit_object_zn15 implementation.
     endloop.
 
   endmethod.
-endclass.
+ENDCLASS.

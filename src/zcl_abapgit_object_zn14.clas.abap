@@ -247,7 +247,14 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN14 IMPLEMENTATION.
 
     data lo_artifact type ref to /neptune/if_artifact_type.
 
-**********************************************************************
+    try.
+        io_xml->read(
+          exporting
+            iv_name = 'key'
+          changing
+            cg_data = lv_key ).
+      catch zcx_abapgit_exception.
+    endtry.
 
     lt_files = zif_abapgit_object~mo_files->get_files( ).
 
@@ -410,6 +417,13 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN14 IMPLEMENTATION.
     field-symbols <lt_standard_table> type standard table.
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
+
+    try.
+        io_xml->add(
+          iv_name = 'key'
+          ig_data = ms_item-obj_name ).
+      catch zcx_abapgit_exception.
+    endtry.
 
     lv_key = ms_item-obj_name.
 

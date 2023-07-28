@@ -50,11 +50,11 @@ class zcl_abapgit_object_zn16 definition
         !ev_tabname type tadir-obj_name
         !ev_obj_key type /neptune/artifact_key
         !ev_name type /neptune/artifact_name .
-endclass.
+ENDCLASS.
 
 
 
-class zcl_abapgit_object_zn16 implementation.
+CLASS ZCL_ABAPGIT_OBJECT_ZN16 IMPLEMENTATION.
 
 
   method deserialize_table.
@@ -121,8 +121,6 @@ class zcl_abapgit_object_zn16 implementation.
 
   method get_values_from_filename.
 
-
-
     data lt_comp type standard table of string with default key.
     data ls_comp like line of lt_comp.
 
@@ -131,7 +129,7 @@ class zcl_abapgit_object_zn16 implementation.
     read table lt_comp into ls_comp index 1.
     if sy-subrc = 0.
       translate ls_comp to upper case.
-      ev_obj_key = ls_comp.
+      ev_obj_key = ev_name = ls_comp.
     endif.
 
     read table lt_comp into ls_comp index 3.
@@ -273,6 +271,15 @@ class zcl_abapgit_object_zn16 implementation.
     data lv_key     type /neptune/artifact_key.
     data lv_name    type /neptune/artifact_name.
 
+    try.
+        io_xml->read(
+          exporting
+            iv_name = 'key'
+          changing
+            cg_data = lv_key ).
+      catch zcx_abapgit_exception.
+    endtry.
+
     lt_files = zif_abapgit_object~mo_files->get_files( ).
 
     loop at lt_files into ls_files where filename cs '.json'.
@@ -360,15 +367,11 @@ class zcl_abapgit_object_zn16 implementation.
 
 
   method zif_abapgit_object~map_filename_to_object.
-
-
     return.
   endmethod.
 
 
   method zif_abapgit_object~map_object_to_filename.
-
-
     return.
   endmethod.
 
@@ -388,9 +391,14 @@ class zcl_abapgit_object_zn16 implementation.
                    <lv_name>           type any,
                    <lv_doc_no>         type any.
 
-**********************************************************************
-
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
+
+    try.
+        io_xml->add(
+          iv_name = 'key'
+          ig_data = ms_item-obj_name ).
+      catch zcx_abapgit_exception.
+    endtry.
 
     lv_key = ms_item-obj_name.
 
@@ -451,4 +459,4 @@ class zcl_abapgit_object_zn16 implementation.
     endloop.
 
   endmethod.
-endclass.
+ENDCLASS.
