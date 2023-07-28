@@ -34,8 +34,7 @@ class zcl_abapgit_object_zn03 definition
       importing
         !is_filename type string
       exporting
-        !ev_tabname type tadir-obj_name
-        !ev_obj_key type /neptune/artifact_key .
+        !ev_tabname type tadir-obj_name .
 ENDCLASS.
 
 
@@ -100,12 +99,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
     data ls_comp like line of lt_comp.
 
     split is_filename at '.' into table lt_comp.
-
-    read table lt_comp into ls_comp index 1.
-    if sy-subrc = 0.
-      translate ls_comp to upper case.
-      ev_obj_key = ls_comp.
-    endif.
 
     read table lt_comp into ls_comp index 3.
     if sy-subrc = 0.
@@ -262,8 +255,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
         exporting
           is_filename = ls_files-filename
         importing
-          ev_tabname  = lv_tabname
-          ev_obj_key  = lv_key ).
+          ev_tabname  = lv_tabname ).
 
       create data lr_data type standard table of (lv_tabname) with non-unique default key.
 
