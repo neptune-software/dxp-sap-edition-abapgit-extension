@@ -8,45 +8,44 @@ class zcl_abapgit_object_zn04 definition
 
     interfaces zif_abapgit_object .
   protected section.
-private section.
+  private section.
 
-  types:
-    begin of ty_mapping,
-              key type tadir-obj_name,
-              name type string,
-             end of ty_mapping .
-  types
-    ty_mapping_tt type standard table of ty_mapping with key key .
+    types:
+      begin of ty_mapping,
+                key type tadir-obj_name,
+                name type string,
+               end of ty_mapping .
+    types:
+      ty_mapping_tt type standard table of ty_mapping with key key .
 
-  constants
-    mc_name_separator(1) type c value '@'.                  "#EC NOTEXT
-  class-data gt_mapping type ty_mapping_tt .
-  data mt_skip_paths type string_table .
+    constants:
+      mc_name_separator(1) type c value '@'.                "#EC NOTEXT
+    class-data gt_mapping type ty_mapping_tt .
+    data mt_skip_paths type string_table .
 
-  methods serialize_table
-    importing
-      !iv_tabname type tabname
-      !it_table type any
-    raising
-      zcx_abapgit_exception .
-  methods set_skip_fields .
-  methods get_skip_fields
-    returning
-      value(rt_skip_paths) type string_table .
-  methods deserialize_table
-    importing
-      !is_file type zif_abapgit_git_definitions=>ty_file
-      !ir_data type ref to data
-      !iv_tabname type tadir-obj_name
-    raising
-      zcx_abapgit_exception .
-  methods get_values_from_filename
-    importing
-      !is_filename type string
-    exporting
-      !ev_tabname type tadir-obj_name
-      !ev_obj_key type /neptune/artifact_key
-      !ev_name type /neptune/artifact_name .
+    methods serialize_table
+      importing
+        !iv_tabname type tabname
+        !it_table type any
+      raising
+        zcx_abapgit_exception .
+    methods set_skip_fields .
+    methods get_skip_fields
+      returning
+        value(rt_skip_paths) type string_table .
+    methods deserialize_table
+      importing
+        !is_file type zif_abapgit_git_definitions=>ty_file
+        !ir_data type ref to data
+        !iv_tabname type tadir-obj_name
+      raising
+        zcx_abapgit_exception .
+    methods get_values_from_filename
+      importing
+        !is_filename type string
+      exporting
+        !ev_tabname type tadir-obj_name
+        !ev_name type /neptune/artifact_name .
 ENDCLASS.
 
 
@@ -103,9 +102,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN04 IMPLEMENTATION.
     read table lt_comp into ls_comp index 1.
     if sy-subrc = 0.
       split ls_comp at mc_name_separator into lv_name lv_key.
-      translate lv_key to upper case.
       translate lv_name to upper case.
-      ev_obj_key = lv_key.
       ev_name = lv_name.
     endif.
 
@@ -264,7 +261,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN04 IMPLEMENTATION.
           is_filename = ls_files-filename
         importing
           ev_tabname  = lv_tabname
-          ev_obj_key  = lv_key
           ev_name     = lv_name ).
 
       create data lr_data type standard table of (lv_tabname) with non-unique default key.
