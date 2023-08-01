@@ -12,9 +12,9 @@ class zcl_abapgit_object_zn07 definition
 
     types:
       begin of ty_mapping,
-              key type tadir-obj_name,
-              name type string,
-             end of ty_mapping .
+                key type tadir-obj_name,
+                name type string,
+               end of ty_mapping .
     types
       ty_mapping_tt type standard table of ty_mapping with key key .
 
@@ -47,7 +47,6 @@ class zcl_abapgit_object_zn07 definition
         !is_filename type string
       exporting
         !ev_tabname type tadir-obj_name
-        !ev_obj_key type /neptune/artifact_key
         !ev_name type /neptune/artifact_name .
 ENDCLASS.
 
@@ -123,9 +122,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN07 IMPLEMENTATION.
     read table lt_comp into ls_comp index 1.
     if sy-subrc = 0.
       split ls_comp at mc_name_separator into lv_name lv_key.
-      translate lv_key to upper case.
       translate lv_name to upper case.
-      ev_obj_key = lv_key.
       ev_name = lv_name.
     endif.
 
@@ -284,7 +281,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN07 IMPLEMENTATION.
           is_filename = ls_files-filename
         importing
           ev_tabname  = lv_tabname
-          ev_obj_key  = lv_key
           ev_name     = lv_name ).
 
       create data lr_data type standard table of (lv_tabname) with non-unique default key.

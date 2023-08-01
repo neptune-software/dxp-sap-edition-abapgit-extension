@@ -14,28 +14,26 @@ class zcl_abapgit_object_zn01 definition
 
     types:
       begin of ty_lcl_evtscr,
-            applid    type /neptune/applid,
-            field_id  type /neptune/field_id,
-*          version   type /neptune/version,
-            event     type /neptune/event_id,
-            file_name type string,
-           end of ty_lcl_evtscr .
-    types
+              applid    type /neptune/applid,
+              field_id  type /neptune/field_id,
+              event     type /neptune/event_id,
+              file_name type string,
+             end of ty_lcl_evtscr .
+    types:
       ty_tt_lcl_evtscr type standard table of ty_lcl_evtscr .
     types:
       begin of ty_lcl_css,
-            applid    type /neptune/applid,
-*          version   type /neptune/version,
-            file_name type string,
-           end of ty_lcl_css .
-    types
+              applid    type /neptune/applid,
+              file_name type string,
+             end of ty_lcl_css .
+    types:
       ty_tt_lcl_css type standard table of ty_lcl_css .
     types:
       begin of ty_code,
-            file_name type string,
-            code      type string,
-           end of ty_code .
-    types
+              file_name type string,
+              code      type string,
+             end of ty_code .
+    types:
       ty_tt_code type standard table of ty_code with non-unique key file_name .
 
     data mt_skip_paths type string_table .
@@ -74,8 +72,7 @@ class zcl_abapgit_object_zn01 definition
       importing
         !is_filename type string
       exporting
-        !ev_tabname type tadir-obj_name
-        !ev_obj_key type /neptune/artifact_key .
+        !ev_tabname type tadir-obj_name .
     methods set_skip_fields .
     methods get_skip_fields
       returning
@@ -398,12 +395,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
     data ls_comp like line of lt_comp.
 
     split is_filename at '.' into table lt_comp.
-
-    read table lt_comp into ls_comp index 1.
-    if sy-subrc = 0.
-      translate ls_comp to upper case.
-      ev_obj_key = ls_comp.
-    endif.
 
     read table lt_comp into ls_comp index 3.
     if sy-subrc = 0.
@@ -854,8 +845,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
         exporting
           is_filename = ls_files-filename
         importing
-          ev_tabname  = lv_tabname
-          ev_obj_key  = lv_key ).
+          ev_tabname  = lv_tabname ).
 
       create data lr_data type standard table of (lv_tabname) with non-unique default key.
 
