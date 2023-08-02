@@ -20,24 +20,17 @@ private section.
   types:
     ty_t_mime_t type standard table of /neptune/mime_t with non-unique default key .
   types:
-    begin of ty_lcl_mime,
-               name           type /neptune/mime-name          ,
-               parent         type /neptune/mime-parent        ,
-               type           type /neptune/mime-type          ,
-               descr          type /neptune/mime-descr         ,
-               credat         type /neptune/mime-credat        ,
-               cretim         type /neptune/mime-cretim        ,
-               crenam         type /neptune/mime-crenam        ,
-               file_kb        type /neptune/mime-file_kb       ,
-               configuration  type /neptune/mime-configuration ,
-               guid           type /neptune/mime-guid          ,
-               file_name      type string,
-         end of ty_lcl_mime .
+    begin of ty_lcl_mime.
+          include type /neptune/mime.
+  types: file_name      type string,
+   end of ty_lcl_mime .
   types:
     ty_tt_lcl_mime type standard table of ty_lcl_mime .
 
   constants:
-    mc_name_separator(1) type c value '@'. "#EC NOTEXT
+    gc_name_separator(1) type c value '@'. "#EC NOTEXT
+  constants GC_MIME_TABLE type TABNAME value '/NEPTUNE/MIME'. "#EC NOTEXT
+  constants GC_MIME_T_TABLE type TABNAME value '/NEPTUNE/MIME_T'. "#EC NOTEXT
   data GT_SKIP_PATHS type STRING_TABLE .
   class-data GT_MAPPING type TY_MAPPING_TT .
 
@@ -52,13 +45,18 @@ private section.
     returning
       value(RT_SKIP_PATHS) type STRING_TABLE .
   interface ZIF_ABAPGIT_GIT_DEFINITIONS load .
+  methods DESERIALIZE_MIME_TABLE
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IR_DATA type ref to DATA
+      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
   methods DESERIALIZE_TABLE
     importing
       !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
       !IR_DATA type ref to DATA
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
       !IV_TABNAME type TADIR-OBJ_NAME
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
     raising
       ZCX_ABAPGIT_EXCEPTION .
   methods GET_VALUES_FROM_FILENAME
@@ -76,9 +74,8 @@ private section.
   interface /NEPTUNE/IF_ARTIFACT_TYPE load .
   methods SERIALIZE_MIME_TABLE
     importing
-      !IV_TABNAME type TABNAME
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
-  methods DESERIALIZE_MIME_TABLE .
+      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT
+      !IT_MIME_T type TY_T_MIME_T optional .
 ENDCLASS.
 
 
@@ -86,8 +83,46 @@ ENDCLASS.
 CLASS ZCL_ABAPGIT_OBJECT_ZN18 IMPLEMENTATION.
 
 
-method DESERIALIZE_MIME_TABLE.
-endmethod.
+  method DESERIALIZE_MIME_TABLE.
+
+    data lt_lcl_mime type ty_tt_lcl_mime.
+    data ls_lcl_mime like line of lt_lcl_mime.
+
+    data lt_mime type standard table of /neptune/mime with default key.
+    data ls_mime like line of lt_mime.
+
+    data lo_ajson type ref to zcl_abapgit_ajson.
+    data lx_ajson type ref to zcx_abapgit_ajson_error.
+
+    data ls_file like line of it_files.
+
+    field-symbols <lt_tab> type any table.
+
+    assign ir_data->* to <lt_tab>.
+    check sy-subrc = 0.
+
+    try.
+        lo_ajson = zcl_abapgit_ajson=>parse( zcl_abapgit_convert=>xstring_to_string_utf8( is_file-data ) ).
+        lo_ajson->zif_abapgit_ajson~to_abap( importing ev_container = lt_lcl_mime ).
+      catch zcx_abapgit_ajson_error into lx_ajson.
+        zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
+    endtry.
+
+    loop at lt_lcl_mime into ls_lcl_mime.
+
+      move-corresponding ls_lcl_mime to ls_mime.
+
+      read table it_files into ls_file with key filename = ls_lcl_mime-file_name.
+      if sy-subrc = 0.
+
+        ls_mime-data = ls_file-data.
+
+      endif.
+    endloop.
+*
+    <lt_tab> = lt_mime.
+
+  endmethod.
 
 
   method DESERIALIZE_TABLE.
@@ -96,11 +131,8 @@ endmethod.
     data lx_ajson type ref to zcx_abapgit_ajson_error.
 
     data lt_table_content type ref to data.
-    data ls_file like line of it_files.
 
     field-symbols <lt_tab> type any table.
-    field-symbols <ls_line> type any.
-    field-symbols <lv_field> type any.
     field-symbols <lt_standard_table> type standard table.
 
     assign ir_data->* to <lt_tab>.
@@ -117,28 +149,6 @@ endmethod.
       catch zcx_abapgit_ajson_error into lx_ajson.
         zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
     endtry.
-
-
-    loop at <lt_standard_table> assigning <ls_line>.
-
-      assign component 'APPLID' of structure <ls_line> to <lv_field>.
-      if <lv_field> is assigned.
-        <lv_field> = iv_key.
-        unassign <lv_field>.
-      endif.
-
-      if iv_tabname = '/NEPTUNE/DOC_H' ##NO_TEXT.
-        assign component 'DOC_TEXT' of structure <ls_line> to <lv_field> ##NO_TEXT.
-        check sy-subrc = 0 and <lv_field> is not initial.
-
-        read table it_files into ls_file with key filename = <lv_field>.
-        check sy-subrc = 0.
-
-        <lv_field> = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
-      endif.
-    endloop.
-
-
 
     <lt_tab> = <lt_standard_table>.
 
@@ -209,23 +219,21 @@ method serialize_mime_table.
 
   data: ls_file          type zif_abapgit_git_definitions=>ty_file,
         lv_path          type string,
-        lv_guid          type string.
+        lv_guid          type string,
+        lv_name          type /neptune/mime-name,
+        lv_ext           type char10.
 
-  field-symbols: <lt_standard_table> type standard table,
-                 <ls_line>           type any,
-                 <lv_data>           type any,
-                 <lv_name>           type any,
-                 <lv_parent>         type any,
-                 <lv_guid>           type any.
+  field-symbols: <lt_standard_table> type standard table.
 
   assign is_table_content-table_content->* to <lt_standard_table>.
   check sy-subrc = 0 and <lt_standard_table> is not initial.
 
   lt_mime = <lt_standard_table>.
 
-
   loop at lt_mime into ls_mime.
     move-corresponding ls_mime to ls_lcl_mime.
+    " clear the image from this field because the image will be its own file
+    clear ls_lcl_mime-data.
 
 **********************************************************************
 *            lv_path = get_full_file_path(
@@ -244,88 +252,29 @@ method serialize_mime_table.
 *            replace all occurrences of '/' in ls_file-filename with '#'.
 **********************************************************************
 
-    lv_guid = <lv_guid>.
+    lv_guid = ls_mime-guid.
 
     concatenate lv_guid
                 ms_item-obj_type
                 is_table_content-tabname into ls_file-filename separated by '.'.
 
     replace all occurrences of '/' in ls_file-filename with '#'.
-    concatenate ls_mime-name ls_file-filename into ls_file-filename separated by mc_name_separator.
+
+    split ls_mime-name at '.' into lv_name lv_ext.
+    concatenate lv_name ls_file-filename into ls_file-filename separated by gc_name_separator.
+    concatenate ls_file-filename lv_ext into ls_file-filename separated by '.'.
 
     translate ls_file-filename to lower case.
 
     ls_file-path = '/'.
-    ls_file-data = <lv_data>.
+    ls_file-data = ls_mime-data.
 
     zif_abapgit_object~mo_files->add( ls_file ).
-
 
     ls_lcl_mime-file_name = ls_file-filename.
 
     append ls_lcl_mime to lt_lcl_mime.
   endloop.
-
-
-*  loop at <lt_standard_table> assigning <ls_line>.
-*
-*    assign component 'DATA' of structure <ls_line> to <lv_data> casting type /neptune/mime-data.
-*    if sy-subrc = 0 and <lv_data> is not initial.
-*
-*      assign component 'NAME' of structure <ls_line> to <lv_name> casting type /neptune/mime-name.
-*      check sy-subrc = 0.
-*      assign component 'GUID' of structure <ls_line> to <lv_guid> casting type /neptune/mime-guid.
-*      check sy-subrc = 0.
-*      assign component 'PARENT' of structure <ls_line> to <lv_parent> casting type /neptune/mime-parent.
-*      check sy-subrc = 0.
-*
-**            lv_path = get_full_file_path(
-**                          iv_parent = <lv_parent>
-**                          it_mime_t = <lt_mime_t> ).
-**
-**            concatenate lv_path <lv_name> into lv_path.
-**
-**            lv_guid = <lv_guid>.
-**
-**            concatenate lv_guid
-**                        ms_item-obj_type
-**                        ls_table_content-tabname
-**                        lv_path into ls_file-filename separated by '.'.
-**
-**            replace all occurrences of '/' in ls_file-filename with '#'.
-*
-*      lv_guid = <lv_guid>.
-*
-*      concatenate lv_guid
-*                  ms_item-obj_type
-*                  is_table_content-tabname into ls_file-filename separated by '.'.
-*
-*      replace all occurrences of '/' in ls_file-filename with '#'.
-*      concatenate <lv_name> ls_file-filename into ls_file-filename separated by mc_name_separator.
-*
-*      translate ls_file-filename to lower case.
-*
-*      ls_file-path = '/'.
-*      ls_file-data = <lv_data>.
-*
-*      zif_abapgit_object~mo_files->add( ls_file ).
-**            <lv_data> = ls_file-filename.
-*
-*      cl_bcs_convert=>string_to_xstring(
-*        exporting
-*          iv_string     = ls_file-filename    " Input data
-**    iv_convert_cp = 'X'    " Run Code Page Conversion
-**    iv_codepage   =     " Target Code Page in SAP Form  (Default = SAPconnect Setting)
-**    iv_add_bom    =     " Add Byte-Order Mark
-*        receiving
-*          ev_xstring    = <lv_data>    " Output data
-*      ).
-**  catch cx_bcs.    " BCS: General Exceptions
-*
-*
-*    endif.
-*
-*  endloop.
 
   serialize_table(
     iv_tabname = is_table_content-tabname
@@ -408,36 +357,36 @@ endmethod.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~CHANGED_BY.
+  method zif_abapgit_object~changed_by.
 
-    data: lo_artifact type ref to /neptune/if_artifact_type,
-          lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
-          ls_table_content like line of lt_table_content,
-          lv_key           type /neptune/artifact_key.
-
-    data ls_doc type /neptune/doc.
-
-    field-symbols <lt_standard_table> type standard table.
-
-    lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
-
-    lv_key = ms_item-obj_name.
-
-    lo_artifact->get_table_content(
-      exporting iv_key1          = lv_key
-      importing et_table_content = lt_table_content ).
-
-    read table lt_table_content into ls_table_content with table key tabname = '/NEPTUNE/DOC'.
-    if sy-subrc = 0.
-      assign ls_table_content-table_content->* to <lt_standard_table>.
-      check sy-subrc = 0.
-      read table <lt_standard_table> into ls_doc index 1.
-      if sy-subrc = 0 and ls_doc-updnam is not initial.
-        rv_user = ls_doc-updnam.
-      else.
-        rv_user = ls_doc-crenam.
-      endif.
-    endif.
+*    data: lo_artifact type ref to /neptune/if_artifact_type,
+*          lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
+*          ls_table_content like line of lt_table_content,
+*          lv_key           type /neptune/artifact_key.
+*
+*    data ls_mime_t type /neptune/mime_t.
+*
+*    field-symbols <lt_standard_table> type standard table.
+*
+*    lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
+*
+*    lv_key = ms_item-obj_name.
+*
+*    lo_artifact->get_table_content(
+*      exporting iv_key1          = lv_key
+*      importing et_table_content = lt_table_content ).
+*
+*    read table lt_table_content into ls_table_content with table key tabname = gc_mime_t_table.
+*    if sy-subrc = 0.
+*      assign ls_table_content-table_content->* to <lt_standard_table>.
+*      check sy-subrc = 0.
+*      read table <lt_standard_table> into ls_mime_t index 1.
+*      if sy-subrc = 0 and ls_mime_t-updnam is not initial.
+*        rv_user = ls_mime_t-updnam.
+*      else.
+*        rv_user = ls_mime_t-crenam.
+*      endif.
+*    endif.
 
   endmethod.
 
@@ -447,7 +396,7 @@ endmethod.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~DESERIALIZE.
+  method zif_abapgit_object~deserialize.
 
 ** pick up logic from CLASS ZCL_ABAPGIT_DATA_DESERIALIZER
 
@@ -486,12 +435,19 @@ endmethod.
 
       create data lr_data type standard table of (lv_tabname) with non-unique default key.
 
-      deserialize_table(
-        is_file    = ls_files
-        iv_key     = lv_key
-        iv_tabname = lv_tabname
-        ir_data    = lr_data
-        it_files   = lt_files ).
+      case lv_tabname.
+        when gc_mime_table.
+          deserialize_mime_table(
+            is_file    = ls_files
+            ir_data    = lr_data
+            it_files   = lt_files ).
+
+        when others.
+          deserialize_table(
+            is_file    = ls_files
+            iv_tabname = lv_tabname
+            ir_data    = lr_data ).
+      endcase.
 
       ls_table_content-tabname = lv_tabname.
       ls_table_content-table_content = lr_data.
@@ -566,7 +522,7 @@ endmethod.
           lv_filename type string.
     data ls_mapping like line of gt_mapping.
 
-    split iv_filename at mc_name_separator into lv_artifact_name lv_filename.
+    split iv_filename at gc_name_separator into lv_artifact_name lv_filename.
     split lv_filename at '.' into table lt_parts.
     read table lt_parts into lv_key index 1.
     check sy-subrc = 0.
@@ -616,11 +572,11 @@ endmethod.
     endtry.
 
     if ls_tadir is not initial.
-      concatenate ls_tadir-artifact_name cv_filename into cv_filename separated by mc_name_separator.
+      concatenate ls_tadir-artifact_name cv_filename into cv_filename separated by gc_name_separator.
     else.
       read table gt_mapping into ls_mapping with key key = is_item-obj_name.
       if sy-subrc = 0.
-        concatenate ls_mapping-name cv_filename into cv_filename separated by mc_name_separator.
+        concatenate ls_mapping-name cv_filename into cv_filename separated by gc_name_separator.
       endif.
     endif.
 
@@ -666,7 +622,7 @@ endmethod.
 
 
 * get folders table
-    read table lt_table_content into ls_table_content with key tabname = '/NEPTUNE/MIME_T'.
+    read table lt_table_content into ls_table_content with key tabname = gc_mime_t_table.
     if sy-subrc eq 0.
       assign ls_table_content-table_content->* to <lt_mime_t>.
     endif.
@@ -679,91 +635,16 @@ endmethod.
       check sy-subrc = 0 and <lt_standard_table> is not initial.
 
       case ls_table_content-tabname.
-        when '/NEPTUNE/MIME'.
+        when gc_mime_table.
           serialize_mime_table(
-            iv_tabname       = ls_table_content-tabname
-            is_table_content = ls_table_content ).
+            is_table_content = ls_table_content
+            it_mime_t        = <lt_mime_t> ).
 
         when others.
-
           serialize_table(
             iv_tabname = ls_table_content-tabname
             it_table   = <lt_standard_table> ).
       endcase.
-
-*      if ls_table_content-tabname = '/NEPTUNE/MIME'.
-*        loop at <lt_standard_table> assigning <ls_line>.
-*
-*          assign component 'DATA' of structure <ls_line> to <lv_data> casting type /neptune/mime-data.
-*          if sy-subrc = 0 and <lv_data> is not initial.
-*
-*            assign component 'NAME' of structure <ls_line> to <lv_name> casting type /neptune/mime-name.
-*            check sy-subrc = 0.
-*            assign component 'GUID' of structure <ls_line> to <lv_guid> casting type /neptune/mime-guid.
-*            check sy-subrc = 0.
-*            assign component 'PARENT' of structure <ls_line> to <lv_parent> casting type /neptune/mime-parent.
-*            check sy-subrc = 0.
-*
-**            lv_path = get_full_file_path(
-**                          iv_parent = <lv_parent>
-**                          it_mime_t = <lt_mime_t> ).
-**
-**            concatenate lv_path <lv_name> into lv_path.
-**
-**            lv_guid = <lv_guid>.
-**
-**            concatenate lv_guid
-**                        ms_item-obj_type
-**                        ls_table_content-tabname
-**                        lv_path into ls_file-filename separated by '.'.
-**
-**            replace all occurrences of '/' in ls_file-filename with '#'.
-*
-*            lv_guid = <lv_guid>.
-*
-*            concatenate lv_guid
-*                        ms_item-obj_type
-*                        ls_table_content-tabname into ls_file-filename separated by '.'.
-*
-*            replace all occurrences of '/' in ls_file-filename with '#'.
-*            concatenate <lv_name> ls_file-filename into ls_file-filename separated by mc_name_separator.
-*
-*            translate ls_file-filename to lower case.
-*
-*            ls_file-path = '/'.
-*            ls_file-data = <lv_data>.
-*
-*            zif_abapgit_object~mo_files->add( ls_file ).
-**            <lv_data> = ls_file-filename.
-*
-*            cl_bcs_convert=>string_to_xstring(
-*              exporting
-*                iv_string     = ls_file-filename    " Input data
-**    iv_convert_cp = 'X'    " Run Code Page Conversion
-**    iv_codepage   =     " Target Code Page in SAP Form  (Default = SAPconnect Setting)
-**    iv_add_bom    =     " Add Byte-Order Mark
-*              receiving
-*                ev_xstring    = <lv_data>    " Output data
-*            ).
-**  catch cx_bcs.    " BCS: General Exceptions
-*
-*
-*          endif.
-*
-*        endloop.
-*
-*
-*        serialize_table(
-*          iv_tabname = ls_table_content-tabname
-*          it_table   = <lt_standard_table> ).
-*
-*        " to avoid serializing the actual /neptune/mime table
-*        continue. " loop at lt_table_content into ls_table_content.
-*      endif.
-
-      serialize_table(
-        iv_tabname = ls_table_content-tabname
-        it_table   = <lt_standard_table> ).
 
     endloop.
 
