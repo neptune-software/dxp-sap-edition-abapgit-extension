@@ -19,6 +19,6 @@
   },
   "homepage": "https://github.com/neptune-software/dxp-sap-edition-abapgit-extension#readme",
   "devDependencies": {
-    "@abaplint/cli": "^2.95.43"
+    "@abaplint/cli": "^2.102.17"
   }
 }
