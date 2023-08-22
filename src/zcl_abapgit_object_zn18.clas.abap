@@ -8,74 +8,75 @@ class zcl_abapgit_object_zn18 definition
 
     interfaces zif_abapgit_object .
   protected section.
-  private section.
+private section.
 
-    types:
-      begin of ty_mapping,
+  types:
+    begin of ty_mapping,
                   key type tadir-obj_name,
                   name type string,
                  end of ty_mapping .
-    types:
-      ty_mapping_tt type standard table of ty_mapping with key key .
-    types:
-      ty_t_mime_t type standard table of /neptune/mime_t with non-unique default key .
-    types:
-      begin of ty_lcl_mime.
+  types:
+    ty_mapping_tt type standard table of ty_mapping with key key .
+  types:
+    ty_t_mime_t type standard table of /neptune/mime_t with non-unique default key .
+  types:
+    begin of ty_lcl_mime.
             include type /neptune/mime.
     types: file_name      type string,
      end of ty_lcl_mime .
-    types:
-      ty_tt_lcl_mime type standard table of ty_lcl_mime .
+  types:
+    ty_tt_lcl_mime type standard table of ty_lcl_mime .
 
-    constants:
-      gc_name_separator(1) type c value '@'.                "#EC NOTEXT
-    constants gc_mime_table type tabname value '/NEPTUNE/MIME'. "#EC NOTEXT
-    constants gc_mime_t_table type tabname value '/NEPTUNE/MIME_T'. "#EC NOTEXT
-    data gt_skip_paths type string_table .
-    class-data gt_mapping type ty_mapping_tt .
+  constants:
+    gc_name_separator(1) type c value '@'. "#EC NOTEXT
+  constants GC_MIME_TABLE type TABNAME value '/NEPTUNE/MIME'. "#EC NOTEXT
+  constants GC_MIME_T_TABLE type TABNAME value '/NEPTUNE/MIME_T'. "#EC NOTEXT
+  data GT_SKIP_PATHS type STRING_TABLE .
+  class-data GT_MAPPING type TY_MAPPING_TT .
 
-    methods serialize_table
-      importing
-        !iv_tabname type tabname
-        !it_table type any
-      raising
-        zcx_abapgit_exception .
-    methods set_skip_fields .
-    methods get_skip_fields
-      returning
-        value(rt_skip_paths) type string_table .
-    interface zif_abapgit_git_definitions load .
-    methods deserialize_mime_table
-      importing
-        !is_file type zif_abapgit_git_definitions=>ty_file
-        !ir_data type ref to data
-        !it_files type zif_abapgit_git_definitions=>ty_files_tt
-      raising
-        zcx_abapgit_exception .
-    methods deserialize_table
-      importing
-        !is_file type zif_abapgit_git_definitions=>ty_file
-        !ir_data type ref to data
-        !iv_tabname type tadir-obj_name
-      raising
-        zcx_abapgit_exception .
-    methods get_values_from_filename
-      importing
-        !is_filename type string
-      exporting
-        !ev_tabname type tadir-obj_name
-        !ev_name type /neptune/artifact_name .
-    methods get_full_file_path
-      importing
-        !iv_parent type /neptune/mime_t-parent
-        !it_mime_t type ty_t_mime_t
-      returning
-        value(rv_path) type string .
-    interface /neptune/if_artifact_type load .
-    methods serialize_mime_table
-      importing
-        !is_table_content type /neptune/if_artifact_type=>ty_table_content
-        !it_mime_t type ty_t_mime_t optional .
+  methods SERIALIZE_TABLE
+    importing
+      !IV_TABNAME type TABNAME
+      !IT_TABLE type ANY
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods SET_SKIP_FIELDS .
+  methods GET_SKIP_FIELDS
+    returning
+      value(RT_SKIP_PATHS) type STRING_TABLE .
+  interface ZIF_ABAPGIT_GIT_DEFINITIONS load .
+  methods DESERIALIZE_MIME_TABLE
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IR_DATA type ref to DATA
+      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods DESERIALIZE_TABLE
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IR_DATA type ref to DATA
+      !IV_TABNAME type TADIR-OBJ_NAME
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods GET_VALUES_FROM_FILENAME
+    importing
+      !IS_FILENAME type STRING
+    exporting
+      !EV_TABNAME type TADIR-OBJ_NAME
+      !EV_NAME type /NEPTUNE/ARTIFACT_NAME .
+  methods GET_FULL_FILE_PATH
+    importing
+      !IV_PARENT type /NEPTUNE/MIME_T-PARENT
+      !IT_MIME_T type TY_T_MIME_T
+    returning
+      value(RV_PATH) type STRING .
+  interface /NEPTUNE/IF_ARTIFACT_TYPE load .
+  methods SERIALIZE_MIME_TABLE
+    importing
+      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
+      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT
+      !IT_MIME_T type TY_T_MIME_T optional .
 ENDCLASS.
 
 
@@ -118,6 +119,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN18 IMPLEMENTATION.
         ls_mime-data = ls_file-data.
 
       endif.
+      append ls_mime to lt_mime.
     endloop.
 *
     <lt_tab> = lt_mime.
@@ -220,7 +222,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN18 IMPLEMENTATION.
     data: ls_file          type zif_abapgit_git_definitions=>ty_file,
           lv_path          type string,
           lv_guid          type string,
-          lv_name          type /neptune/mime-name,
+          lv_name          type string,
           lv_ext           type char10.
 
     field-symbols: <lt_standard_table> type standard table.
@@ -254,13 +256,16 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN18 IMPLEMENTATION.
 
       lv_guid = ls_mime-guid.
 
-      concatenate lv_guid
+      concatenate iv_key
                   ms_item-obj_type
-                  is_table_content-tabname into ls_file-filename separated by '.'.
+*                  is_table_content-tabname into ls_file-filename separated by '.'.
+                  is_table_content-tabname
+                  lv_guid into ls_file-filename separated by '.'.
 
       replace all occurrences of '/' in ls_file-filename with '#'.
 
       split ls_mime-name at '.' into lv_name lv_ext.
+*      concatenate lv_name lv_guid into lv_name separated by '_'.
       concatenate lv_name ls_file-filename into ls_file-filename separated by gc_name_separator.
       concatenate ls_file-filename lv_ext into ls_file-filename separated by '.'.
 
@@ -637,6 +642,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN18 IMPLEMENTATION.
       case ls_table_content-tabname.
         when gc_mime_table.
           serialize_mime_table(
+            iv_key           = lv_key
             is_table_content = ls_table_content
             it_mime_t        = <lt_mime_t> ).
 
