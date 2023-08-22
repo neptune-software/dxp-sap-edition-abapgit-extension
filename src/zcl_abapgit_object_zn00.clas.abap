@@ -9,18 +9,20 @@ class zcl_abapgit_object_zn00 definition
     interfaces zif_abapgit_object .
   protected section.
   private section.
-ENDCLASS.
+endclass.
 
 
 
-CLASS ZCL_ABAPGIT_OBJECT_ZN00 IMPLEMENTATION.
+class zcl_abapgit_object_zn00 implementation.
 
 
   method zif_abapgit_object~changed_by.
+    return.
   endmethod.
 
 
   method zif_abapgit_object~delete.
+    return.
   endmethod.
 
 
@@ -46,18 +48,22 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN00 IMPLEMENTATION.
 
 
   method zif_abapgit_object~get_comparator.
+    return.
   endmethod.
 
 
   method zif_abapgit_object~get_deserialize_order.
+    return.
   endmethod.
 
 
   method zif_abapgit_object~get_deserialize_steps.
+    return.
   endmethod.
 
 
   method zif_abapgit_object~get_metadata.
+    return.
   endmethod.
 
 
@@ -67,18 +73,22 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN00 IMPLEMENTATION.
 
 
   method zif_abapgit_object~is_locked.
+    return.
   endmethod.
 
 
   method zif_abapgit_object~jump.
+    return.
   endmethod.
 
 
   method zif_abapgit_object~map_filename_to_object.
+    return.
   endmethod.
 
 
   method zif_abapgit_object~map_object_to_filename.
+    return.
   endmethod.
 
 
@@ -88,6 +98,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN00 IMPLEMENTATION.
 
     select single * from /neptune/lib_002
       into ls_lib_002.
+      
+    check sy-subrc = 0.
 
     try.
         io_xml->add(
@@ -97,4 +109,4 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN00 IMPLEMENTATION.
     endtry.
 
   endmethod.
-ENDCLASS.
+endclass.
