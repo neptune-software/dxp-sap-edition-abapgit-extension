@@ -98,7 +98,7 @@ class zcl_abapgit_object_zn00 implementation.
 
     select single * from /neptune/lib_002
       into ls_lib_002.
-      
+
     check sy-subrc = 0.
 
     try.

@@ -79,11 +79,11 @@ class zcl_abapgit_object_zn19 definition
         !iv_key type /neptune/artifact_key
         !is_table_content type /neptune/if_artifact_type=>ty_table_content
         !it_mime_t type ty_t_mime_t optional .
-endclass.
+ENDCLASS.
 
 
 
-class zcl_abapgit_object_zn19 implementation.
+CLASS ZCL_ABAPGIT_OBJECT_ZN19 IMPLEMENTATION.
 
 
   method deserialize_mime_table.
@@ -567,7 +567,7 @@ class zcl_abapgit_object_zn19 implementation.
           exporting
             iv_key           = lv_key
             iv_devclass      = is_item-devclass
-            iv_artifact_type = /neptune/if_artifact_type=>gc_artifact_type-mime_folder
+            iv_artifact_type = /neptune/if_artifact_type=>gc_artifact_type-media_pack
           receiving
             rs_tadir    = ls_tadir          ##called.
 
@@ -635,7 +635,7 @@ class zcl_abapgit_object_zn19 implementation.
     endif.
 
     check <lt_mime_t> is assigned.
-    
+
 * serialize
     loop at lt_table_content into ls_table_content.
 
@@ -659,4 +659,4 @@ class zcl_abapgit_object_zn19 implementation.
     endloop.
 
   endmethod.
-endclass.
+ENDCLASS.

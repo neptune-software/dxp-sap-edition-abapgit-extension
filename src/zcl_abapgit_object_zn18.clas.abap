@@ -604,7 +604,7 @@ class zcl_abapgit_object_zn18 implementation.
     endif.
 
     check <lt_mime_t> is assigned.
-    
+
 * serialize
     loop at lt_table_content into ls_table_content.
 
