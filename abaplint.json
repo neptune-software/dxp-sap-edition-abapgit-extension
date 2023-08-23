@@ -144,7 +144,7 @@
     "commented_code": true,
     "align_parameters": true,
     "method_length": true,
-    "unnecessary_chaining": true,
+    "unnecessary_chaining": false,
     "remove_descriptions": false,
     "exporting": true,
     "prefix_is_current_class": true,

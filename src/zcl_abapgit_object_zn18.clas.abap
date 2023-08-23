@@ -12,9 +12,9 @@ class zcl_abapgit_object_zn18 definition
 
     types:
       begin of ty_mapping,
-                    key type tadir-obj_name,
-                    name type string,
-                   end of ty_mapping .
+                      key type tadir-obj_name,
+                      name type string,
+                     end of ty_mapping .
     types:
       ty_mapping_tt type standard table of ty_mapping with key key .
     types:
@@ -23,7 +23,7 @@ class zcl_abapgit_object_zn18 definition
       begin of ty_lcl_mime.
             include type /neptune/mime.
     types: file_name      type string,
-     end of ty_lcl_mime .
+      end of ty_lcl_mime .
     types:
       ty_tt_lcl_mime type standard table of ty_lcl_mime .
 
@@ -31,7 +31,7 @@ class zcl_abapgit_object_zn18 definition
       gc_name_separator(1) type c value '@'.                "#EC NOTEXT
     constants gc_mime_table type tabname value '/NEPTUNE/MIME'. "#EC NOTEXT
     constants gc_mime_t_table type tabname value '/NEPTUNE/MIME_T'. "#EC NOTEXT
-    data gt_skip_paths type string_table .
+    data mt_skip_paths type string_table .
     class-data gt_mapping type ty_mapping_tt .
 
     methods serialize_table
@@ -169,7 +169,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN18 IMPLEMENTATION.
       read table it_mime_t assigning <ls_mime_t> with key guid = lv_parent.
       if sy-subrc = 0.
         concatenate <ls_mime_t>-name rv_path into rv_path separated by '_'.
-        if <ls_mime_t>-parent is initial and <ls_mime_t>-guid ne /neptune/cl_nad_cockpit=>media_folder-media_pack.
+        if <ls_mime_t>-parent is initial and <ls_mime_t>-guid <> /neptune/cl_nad_cockpit=>media_folder-media_pack.
           concatenate 'Media Library' rv_path into rv_path separated by '_'.
         endif.
         lv_parent = <ls_mime_t>-parent.
@@ -183,7 +183,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN18 IMPLEMENTATION.
 
   method get_skip_fields.
 
-    rt_skip_paths = gt_skip_paths.
+    rt_skip_paths = mt_skip_paths.
 
   endmethod.
 
@@ -265,7 +265,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN18 IMPLEMENTATION.
       replace all occurrences of '/' in ls_file-filename with '#'.
 
       split ls_mime-name at '.' into lv_name lv_ext.
-*      concatenate lv_name lv_guid into lv_name separated by '_'.
+
       concatenate lv_name ls_file-filename into ls_file-filename separated by gc_name_separator.
       concatenate ls_file-filename lv_ext into ls_file-filename separated by '.'.
 
@@ -342,57 +342,28 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN18 IMPLEMENTATION.
     data lv_skip type string.
 
     lv_skip = '*MANDT' ##NO_TEXT.
-    append lv_skip to gt_skip_paths.
+    append lv_skip to mt_skip_paths.
     lv_skip = '*APPLID' ##NO_TEXT.
-    append lv_skip to gt_skip_paths.
+    append lv_skip to mt_skip_paths.
     lv_skip = '*CREDAT' ##NO_TEXT.
-    append lv_skip to gt_skip_paths.
+    append lv_skip to mt_skip_paths.
     lv_skip = '*CRETIM' ##NO_TEXT.
-    append lv_skip to gt_skip_paths.
+    append lv_skip to mt_skip_paths.
     lv_skip = '*CRENAM' ##NO_TEXT.
-    append lv_skip to gt_skip_paths.
+    append lv_skip to mt_skip_paths.
     lv_skip = '*UPDDAT' ##NO_TEXT.
-    append lv_skip to gt_skip_paths.
+    append lv_skip to mt_skip_paths.
     lv_skip = '*UPDTIM' ##NO_TEXT.
-    append lv_skip to gt_skip_paths.
+    append lv_skip to mt_skip_paths.
     lv_skip = '*UPDNAM' ##NO_TEXT.
-    append lv_skip to gt_skip_paths.
+    append lv_skip to mt_skip_paths.
 
 
   endmethod.
 
 
   method zif_abapgit_object~changed_by.
-
-*    data: lo_artifact type ref to /neptune/if_artifact_type,
-*          lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
-*          ls_table_content like line of lt_table_content,
-*          lv_key           type /neptune/artifact_key.
-*
-*    data ls_mime_t type /neptune/mime_t.
-*
-*    field-symbols <lt_standard_table> type standard table.
-*
-*    lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
-*
-*    lv_key = ms_item-obj_name.
-*
-*    lo_artifact->get_table_content(
-*      exporting iv_key1          = lv_key
-*      importing et_table_content = lt_table_content ).
-*
-*    read table lt_table_content into ls_table_content with table key tabname = gc_mime_t_table.
-*    if sy-subrc = 0.
-*      assign ls_table_content-table_content->* to <lt_standard_table>.
-*      check sy-subrc = 0.
-*      read table <lt_standard_table> into ls_mime_t index 1.
-*      if sy-subrc = 0 and ls_mime_t-updnam is not initial.
-*        rv_user = ls_mime_t-updnam.
-*      else.
-*        rv_user = ls_mime_t-crenam.
-*      endif.
-*    endif.
-
+    return.
   endmethod.
 
 
@@ -443,9 +414,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN18 IMPLEMENTATION.
       case lv_tabname.
         when gc_mime_table.
           deserialize_mime_table(
-            is_file    = ls_files
-            ir_data    = lr_data
-            it_files   = lt_files ).
+            is_file  = ls_files
+            ir_data  = lr_data
+            it_files = lt_files ).
 
         when others.
           deserialize_table(
@@ -628,9 +599,11 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN18 IMPLEMENTATION.
 
 * get folders table
     read table lt_table_content into ls_table_content with key tabname = gc_mime_t_table.
-    if sy-subrc eq 0.
+    if sy-subrc = 0.
       assign ls_table_content-table_content->* to <lt_mime_t>.
     endif.
+
+    check <lt_mime_t> is assigned.
 
 * serialize
     loop at lt_table_content into ls_table_content.
