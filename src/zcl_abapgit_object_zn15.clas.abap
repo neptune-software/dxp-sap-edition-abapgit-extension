@@ -169,7 +169,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
 
   method get_jshelper_groups.
 
-    data lt_jshlpgr type standard table of /neptune/jshlpgr.
+    data lt_jshlpgr type standard table of /neptune/jshlpgr with non-unique default key.
 
     select *
       from /neptune/jshlpgr
@@ -415,8 +415,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
     data lv_key     type /neptune/artifact_key.
     data lv_name    type /neptune/artifact_name.
 
-    data: lt_jshlpgr type standard table of /neptune/jshlpgr,
-          lt_jshlpgr_db type standard table of /neptune/jshlpgr,
+    data: lt_jshlpgr type standard table of /neptune/jshlpgr with non-unique default key,
+          lt_jshlpgr_db type standard table of /neptune/jshlpgr with non-unique default key,
           ls_jshlpgr like line of lt_jshlpgr.
 
     field-symbols: <lt_standard_table> type standard table,
