@@ -900,7 +900,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
             is_file     = ls_files
             iv_tabname  = lv_tabname
             iv_key      = lv_key
-            iv_devclass = ms_item-devclass
+            iv_devclass = iv_package
             ir_data     = lr_data ).
 
       endcase.
@@ -923,7 +923,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
       lo_artifact->update_tadir_entry(
           iv_key1     = lv_key
-          iv_devclass = ms_item-devclass ).
+          iv_devclass = iv_package ).
 
     endif.
 

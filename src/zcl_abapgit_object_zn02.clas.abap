@@ -283,7 +283,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
         is_file     = ls_files
         iv_tabname  = lv_tabname
         ir_data     = lr_data
-        iv_devclass = ms_item-devclass ).
+        iv_devclass = iv_package ).
 
       ls_table_content-tabname = lv_tabname.
       ls_table_content-table_content = lr_data.
@@ -302,7 +302,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
 
       lo_artifact->update_tadir_entry(
           iv_key1          = lv_key
-          iv_devclass      = ms_item-devclass
+          iv_devclass      = iv_package
           iv_artifact_name = lv_name ).
 
     endif.
