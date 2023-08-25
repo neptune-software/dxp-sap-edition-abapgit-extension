@@ -8,45 +8,45 @@ class zcl_abapgit_object_zn02 definition
 
     interfaces zif_abapgit_object .
   protected section.
-private section.
+  private section.
 
-  types:
-    begin of ty_mapping,
-              key type tadir-obj_name,
-              name type string,
-             end of ty_mapping .
-  types:
-    ty_mapping_tt type standard table of ty_mapping with key key .
+    types:
+      begin of ty_mapping,
+                key type tadir-obj_name,
+                name type string,
+               end of ty_mapping .
+    types:
+      ty_mapping_tt type standard table of ty_mapping with key key .
 
-  constants:
-    mc_name_separator(1) type c value '@'. "#EC NOTEXT
-  class-data GT_MAPPING type TY_MAPPING_TT .
-  data MT_SKIP_PATHS type STRING_TABLE .
+    constants:
+      mc_name_separator(1) type c value '@'.                "#EC NOTEXT
+    class-data gt_mapping type ty_mapping_tt .
+    data mt_skip_paths type string_table .
 
-  methods SERIALIZE_TABLE
-    importing
-      !IV_TABNAME type TABNAME
-      !IT_TABLE type ANY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods SET_SKIP_FIELDS .
-  methods GET_SKIP_FIELDS
-    returning
-      value(RT_SKIP_PATHS) type STRING_TABLE .
-  methods DESERIALIZE_TABLE
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IR_DATA type ref to DATA
-      !IV_TABNAME type TADIR-OBJ_NAME
-      !IV_DEVCLASS type DEVCLASS
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods GET_VALUES_FROM_FILENAME
-    importing
-      !IS_FILENAME type STRING
-    exporting
-      !EV_TABNAME type TADIR-OBJ_NAME
-      !EV_NAME type /NEPTUNE/ARTIFACT_NAME .
+    methods serialize_table
+      importing
+        !iv_tabname type tabname
+        !it_table type any
+      raising
+        zcx_abapgit_exception .
+    methods set_skip_fields .
+    methods get_skip_fields
+      returning
+        value(rt_skip_paths) type string_table .
+    methods deserialize_table
+      importing
+        !is_file type zif_abapgit_git_definitions=>ty_file
+        !ir_data type ref to data
+        !iv_tabname type tadir-obj_name
+        !iv_devclass type devclass
+      raising
+        zcx_abapgit_exception .
+    methods get_values_from_filename
+      importing
+        !is_filename type string
+      exporting
+        !ev_tabname type tadir-obj_name
+        !ev_name type /neptune/artifact_name .
 ENDCLASS.
 
 
