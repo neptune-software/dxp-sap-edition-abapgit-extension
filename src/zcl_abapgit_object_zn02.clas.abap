@@ -12,9 +12,9 @@ class zcl_abapgit_object_zn02 definition
 
     types:
       begin of ty_mapping,
-              key type tadir-obj_name,
-              name type string,
-             end of ty_mapping .
+                key type tadir-obj_name,
+                name type string,
+               end of ty_mapping .
     types:
       ty_mapping_tt type standard table of ty_mapping with key key .
 
@@ -38,6 +38,7 @@ class zcl_abapgit_object_zn02 definition
         !is_file type zif_abapgit_git_definitions=>ty_file
         !ir_data type ref to data
         !iv_tabname type tadir-obj_name
+        !iv_devclass type devclass
       raising
         zcx_abapgit_exception .
     methods get_values_from_filename
@@ -62,6 +63,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
 
     field-symbols <lt_tab> type any table.
     field-symbols <lt_standard_table> type standard table.
+    field-symbols <ls_line> type any.
+    field-symbols <lv_field> type any.
 
 **********************************************************************
 
@@ -79,6 +82,14 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
       catch zcx_abapgit_ajson_error into lx_ajson.
         zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
     endtry.
+
+    loop at <lt_standard_table> assigning <ls_line>.
+      assign component 'DEVCLASS' of structure <ls_line> to <lv_field>.
+      if <lv_field> is assigned.
+        <lv_field> = iv_devclass.
+        unassign <lv_field>.
+      endif.
+    endloop.
 
     <lt_tab> = <lt_standard_table>.
 
@@ -170,6 +181,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
 
     data lv_skip type string.
 
+    lv_skip = '*DEVCLASS'.
+    append lv_skip to mt_skip_paths.
     lv_skip = '*CREDAT'.
     append lv_skip to mt_skip_paths.
     lv_skip = '*CRETIM'.
@@ -222,6 +235,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
 
 
   method zif_abapgit_object~delete.
+*    data: lt_files type zif_abapgit_git_definitions=>ty_files_tt.
+*    lt_files = zif_abapgit_object~mo_files->get_files( ).
     return.
   endmethod.
 
@@ -265,9 +280,10 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
       create data lr_data type standard table of (lv_tabname) with non-unique default key.
 
       deserialize_table(
-        is_file    = ls_files
-        iv_tabname = lv_tabname
-        ir_data    = lr_data ).
+        is_file     = ls_files
+        iv_tabname  = lv_tabname
+        ir_data     = lr_data
+        iv_devclass = iv_package ).
 
       ls_table_content-tabname = lv_tabname.
       ls_table_content-table_content = lr_data.
@@ -286,7 +302,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
 
       lo_artifact->update_tadir_entry(
           iv_key1          = lv_key
-          iv_devclass      = ms_item-devclass
+          iv_devclass      = iv_package
           iv_artifact_name = lv_name ).
 
     endif.

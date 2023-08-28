@@ -14,25 +14,25 @@ class zcl_abapgit_object_zn01 definition
 
     types:
       begin of ty_lcl_evtscr,
-              applid    type /neptune/applid,
-              field_id  type /neptune/field_id,
-              event     type /neptune/event_id,
-              file_name type string,
-             end of ty_lcl_evtscr .
+                applid    type /neptune/applid,
+                field_id  type /neptune/field_id,
+                event     type /neptune/event_id,
+                file_name type string,
+               end of ty_lcl_evtscr .
     types:
       ty_tt_lcl_evtscr type standard table of ty_lcl_evtscr .
     types:
       begin of ty_lcl_css,
-              applid    type /neptune/applid,
-              file_name type string,
-             end of ty_lcl_css .
+                applid    type /neptune/applid,
+                file_name type string,
+               end of ty_lcl_css .
     types:
       ty_tt_lcl_css type standard table of ty_lcl_css .
     types:
       begin of ty_code,
-              file_name type string,
-              code      type string,
-             end of ty_code .
+                file_name type string,
+                code      type string,
+               end of ty_code .
     types:
       ty_tt_code type standard table of ty_code with non-unique key file_name .
 
@@ -66,6 +66,7 @@ class zcl_abapgit_object_zn01 definition
         !ir_data type ref to data
         !iv_tabname type tadir-obj_name
         !iv_key type /neptune/artifact_key
+        !iv_devclass type devclass
       raising
         zcx_abapgit_exception .
     methods get_values_from_filename
@@ -262,6 +263,12 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
       assign component 'VERSION' of structure <ls_line> to <lv_field>.
       if <lv_field> is assigned.
         <lv_field> = 1.
+        unassign <lv_field>.
+      endif.
+
+      assign component 'DEVCLASS' of structure <ls_line> to <lv_field>.
+      if <lv_field> is assigned.
+        <lv_field> = iv_devclass.
         unassign <lv_field>.
       endif.
 
@@ -756,6 +763,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
     lv_skip = '*APPLID'.
     append lv_skip to mt_skip_paths.
+    lv_skip = '*DEVCLASS'.
+    append lv_skip to mt_skip_paths.
     lv_skip = '*CREDAT'.
     append lv_skip to mt_skip_paths.
     lv_skip = '*CRETIM'.
@@ -888,10 +897,11 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
         when others.
 
           deserialize_table(
-            is_file    = ls_files
-            iv_tabname = lv_tabname
-            iv_key     = lv_key
-            ir_data    = lr_data ).
+            is_file     = ls_files
+            iv_tabname  = lv_tabname
+            iv_key      = lv_key
+            iv_devclass = iv_package
+            ir_data     = lr_data ).
 
       endcase.
 
@@ -913,7 +923,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
       lo_artifact->update_tadir_entry(
           iv_key1     = lv_key
-          iv_devclass = ms_item-devclass ).
+          iv_devclass = iv_package ).
 
     endif.
 
