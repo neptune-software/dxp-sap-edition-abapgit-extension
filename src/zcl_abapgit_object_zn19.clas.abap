@@ -221,6 +221,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN19 IMPLEMENTATION.
 
     data lt_mime type standard table of /neptune/mime with default key.
     data ls_mime like line of lt_mime.
+    data ls_mime_t like line of it_mime_t.
 
     data: ls_file          type zif_abapgit_git_definitions=>ty_file,
           lv_path          type string,
@@ -235,42 +236,26 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN19 IMPLEMENTATION.
 
     lt_mime = <lt_standard_table>.
 
+    read table it_mime_t into ls_mime_t with key guid = iv_key.
+
     loop at lt_mime into ls_mime.
       move-corresponding ls_mime to ls_lcl_mime.
       " clear the image from this field because the image will be its own file
       clear ls_lcl_mime-data.
 
-**********************************************************************
-*            lv_path = get_full_file_path(
-*                          iv_parent = ls_mime-parent
-*                          it_mime_t = <lt_mime_t> ).
-*
-*            concatenate lv_path ls_mime-name into lv_path.
-*
-*            lv_guid = ls_mime-guid.
-*
-*            concatenate lv_guid
-*                        ms_item-obj_type
-*                        IS_TABLE_CONTENT-tabname
-*                        lv_path into ls_file-filename separated by '.'.
-*
-*            replace all occurrences of '/' in ls_file-filename with '#'.
-**********************************************************************
-
       lv_guid = ls_mime-guid.
 
       concatenate iv_key
                   ms_item-obj_type
-*                  is_table_content-tabname into ls_file-filename separated by '.'.
-                  is_table_content-tabname
-                  lv_guid into ls_file-filename separated by '.'.
+                  is_table_content-tabname into ls_file-filename separated by '.'.
+*                  lv_guid into ls_file-filename separated by '.'.
 
       replace all occurrences of '/' in ls_file-filename with '#'.
 
-      split ls_mime-name at '.' into lv_name lv_ext.
+      concatenate ls_file-filename lv_guid  into ls_file-filename separated by gc_name_separator.
+      concatenate ls_file-filename ls_mime-name into ls_file-filename separated by '.'.
 
-      concatenate lv_name ls_file-filename into ls_file-filename separated by gc_name_separator.
-      concatenate ls_file-filename lv_ext into ls_file-filename separated by '.'.
+      concatenate ls_mime_t-name ls_file-filename into ls_file-filename separated by gc_name_separator.
 
       translate ls_file-filename to lower case.
 
@@ -287,7 +272,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN19 IMPLEMENTATION.
     serialize_table(
       iv_tabname = is_table_content-tabname
       it_table   = lt_lcl_mime ).
-
 
   endmethod.
 
