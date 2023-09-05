@@ -19,7 +19,7 @@ class zcl_abapgit_object_zn17 definition
       ty_mapping_tt type standard table of ty_mapping with key key .
 
     constants
-      mc_name_separator(1) type c value '@'. "#EC NOTEXT
+      mc_name_separator(1) type c value '@'.                "#EC NOTEXT
     class-data gt_mapping type ty_mapping_tt .
     data mt_skip_paths type string_table .
 
@@ -46,11 +46,11 @@ class zcl_abapgit_object_zn17 definition
       exporting
       !ev_tabname type tadir-obj_name
       !ev_name type /neptune/artifact_name .
-endclass.
+ENDCLASS.
 
 
 
-class zcl_abapgit_object_zn17 implementation.
+CLASS ZCL_ABAPGIT_OBJECT_ZN17 IMPLEMENTATION.
 
 
   method deserialize_table.
@@ -222,7 +222,19 @@ class zcl_abapgit_object_zn17 implementation.
 
 
   method zif_abapgit_object~delete.
-    return.
+
+    data: lo_artifact      type ref to /neptune/if_artifact_type,
+          lv_key1          type /neptune/artifact_key.
+
+    lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
+
+    lv_key1 = ms_item-obj_name.
+
+    lo_artifact->delete_artifact(
+      iv_key1      = lv_key1
+      iv_devclass  = iv_package
+      iv_transport = iv_transport ).
+
   endmethod.
 
 
@@ -446,4 +458,4 @@ class zcl_abapgit_object_zn17 implementation.
     endloop.
 
   endmethod.
-endclass.
+ENDCLASS.

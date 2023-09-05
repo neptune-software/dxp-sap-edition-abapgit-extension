@@ -9,11 +9,11 @@ class zcl_abapgit_object_zn00 definition
     interfaces zif_abapgit_object .
   protected section.
   private section.
-endclass.
+ENDCLASS.
 
 
 
-class zcl_abapgit_object_zn00 implementation.
+CLASS ZCL_ABAPGIT_OBJECT_ZN00 IMPLEMENTATION.
 
 
   method zif_abapgit_object~changed_by.
@@ -109,4 +109,4 @@ class zcl_abapgit_object_zn00 implementation.
     endtry.
 
   endmethod.
-endclass.
+ENDCLASS.

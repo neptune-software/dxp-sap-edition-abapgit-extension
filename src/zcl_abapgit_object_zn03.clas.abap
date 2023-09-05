@@ -10,99 +10,99 @@ class zcl_abapgit_object_zn03 definition
 
     constants gc_crlf type abap_cr_lf value cl_abap_char_utilities=>cr_lf. "#EC NOTEXT
   protected section.
-private section.
+  private section.
 
-  types:
-    begin of ty_lcl_cushead,
-              configuration type /neptune/cushead-configuration,
-              file_name     type string,
-             end of ty_lcl_cushead .
-  types:
-    ty_tt_lcl_cushead type standard table of ty_lcl_cushead .
-  types:
-    begin of ty_lcl_cuslogi,
-              configuration type /neptune/cuslogi-configuration,
-              file_name     type string,
-             end of ty_lcl_cuslogi .
-  types:
-    ty_tt_lcl_cuslogi type standard table of ty_lcl_cuslogi .
-  types:
-    begin of ty_lcl_confxml,
-              configuration type /neptune/confxml-configuration,
-              file_name     type string,
-             end of ty_lcl_confxml .
-  types:
-    ty_tt_lcl_confxml type standard table of ty_lcl_confxml .
+    types:
+      begin of ty_lcl_cushead,
+                configuration type /neptune/cushead-configuration,
+                file_name     type string,
+               end of ty_lcl_cushead .
+    types:
+      ty_tt_lcl_cushead type standard table of ty_lcl_cushead .
+    types:
+      begin of ty_lcl_cuslogi,
+                configuration type /neptune/cuslogi-configuration,
+                file_name     type string,
+               end of ty_lcl_cuslogi .
+    types:
+      ty_tt_lcl_cuslogi type standard table of ty_lcl_cuslogi .
+    types:
+      begin of ty_lcl_confxml,
+                configuration type /neptune/confxml-configuration,
+                file_name     type string,
+               end of ty_lcl_confxml .
+    types:
+      ty_tt_lcl_confxml type standard table of ty_lcl_confxml .
 
-  data MT_SKIP_PATHS type STRING_TABLE .
+    data mt_skip_paths type string_table .
 
-  methods SERIALIZE_CUSHEAD
-    importing
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
-  methods SERIALIZE_CONFXML
-    importing
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
-  methods SERIALIZE_APPCACH
-    importing
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
-  methods SERIALIZE_CUSLOGI
-    importing
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
-  methods SERIALIZE_TABLE
-    importing
-      !IV_TABNAME type TABNAME
-      !IT_TABLE type ANY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods SET_SKIP_FIELDS .
-  methods GET_SKIP_FIELDS
-    returning
-      value(RT_SKIP_PATHS) type STRING_TABLE .
-  methods DESERIALIZE_TABLE
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IR_DATA type ref to DATA
-      !IV_TABNAME type TADIR-OBJ_NAME
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods GET_VALUES_FROM_FILENAME
-    importing
-      !IS_FILENAME type STRING
-    exporting
-      !EV_TABNAME type TADIR-OBJ_NAME .
-  methods DESERIALIZE_CUSHEAD
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
-      !IR_DATA type ref to DATA
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods DESERIALIZE_CONFXML
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
-      !IR_DATA type ref to DATA
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods DESERIALIZE_APPCACH
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
-      !IR_DATA type ref to DATA
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods DESERIALIZE_CUSLOGI
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
-      !IR_DATA type ref to DATA
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
+    methods serialize_cushead
+      importing
+        !is_table_content type /neptune/if_artifact_type=>ty_table_content .
+    methods serialize_confxml
+      importing
+        !is_table_content type /neptune/if_artifact_type=>ty_table_content .
+    methods serialize_appcach
+      importing
+        !is_table_content type /neptune/if_artifact_type=>ty_table_content .
+    methods serialize_cuslogi
+      importing
+        !is_table_content type /neptune/if_artifact_type=>ty_table_content .
+    methods serialize_table
+      importing
+        !iv_tabname type tabname
+        !it_table type any
+      raising
+        zcx_abapgit_exception .
+    methods set_skip_fields .
+    methods get_skip_fields
+      returning
+        value(rt_skip_paths) type string_table .
+    methods deserialize_table
+      importing
+        !is_file type zif_abapgit_git_definitions=>ty_file
+        !ir_data type ref to data
+        !iv_tabname type tadir-obj_name
+        !iv_key type /neptune/artifact_key
+      raising
+        zcx_abapgit_exception .
+    methods get_values_from_filename
+      importing
+        !is_filename type string
+      exporting
+        !ev_tabname type tadir-obj_name .
+    methods deserialize_cushead
+      importing
+        !is_file type zif_abapgit_git_definitions=>ty_file
+        !it_files type zif_abapgit_git_definitions=>ty_files_tt
+        !ir_data type ref to data
+        !iv_key type /neptune/artifact_key
+      raising
+        zcx_abapgit_exception .
+    methods deserialize_confxml
+      importing
+        !is_file type zif_abapgit_git_definitions=>ty_file
+        !it_files type zif_abapgit_git_definitions=>ty_files_tt
+        !ir_data type ref to data
+        !iv_key type /neptune/artifact_key
+      raising
+        zcx_abapgit_exception .
+    methods deserialize_appcach
+      importing
+        !is_file type zif_abapgit_git_definitions=>ty_file
+        !it_files type zif_abapgit_git_definitions=>ty_files_tt
+        !ir_data type ref to data
+        !iv_key type /neptune/artifact_key
+      raising
+        zcx_abapgit_exception .
+    methods deserialize_cuslogi
+      importing
+        !is_file type zif_abapgit_git_definitions=>ty_file
+        !it_files type zif_abapgit_git_definitions=>ty_files_tt
+        !ir_data type ref to data
+        !iv_key type /neptune/artifact_key
+      raising
+        zcx_abapgit_exception .
 ENDCLASS.
 
 
@@ -213,7 +213,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
   endmethod.
 
 
-  method DESERIALIZE_CUSHEAD.
+  method deserialize_cushead.
 
     data lt_lcl_cushead type ty_tt_lcl_cushead.
     data ls_lcl_cushead like line of lt_lcl_cushead.
@@ -562,10 +562,10 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
           iv_tabname = is_table_content-tabname
           it_table   = lt_lcl_cushead ).
 
-          ls_file-path = '/'.
-          ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_code ).
-          ls_file-filename = ls_lcl_cushead-file_name.
-          zif_abapgit_object~mo_files->add( ls_file ).
+        ls_file-path = '/'.
+        ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_code ).
+        ls_file-filename = ls_lcl_cushead-file_name.
+        zif_abapgit_object~mo_files->add( ls_file ).
 
       catch zcx_abapgit_exception.
     endtry.
@@ -573,7 +573,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
   endmethod.
 
 
-  method SERIALIZE_CUSLOGI.
+  method serialize_cuslogi.
 
     data ls_file type zif_abapgit_git_definitions=>ty_file.
 
@@ -625,10 +625,10 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
           iv_tabname = is_table_content-tabname
           it_table   = lt_lcl_cuslogi ).
 
-          ls_file-path = '/'.
-          ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_code ).
-          ls_file-filename = ls_lcl_cuslogi-file_name.
-          zif_abapgit_object~mo_files->add( ls_file ).
+        ls_file-path = '/'.
+        ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_code ).
+        ls_file-filename = ls_lcl_cuslogi-file_name.
+        zif_abapgit_object~mo_files->add( ls_file ).
 
       catch zcx_abapgit_exception.
     endtry.
@@ -744,7 +744,19 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
 
 
   method zif_abapgit_object~delete.
-    return.
+
+    data: lo_artifact      type ref to /neptune/if_artifact_type,
+          lv_key1          type /neptune/artifact_key.
+
+    lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
+
+    lv_key1 = ms_item-obj_name.
+
+    lo_artifact->delete_artifact(
+      iv_key1      = lv_key1
+      iv_devclass  = iv_package
+      iv_transport = iv_transport ).
+
   endmethod.
 
 
