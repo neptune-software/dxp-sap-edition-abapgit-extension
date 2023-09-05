@@ -103,11 +103,11 @@ class zcl_abapgit_object_zn03 definition
         !iv_key type /neptune/artifact_key
       raising
         zcx_abapgit_exception .
-ENDCLASS.
+endclass.
 
 
 
-CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
+class zcl_abapgit_object_zn03 implementation.
 
 
   method deserialize_appcach.
@@ -389,9 +389,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
   method serialize_appcach.
 
     data ls_file type zif_abapgit_git_definitions=>ty_file.
-
-*    data lt_lcl_cuslogi type ty_tt_lcl_cuslogi.
-*    data ls_lcl_cuslogi like line of lt_lcl_cuslogi.
 
     data lt_appcach type standard table of /neptune/appcach with default key.
     data ls_appcach like line of lt_appcach.
@@ -944,20 +941,16 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
 
       case ls_table_content-tabname.
         when '/NEPTUNE/CUSHEAD'.
-          serialize_cushead(
-            is_table_content = ls_table_content ).
+          serialize_cushead( is_table_content = ls_table_content ).
 
         when '/NEPTUNE/CUSLOGI'.
-          serialize_cuslogi(
-            is_table_content = ls_table_content ).
+          serialize_cuslogi( is_table_content = ls_table_content ).
 
         when '/NEPTUNE/CONFXML'.
-          serialize_confxml(
-            is_table_content = ls_table_content ).
+          serialize_confxml( is_table_content = ls_table_content ).
 
         when '/NEPTUNE/APPCACH'.
-          serialize_appcach(
-            is_table_content = ls_table_content ).
+          serialize_appcach( is_table_content = ls_table_content ).
 
         when others.
           serialize_table(
@@ -970,4 +963,4 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
     endloop.
 
   endmethod.
-ENDCLASS.
+endclass.

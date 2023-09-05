@@ -148,7 +148,7 @@
     "remove_descriptions": false,
     "exporting": true,
     "prefix_is_current_class": true,
-    "preferred_compare_operator": true,
+    "preferred_compare_operator": false,
     "check_comments": true,
     "check_subrc": true,
     "keyword_case": {
