@@ -1,4 +1,4 @@
-class zcl_abapgit_object_zn03 definition
+class zcl_abapgit_object_zn22 definition
   public
   inheriting from zcl_abapgit_objects_super
   final
@@ -107,7 +107,7 @@ endclass.
 
 
 
-class zcl_abapgit_object_zn03 implementation.
+class zcl_abapgit_object_zn22 implementation.
 
 
   method deserialize_appcach.
