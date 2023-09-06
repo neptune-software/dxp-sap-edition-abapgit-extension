@@ -391,7 +391,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN20 IMPLEMENTATION.
           exporting
             iv_key           = lv_key
             iv_devclass      = is_item-devclass
-            iv_artifact_type = /neptune/if_artifact_type=>gc_artifact_type-policy
+            iv_artifact_type = /neptune/if_artifact_type=>gc_artifact_type-url_alias
           receiving
             rs_tadir    = ls_tadir          ##called.
 
