@@ -28,7 +28,7 @@ class zcl_abapgit_object_zn18 definition
       ty_tt_lcl_mime type standard table of ty_lcl_mime .
 
     constants:
-      gc_name_separator(1) type c value '@'.                "#EC NOTEXT
+      mc_name_separator(1) type c value '@'.                "#EC NOTEXT
     constants gc_mime_table type tabname value '/NEPTUNE/MIME'. "#EC NOTEXT
     constants gc_mime_t_table type tabname value '/NEPTUNE/MIME_T'. "#EC NOTEXT
     data mt_skip_paths type string_table .
@@ -199,7 +199,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN18 IMPLEMENTATION.
 
     read table lt_comp into ls_comp index 1.
     if sy-subrc = 0.
-      split ls_comp at gc_name_separator into lv_name lv_key.
+      split ls_comp at mc_name_separator into lv_name lv_key.
       translate lv_name to upper case.
       ev_name = lv_name.
     endif.
@@ -252,10 +252,10 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN18 IMPLEMENTATION.
 
       replace all occurrences of '/' in ls_file-filename with '#'.
 
-      concatenate ls_file-filename lv_guid  into ls_file-filename separated by gc_name_separator.
+      concatenate ls_file-filename lv_guid  into ls_file-filename separated by mc_name_separator.
       concatenate ls_file-filename ls_mime-name into ls_file-filename separated by '.'.
 
-      concatenate ls_mime_t-name ls_file-filename into ls_file-filename separated by gc_name_separator.
+      concatenate ls_mime_t-name ls_file-filename into ls_file-filename separated by mc_name_separator.
 
       translate ls_file-filename to lower case.
 
@@ -498,7 +498,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN18 IMPLEMENTATION.
           lv_filename type string.
     data ls_mapping like line of gt_mapping.
 
-    split iv_filename at gc_name_separator into lv_artifact_name lv_filename.
+    split iv_filename at mc_name_separator into lv_artifact_name lv_filename.
     split lv_filename at '.' into table lt_parts.
     read table lt_parts into lv_key index 1.
     check sy-subrc = 0.
@@ -548,11 +548,11 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN18 IMPLEMENTATION.
     endtry.
 
     if ls_tadir is not initial.
-      concatenate ls_tadir-artifact_name cv_filename into cv_filename separated by gc_name_separator.
+      concatenate ls_tadir-artifact_name cv_filename into cv_filename separated by mc_name_separator.
     else.
       read table gt_mapping into ls_mapping with key key = is_item-obj_name.
       if sy-subrc = 0.
-        concatenate ls_mapping-name cv_filename into cv_filename separated by gc_name_separator.
+        concatenate ls_mapping-name cv_filename into cv_filename separated by mc_name_separator.
       endif.
     endif.
 
