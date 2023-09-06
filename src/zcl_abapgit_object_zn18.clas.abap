@@ -192,13 +192,16 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN18 IMPLEMENTATION.
 
     data lt_comp type standard table of string with default key.
     data ls_comp like line of lt_comp.
+    data lv_key type /neptune/artifact_key.
+    data lv_name type string.
 
     split is_filename at '.' into table lt_comp.
 
     read table lt_comp into ls_comp index 1.
     if sy-subrc = 0.
-      translate ls_comp to upper case.
-      ev_name = ls_comp.
+      split ls_comp at gc_name_separator into lv_name lv_key.
+      translate lv_name to upper case.
+      ev_name = lv_name.
     endif.
 
     read table lt_comp into ls_comp index 3.
