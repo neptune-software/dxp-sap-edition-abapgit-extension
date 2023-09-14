@@ -8,45 +8,52 @@ class zcl_abapgit_object_zn02 definition
 
     interfaces zif_abapgit_object .
   protected section.
-  private section.
+private section.
 
-    types:
-      begin of ty_mapping,
+  types:
+    begin of ty_mapping,
                 key type tadir-obj_name,
                 name type string,
                end of ty_mapping .
-    types:
-      ty_mapping_tt type standard table of ty_mapping with key key .
+  types:
+    ty_mapping_tt type standard table of ty_mapping with key key .
 
-    constants:
-      mc_name_separator(1) type c value '@'.                "#EC NOTEXT
-    class-data gt_mapping type ty_mapping_tt .
-    data mt_skip_paths type string_table .
+  constants:
+    mc_name_separator(1) type c value '@'. "#EC NOTEXT
+  class-data GT_MAPPING type TY_MAPPING_TT .
+  data MT_SKIP_PATHS type STRING_TABLE .
 
-    methods serialize_table
-      importing
-        !iv_tabname type tabname
-        !it_table type any
-      raising
-        zcx_abapgit_exception .
-    methods set_skip_fields .
-    methods get_skip_fields
-      returning
-        value(rt_skip_paths) type string_table .
-    methods deserialize_table
-      importing
-        !is_file type zif_abapgit_git_definitions=>ty_file
-        !ir_data type ref to data
-        !iv_tabname type tadir-obj_name
-        !iv_devclass type devclass
-      raising
-        zcx_abapgit_exception .
-    methods get_values_from_filename
-      importing
-        !is_filename type string
-      exporting
-        !ev_tabname type tadir-obj_name
-        !ev_name type /neptune/artifact_name .
+  methods SERIALIZE_TABLE
+    importing
+      !IV_TABNAME type TABNAME
+      !IT_TABLE type ANY
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods SET_SKIP_FIELDS .
+  methods GET_SKIP_FIELDS
+    returning
+      value(RT_SKIP_PATHS) type STRING_TABLE .
+  methods DESERIALIZE_TABLE
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IR_DATA type ref to DATA
+      !IV_TABNAME type TADIR-OBJ_NAME
+      !IV_DEVCLASS type DEVCLASS
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods GET_VALUES_FROM_FILENAME
+    importing
+      !IS_FILENAME type STRING
+    exporting
+      !EV_TABNAME type TADIR-OBJ_NAME
+      !EV_NAME type /NEPTUNE/ARTIFACT_NAME .
+  methods INSERT_TO_TRANSPORT
+    importing
+      !IO_ARTIFACT type ref to /NEPTUNE/IF_ARTIFACT_TYPE
+      !IV_TRANSPORT type TRKORR
+      !IV_PACKAGE type DEVCLASS
+      !IV_KEY1 type ANY
+      !IV_ARTIFACT_TYPE type /NEPTUNE/ATY-ARTIFACT_TYPE .
 ENDCLASS.
 
 
@@ -127,6 +134,41 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
     endif.
 
   endmethod.
+
+
+method INSERT_TO_TRANSPORT.
+
+  data ls_message type /neptune/message.
+  data lv_task type trkorr.
+
+  /neptune/cl_nad_transport=>transport_task_find(
+    exporting
+      transport = iv_transport
+    importing
+      task      = lv_task ).
+
+  io_artifact->insert_to_transport(
+    exporting
+      iv_korrnum = lv_task
+      iv_key1    = iv_key1
+    importing
+      ev_message = ls_message ).
+
+  try.
+      call method ('/NEPTUNE/CL_TADIR')=>('INSERT_TO_TRANSPORT')
+*            call method /neptune/cl_tadir=>insert_to_transport
+          exporting
+            iv_korrnum       = lv_task
+            iv_devclass      = iv_package
+            iv_artifact_key  = iv_key1
+            iv_artifact_type = iv_artifact_type
+          importing
+            ev_message      = ls_message .
+    catch cx_sy_dyn_call_illegal_class
+          cx_sy_dyn_call_illegal_method.
+  endtry.
+
+endmethod.
 
 
   method serialize_table.
@@ -266,6 +308,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
     data lv_tabname type tadir-obj_name.
     data lv_key     type /neptune/artifact_key.
     data lv_name    type /neptune/artifact_name.
+    data ls_settings type /neptune/aty.
 
     try.
         io_xml->read(
@@ -305,6 +348,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
     if lt_table_content is not initial.
 
       lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
+      ls_settings = lo_artifact->get_settings( ).
 
       lo_artifact->set_table_content(
         iv_key1                 = lv_key
@@ -315,6 +359,16 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
           iv_devclass      = iv_package
           iv_artifact_name = lv_name ).
 
+      if ls_settings-transportable is not initial and iv_transport is not initial.
+
+        insert_to_transport(
+          io_artifact      = lo_artifact
+          iv_transport     = iv_transport
+          iv_package       = iv_package
+          iv_key1          = lv_key
+          iv_artifact_type = ls_settings-artifact_type ).
+
+      endif.
     endif.
 
   endmethod.

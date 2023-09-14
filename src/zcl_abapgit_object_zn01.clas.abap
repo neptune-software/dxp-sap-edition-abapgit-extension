@@ -10,106 +10,113 @@ class zcl_abapgit_object_zn01 definition
 
     constants gc_crlf type abap_cr_lf value cl_abap_char_utilities=>cr_lf. "#EC NOTEXT
   protected section.
-  private section.
+private section.
 
-    types:
-      begin of ty_lcl_evtscr,
+  types:
+    begin of ty_lcl_evtscr,
                 applid    type /neptune/applid,
                 field_id  type /neptune/field_id,
                 event     type /neptune/event_id,
                 file_name type string,
                end of ty_lcl_evtscr .
-    types:
-      ty_tt_lcl_evtscr type standard table of ty_lcl_evtscr .
-    types:
-      begin of ty_lcl_css,
+  types:
+    ty_tt_lcl_evtscr type standard table of ty_lcl_evtscr .
+  types:
+    begin of ty_lcl_css,
                 applid    type /neptune/applid,
                 file_name type string,
                end of ty_lcl_css .
-    types:
-      ty_tt_lcl_css type standard table of ty_lcl_css .
-    types:
-      begin of ty_code,
+  types:
+    ty_tt_lcl_css type standard table of ty_lcl_css .
+  types:
+    begin of ty_code,
                 file_name type string,
                 code      type string,
                end of ty_code .
-    types:
-      ty_tt_code type standard table of ty_code with non-unique key file_name .
+  types:
+    ty_tt_code type standard table of ty_code with non-unique key file_name .
 
-    data mt_skip_paths type string_table .
+  data MT_SKIP_PATHS type STRING_TABLE .
 
-    interface /neptune/if_artifact_type load .
-    methods serialize_evtscr
-      importing
-        !it_obj type /neptune/obj_tt
-        !is_table_content type /neptune/if_artifact_type=>ty_table_content .
-    methods serialize__evtscr
-      importing
-        !it_obj type /neptune/obj_tt
-        !is_table_content type /neptune/if_artifact_type=>ty_table_content .
-    methods serialize_table
-      importing
-        !iv_tabname type tabname
-        !it_table type any
-      raising
-        zcx_abapgit_exception .
-    methods serialize_css
-      importing
-        !is_table_content type /neptune/if_artifact_type=>ty_table_content .
-    methods serialize__css
-      importing
-        !is_table_content type /neptune/if_artifact_type=>ty_table_content .
-    interface zif_abapgit_git_definitions load .
-    methods deserialize_table
-      importing
-        !is_file type zif_abapgit_git_definitions=>ty_file
-        !ir_data type ref to data
-        !iv_tabname type tadir-obj_name
-        !iv_key type /neptune/artifact_key
-        !iv_devclass type devclass
-      raising
-        zcx_abapgit_exception .
-    methods get_values_from_filename
-      importing
-        !is_filename type string
-      exporting
-        !ev_tabname type tadir-obj_name .
-    methods set_skip_fields .
-    methods get_skip_fields
-      returning
-        value(rt_skip_paths) type string_table .
-    methods deserialize_evtscr
-      importing
-        !is_file type zif_abapgit_git_definitions=>ty_file
-        !it_files type zif_abapgit_git_definitions=>ty_files_tt
-        !ir_data type ref to data
-        !iv_key type /neptune/artifact_key
-      raising
-        zcx_abapgit_exception .
-    methods deserialize__evtscr
-      importing
-        !is_file type zif_abapgit_git_definitions=>ty_file
-        !it_files type zif_abapgit_git_definitions=>ty_files_tt
-        !ir_data type ref to data
-        !iv_key type /neptune/artifact_key
-      exceptions
-        zcx_abapgit_exception .
-    methods deserialize_css
-      importing
-        !is_file type zif_abapgit_git_definitions=>ty_file
-        !it_files type zif_abapgit_git_definitions=>ty_files_tt
-        !ir_data type ref to data
-        !iv_key type /neptune/artifact_key
-      raising
-        zcx_abapgit_exception .
-    methods deserialize__css
-      importing
-        !is_file type zif_abapgit_git_definitions=>ty_file
-        !it_files type zif_abapgit_git_definitions=>ty_files_tt
-        !ir_data type ref to data
-        !iv_key type /neptune/artifact_key
-      raising
-        zcx_abapgit_exception .
+  interface /NEPTUNE/IF_ARTIFACT_TYPE load .
+  methods SERIALIZE_EVTSCR
+    importing
+      !IT_OBJ type /NEPTUNE/OBJ_TT
+      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
+  methods SERIALIZE__EVTSCR
+    importing
+      !IT_OBJ type /NEPTUNE/OBJ_TT
+      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
+  methods SERIALIZE_TABLE
+    importing
+      !IV_TABNAME type TABNAME
+      !IT_TABLE type ANY
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods SERIALIZE_CSS
+    importing
+      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
+  methods SERIALIZE__CSS
+    importing
+      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
+  interface ZIF_ABAPGIT_GIT_DEFINITIONS load .
+  methods DESERIALIZE_TABLE
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IR_DATA type ref to DATA
+      !IV_TABNAME type TADIR-OBJ_NAME
+      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
+      !IV_DEVCLASS type DEVCLASS
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods GET_VALUES_FROM_FILENAME
+    importing
+      !IS_FILENAME type STRING
+    exporting
+      !EV_TABNAME type TADIR-OBJ_NAME .
+  methods SET_SKIP_FIELDS .
+  methods GET_SKIP_FIELDS
+    returning
+      value(RT_SKIP_PATHS) type STRING_TABLE .
+  methods DESERIALIZE_EVTSCR
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
+      !IR_DATA type ref to DATA
+      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods DESERIALIZE__EVTSCR
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
+      !IR_DATA type ref to DATA
+      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
+    exceptions
+      ZCX_ABAPGIT_EXCEPTION .
+  methods DESERIALIZE_CSS
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
+      !IR_DATA type ref to DATA
+      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods DESERIALIZE__CSS
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
+      !IR_DATA type ref to DATA
+      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods INSERT_TO_TRANSPORT
+    importing
+      !IO_ARTIFACT type ref to /NEPTUNE/IF_ARTIFACT_TYPE
+      !IV_TRANSPORT type TRKORR
+      !IV_PACKAGE type DEVCLASS
+      !IV_KEY1 type ANY
+      !IV_ARTIFACT_TYPE type /NEPTUNE/ATY-ARTIFACT_TYPE .
 ENDCLASS.
 
 
@@ -413,6 +420,41 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
   endmethod.
 
 
+method insert_to_transport.
+
+  data ls_message type /neptune/message.
+  data lv_task type trkorr.
+
+  /neptune/cl_nad_transport=>transport_task_find(
+    exporting
+      transport = iv_transport
+    importing
+      task      = lv_task ).
+
+  io_artifact->insert_to_transport(
+    exporting
+      iv_korrnum = lv_task
+      iv_key1    = iv_key1
+    importing
+      ev_message = ls_message ).
+
+  try.
+      call method ('/NEPTUNE/CL_TADIR')=>('INSERT_TO_TRANSPORT')
+*            call method /neptune/cl_tadir=>insert_to_transport
+          exporting
+            iv_korrnum       = lv_task
+            iv_devclass      = iv_package
+            iv_artifact_key  = iv_key1
+            iv_artifact_type = iv_artifact_type
+          importing
+            ev_message      = ls_message .
+    catch cx_sy_dyn_call_illegal_class
+          cx_sy_dyn_call_illegal_method.
+  endtry.
+
+endmethod.
+
+
   method serialize_css.
 
     data ls_file type zif_abapgit_git_definitions=>ty_file.
@@ -497,6 +539,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
     check sy-subrc = 0 and <lt_standard_table> is not initial.
 
     lt_evtscr = <lt_standard_table>.
+
     loop at lt_evtscr into ls_evtscr.
       at new event.
         move-corresponding ls_evtscr to ls_lcl_evtscr.
@@ -694,6 +737,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
     check sy-subrc = 0 and <lt_standard_table> is not initial.
 
     lt_evtscr = <lt_standard_table>.
+
     loop at lt_evtscr into ls_evtscr.
       at new event.
         move-corresponding ls_evtscr to ls_lcl_evtscr.
@@ -777,6 +821,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
     append lv_skip to mt_skip_paths.
     lv_skip = '*UPDNAM'.
     append lv_skip to mt_skip_paths.
+    lv_skip = 'TR_ORDER'.
+    append lv_skip to mt_skip_paths.
 
 
   endmethod.
@@ -848,6 +894,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
     data lv_key     type /neptune/artifact_key.
 
     data lo_artifact type ref to /neptune/if_artifact_type.
+    data ls_settings type /neptune/aty.
 
     try.
         io_xml->read(
@@ -922,12 +969,12 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
       append ls_table_content to lt_table_content.
       clear ls_table_content.
 
-
     endloop.
 
     if lt_table_content is not initial.
 
       lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
+      ls_settings = lo_artifact->get_settings( ).
 
       lo_artifact->set_table_content(
         iv_key1                 = lv_key
@@ -936,6 +983,17 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
       lo_artifact->update_tadir_entry(
           iv_key1     = lv_key
           iv_devclass = iv_package ).
+
+      if ls_settings-transportable is not initial and iv_transport is not initial.
+
+        insert_to_transport(
+          io_artifact      = lo_artifact
+          iv_transport     = iv_transport
+          iv_package       = iv_package
+          iv_key1          = lv_key
+          iv_artifact_type = ls_settings-artifact_type ).
+
+      endif.
 
     endif.
 

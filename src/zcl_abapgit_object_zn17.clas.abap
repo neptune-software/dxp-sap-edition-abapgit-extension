@@ -44,6 +44,13 @@ private section.
     exporting
       !EV_TABNAME type TADIR-OBJ_NAME
       !EV_NAME type /NEPTUNE/ARTIFACT_NAME .
+  methods INSERT_TO_TRANSPORT
+    importing
+      !IO_ARTIFACT type ref to /NEPTUNE/IF_ARTIFACT_TYPE
+      !IV_TRANSPORT type TRKORR
+      !IV_PACKAGE type DEVCLASS
+      !IV_KEY1 type ANY
+      !IV_ARTIFACT_TYPE type /NEPTUNE/ATY-ARTIFACT_TYPE .
 ENDCLASS.
 
 
@@ -109,6 +116,41 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN17 IMPLEMENTATION.
     endif.
 
   endmethod.
+
+
+method INSERT_TO_TRANSPORT.
+
+  data ls_message type /neptune/message.
+  data lv_task type trkorr.
+
+  /neptune/cl_nad_transport=>transport_task_find(
+    exporting
+      transport = iv_transport
+    importing
+      task      = lv_task ).
+
+  io_artifact->insert_to_transport(
+    exporting
+      iv_korrnum = lv_task
+      iv_key1    = iv_key1
+    importing
+      ev_message = ls_message ).
+
+  try.
+      call method ('/NEPTUNE/CL_TADIR')=>('INSERT_TO_TRANSPORT')
+*            call method /neptune/cl_tadir=>insert_to_transport
+          exporting
+            iv_korrnum       = lv_task
+            iv_devclass      = iv_package
+            iv_artifact_key  = iv_key1
+            iv_artifact_type = iv_artifact_type
+          importing
+            ev_message      = ls_message .
+    catch cx_sy_dyn_call_illegal_class
+          cx_sy_dyn_call_illegal_method.
+  endtry.
+
+endmethod.
 
 
   method serialize_table.
@@ -235,9 +277,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN17 IMPLEMENTATION.
 
   method zif_abapgit_object~deserialize.
 
-** pick up logic from CLASS ZCL_ABAPGIT_DATA_DESERIALIZER
-
     data lo_artifact type ref to /neptune/if_artifact_type.
+    data ls_settings type /neptune/aty.
 
     data: lt_files type zif_abapgit_git_definitions=>ty_files_tt,
           ls_files like line of lt_files.
@@ -287,6 +328,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN17 IMPLEMENTATION.
     if lt_table_content is not initial.
 
       lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
+      ls_settings = lo_artifact->get_settings( ).
 
       lo_artifact->set_table_content(
         iv_key1                 = lv_key
@@ -296,6 +338,18 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN17 IMPLEMENTATION.
           iv_key1          = lv_key
           iv_devclass      = ms_item-devclass
           iv_artifact_name = lv_name ).
+
+      if ls_settings-transportable is not initial and iv_transport is not initial.
+
+        insert_to_transport(
+          io_artifact      = lo_artifact
+          iv_transport     = iv_transport
+          iv_package       = iv_package
+          iv_key1          = lv_key
+          iv_artifact_type = ls_settings-artifact_type ).
+
+      endif.
+
 
     endif.
 
