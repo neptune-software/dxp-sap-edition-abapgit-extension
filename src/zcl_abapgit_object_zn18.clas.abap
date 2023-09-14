@@ -77,11 +77,11 @@ class zcl_abapgit_object_zn18 definition
         !iv_key type /neptune/artifact_key
         !is_table_content type /neptune/if_artifact_type=>ty_table_content
         !it_mime_t type ty_t_mime_t optional .
-ENDCLASS.
+endclass.
 
 
 
-CLASS ZCL_ABAPGIT_OBJECT_ZN18 IMPLEMENTATION.
+class zcl_abapgit_object_zn18 implementation.
 
 
   method deserialize_mime_table.
@@ -248,7 +248,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN18 IMPLEMENTATION.
       concatenate iv_key
                   ms_item-obj_type
                   is_table_content-tabname into ls_file-filename separated by '.'.
-*                  lv_guid into ls_file-filename separated by '.'.
 
       replace all occurrences of '/' in ls_file-filename with '#'.
 
@@ -628,4 +627,4 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN18 IMPLEMENTATION.
     endloop.
 
   endmethod.
-ENDCLASS.
+endclass.

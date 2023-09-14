@@ -117,11 +117,11 @@ class zcl_abapgit_object_zn01 definition
         !iv_package type devclass
         !iv_key1 type any
         !iv_artifact_type type /neptune/aty-artifact_type .
-ENDCLASS.
+endclass.
 
 
 
-CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
+class zcl_abapgit_object_zn01 implementation.
 
 
   method deserialize_css.
@@ -447,7 +447,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
               iv_artifact_key  = iv_key1
               iv_artifact_type = iv_artifact_type
             importing
-              ev_message      = ls_message .
+              ev_message      = ls_message.
       catch cx_sy_dyn_call_illegal_class
             cx_sy_dyn_call_illegal_method.
     endtry.
@@ -1128,4 +1128,4 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
     endloop.
 
   endmethod.
-ENDCLASS.
+endclass.
