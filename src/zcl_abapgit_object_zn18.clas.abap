@@ -77,11 +77,11 @@ class zcl_abapgit_object_zn18 definition
         !iv_key type /neptune/artifact_key
         !is_table_content type /neptune/if_artifact_type=>ty_table_content
         !it_mime_t type ty_t_mime_t optional .
-endclass.
+ENDCLASS.
 
 
 
-class zcl_abapgit_object_zn18 implementation.
+CLASS ZCL_ABAPGIT_OBJECT_ZN18 IMPLEMENTATION.
 
 
   method deserialize_mime_table.
@@ -365,8 +365,7 @@ class zcl_abapgit_object_zn18 implementation.
 
     lo_artifact->delete_artifact(
       iv_key1      = lv_key1
-      iv_devclass  = iv_package
-      iv_transport = iv_transport ).
+      iv_devclass  = iv_package ).
 
   endmethod.
 
@@ -627,4 +626,4 @@ class zcl_abapgit_object_zn18 implementation.
     endloop.
 
   endmethod.
-endclass.
+ENDCLASS.

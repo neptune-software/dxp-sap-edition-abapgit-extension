@@ -75,11 +75,11 @@ class zcl_abapgit_object_zn09 definition
         !iv_package type devclass
         !iv_key1 type any
         !iv_artifact_type type /neptune/aty-artifact_type .
-endclass.
+ENDCLASS.
 
 
 
-class zcl_abapgit_object_zn09 implementation.
+CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
 
 
   method deserialize_enhtext.
@@ -416,17 +416,31 @@ class zcl_abapgit_object_zn09 implementation.
 
   method zif_abapgit_object~delete.
 
-    data: lo_artifact      type ref to /neptune/if_artifact_type,
-          lv_key1          type /neptune/artifact_key.
+    data: lo_artifact type ref to /neptune/if_artifact_type,
+          ls_settings type /neptune/aty,
+          lv_key1     type /neptune/artifact_key.
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
+    ls_settings = lo_artifact->get_settings( ).
 
     lv_key1 = ms_item-obj_name.
 
     lo_artifact->delete_artifact(
       iv_key1      = lv_key1
-      iv_devclass  = iv_package
-      iv_transport = iv_transport ).
+      iv_devclass  = iv_package ).
+
+    lo_artifact->delete_tadir_entry( iv_key1 = lv_key1 ).
+
+    if ls_settings-transportable is not initial and iv_transport is not initial.
+
+      insert_to_transport(
+        io_artifact      = lo_artifact
+        iv_transport     = iv_transport
+        iv_package       = iv_package
+        iv_key1          = lv_key1
+        iv_artifact_type = ls_settings-artifact_type ).
+
+    endif.
 
   endmethod.
 
@@ -697,4 +711,4 @@ class zcl_abapgit_object_zn09 implementation.
     endloop.
 
   endmethod.
-endclass.
+ENDCLASS.
