@@ -794,8 +794,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
     lv_key1 = ms_item-obj_name.
 
     lo_artifact->delete_artifact(
-      iv_key1      = lv_key1
-      iv_devclass  = iv_package ).
+      iv_key1     = lv_key1
+      iv_devclass = iv_package ).
 
     lo_artifact->delete_tadir_entry( iv_key1 = lv_key1 ).
 
