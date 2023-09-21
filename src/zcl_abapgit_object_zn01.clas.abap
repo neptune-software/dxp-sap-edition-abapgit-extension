@@ -14,25 +14,25 @@ class zcl_abapgit_object_zn01 definition
 
     types:
       begin of ty_lcl_evtscr,
-                applid    type /neptune/applid,
-                field_id  type /neptune/field_id,
-                event     type /neptune/event_id,
-                file_name type string,
-               end of ty_lcl_evtscr .
+                  applid    type /neptune/applid,
+                  field_id  type /neptune/field_id,
+                  event     type /neptune/event_id,
+                  file_name type string,
+                 end of ty_lcl_evtscr .
     types:
       ty_tt_lcl_evtscr type standard table of ty_lcl_evtscr .
     types:
       begin of ty_lcl_css,
-                applid    type /neptune/applid,
-                file_name type string,
-               end of ty_lcl_css .
+                  applid    type /neptune/applid,
+                  file_name type string,
+                 end of ty_lcl_css .
     types:
       ty_tt_lcl_css type standard table of ty_lcl_css .
     types:
       begin of ty_code,
-                file_name type string,
-                code      type string,
-               end of ty_code .
+                  file_name type string,
+                  code      type string,
+                 end of ty_code .
     types:
       ty_tt_code type standard table of ty_code with non-unique key file_name .
 
@@ -110,6 +110,13 @@ class zcl_abapgit_object_zn01 definition
         !iv_key type /neptune/artifact_key
       raising
         zcx_abapgit_exception .
+    methods insert_to_transport
+      importing
+        !io_artifact type ref to /neptune/if_artifact_type
+        !iv_transport type trkorr
+        !iv_package type devclass
+        !iv_key1 type any
+        !iv_artifact_type type /neptune/aty-artifact_type .
 ENDCLASS.
 
 
@@ -413,6 +420,41 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
   endmethod.
 
 
+  method insert_to_transport.
+
+    data ls_message type /neptune/message.
+    data lv_task type trkorr.
+
+    /neptune/cl_nad_transport=>transport_task_find(
+      exporting
+        transport = iv_transport
+      importing
+        task      = lv_task ).
+
+    io_artifact->insert_to_transport(
+      exporting
+        iv_korrnum = lv_task
+        iv_key1    = iv_key1
+      importing
+        ev_message = ls_message ).
+
+    try.
+        call method ('/NEPTUNE/CL_TADIR')=>('INSERT_TO_TRANSPORT')
+*            call method /neptune/cl_tadir=>insert_to_transport
+            exporting
+              iv_korrnum       = lv_task
+              iv_devclass      = iv_package
+              iv_artifact_key  = iv_key1
+              iv_artifact_type = iv_artifact_type
+            importing
+              ev_message      = ls_message.
+      catch cx_sy_dyn_call_illegal_class
+            cx_sy_dyn_call_illegal_method.
+    endtry.
+
+  endmethod.
+
+
   method serialize_css.
 
     data ls_file type zif_abapgit_git_definitions=>ty_file.
@@ -497,6 +539,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
     check sy-subrc = 0 and <lt_standard_table> is not initial.
 
     lt_evtscr = <lt_standard_table>.
+
     loop at lt_evtscr into ls_evtscr.
       at new event.
         move-corresponding ls_evtscr to ls_lcl_evtscr.
@@ -694,6 +737,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
     check sy-subrc = 0 and <lt_standard_table> is not initial.
 
     lt_evtscr = <lt_standard_table>.
+
     loop at lt_evtscr into ls_evtscr.
       at new event.
         move-corresponding ls_evtscr to ls_lcl_evtscr.
@@ -777,6 +821,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
     append lv_skip to mt_skip_paths.
     lv_skip = '*UPDNAM'.
     append lv_skip to mt_skip_paths.
+    lv_skip = 'TR_ORDER'.
+    append lv_skip to mt_skip_paths.
 
 
   endmethod.
@@ -819,17 +865,31 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
   method zif_abapgit_object~delete.
 
-    data: lo_artifact      type ref to /neptune/if_artifact_type,
-          lv_key1          type /neptune/artifact_key.
+    data: lo_artifact type ref to /neptune/if_artifact_type,
+          ls_settings type /neptune/aty,
+          lv_key1     type /neptune/artifact_key.
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
+    ls_settings = lo_artifact->get_settings( ).
 
     lv_key1 = ms_item-obj_name.
 
     lo_artifact->delete_artifact(
-      iv_key1      = lv_key1
-      iv_devclass  = iv_package
-      iv_transport = iv_transport ).
+      iv_key1     = lv_key1
+      iv_devclass = iv_package ).
+
+    lo_artifact->delete_tadir_entry( iv_key1 = lv_key1 ).
+
+    if ls_settings-transportable is not initial and iv_transport is not initial.
+
+      insert_to_transport(
+        io_artifact      = lo_artifact
+        iv_transport     = iv_transport
+        iv_package       = iv_package
+        iv_key1          = lv_key1
+        iv_artifact_type = ls_settings-artifact_type ).
+
+    endif.
 
   endmethod.
 
@@ -848,6 +908,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
     data lv_key     type /neptune/artifact_key.
 
     data lo_artifact type ref to /neptune/if_artifact_type.
+    data ls_settings type /neptune/aty.
 
     try.
         io_xml->read(
@@ -922,12 +983,12 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
       append ls_table_content to lt_table_content.
       clear ls_table_content.
 
-
     endloop.
 
     if lt_table_content is not initial.
 
       lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
+      ls_settings = lo_artifact->get_settings( ).
 
       lo_artifact->set_table_content(
         iv_key1                 = lv_key
@@ -936,6 +997,17 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
       lo_artifact->update_tadir_entry(
           iv_key1     = lv_key
           iv_devclass = iv_package ).
+
+      if ls_settings-transportable is not initial and iv_transport is not initial.
+
+        insert_to_transport(
+          io_artifact      = lo_artifact
+          iv_transport     = iv_transport
+          iv_package       = iv_package
+          iv_key1          = lv_key
+          iv_artifact_type = ls_settings-artifact_type ).
+
+      endif.
 
     endif.
 

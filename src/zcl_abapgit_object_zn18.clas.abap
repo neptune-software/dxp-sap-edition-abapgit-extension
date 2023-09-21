@@ -248,7 +248,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN18 IMPLEMENTATION.
       concatenate iv_key
                   ms_item-obj_type
                   is_table_content-tabname into ls_file-filename separated by '.'.
-*                  lv_guid into ls_file-filename separated by '.'.
 
       replace all occurrences of '/' in ls_file-filename with '#'.
 
@@ -365,9 +364,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN18 IMPLEMENTATION.
     lv_key1 = ms_item-obj_name.
 
     lo_artifact->delete_artifact(
-      iv_key1      = lv_key1
-      iv_devclass  = iv_package
-      iv_transport = iv_transport ).
+      iv_key1     = lv_key1
+      iv_devclass = iv_package ).
 
   endmethod.
 

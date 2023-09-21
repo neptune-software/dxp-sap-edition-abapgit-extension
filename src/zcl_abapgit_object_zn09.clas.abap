@@ -14,21 +14,21 @@ class zcl_abapgit_object_zn09 definition
 
     types:
       begin of ty_mapping,
-                key type tadir-obj_name,
-                name type string,
-               end of ty_mapping .
+                  key type tadir-obj_name,
+                  name type string,
+                 end of ty_mapping .
     types:
       ty_mapping_tt type standard table of ty_mapping with key key .
     types:
       begin of ty_lcl_enhtext,
-            enhancement type /neptune/enhancement,
-            spot        type /neptune/enhancement_spot,
-            file_name   type string,
-           end of ty_lcl_enhtext .
-    types
+              enhancement type /neptune/enhancement,
+              spot        type /neptune/enhancement_spot,
+              file_name   type string,
+             end of ty_lcl_enhtext .
+    types:
       ty_tt_lcl_enhtext type standard table of ty_lcl_enhtext .
 
-    constants
+    constants:
       mc_name_separator(1) type c value '@'.                "#EC NOTEXT
     class-data gt_mapping type ty_mapping_tt .
     data mt_skip_paths type string_table .
@@ -68,6 +68,13 @@ class zcl_abapgit_object_zn09 definition
         !ir_data type ref to data
       raising
         zcx_abapgit_exception .
+    methods insert_to_transport
+      importing
+        !io_artifact type ref to /neptune/if_artifact_type
+        !iv_transport type trkorr
+        !iv_package type devclass
+        !iv_key1 type any
+        !iv_artifact_type type /neptune/aty-artifact_type .
 ENDCLASS.
 
 
@@ -191,6 +198,41 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
       translate ls_comp to upper case.
       ev_tabname = ls_comp.
     endif.
+
+  endmethod.
+
+
+  method insert_to_transport.
+
+    data ls_message type /neptune/message.
+    data lv_task type trkorr.
+
+    /neptune/cl_nad_transport=>transport_task_find(
+      exporting
+        transport = iv_transport
+      importing
+        task      = lv_task ).
+
+    io_artifact->insert_to_transport(
+      exporting
+        iv_korrnum = lv_task
+        iv_key1    = iv_key1
+      importing
+        ev_message = ls_message ).
+
+    try.
+        call method ('/NEPTUNE/CL_TADIR')=>('INSERT_TO_TRANSPORT')
+*            call method /neptune/cl_tadir=>insert_to_transport
+            exporting
+              iv_korrnum       = lv_task
+              iv_devclass      = iv_package
+              iv_artifact_key  = iv_key1
+              iv_artifact_type = iv_artifact_type
+            importing
+              ev_message      = ls_message.
+      catch cx_sy_dyn_call_illegal_class
+            cx_sy_dyn_call_illegal_method.
+    endtry.
 
   endmethod.
 
@@ -374,17 +416,31 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
 
   method zif_abapgit_object~delete.
 
-    data: lo_artifact      type ref to /neptune/if_artifact_type,
-          lv_key1          type /neptune/artifact_key.
+    data: lo_artifact type ref to /neptune/if_artifact_type,
+          ls_settings type /neptune/aty,
+          lv_key1     type /neptune/artifact_key.
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
+    ls_settings = lo_artifact->get_settings( ).
 
     lv_key1 = ms_item-obj_name.
 
     lo_artifact->delete_artifact(
-      iv_key1      = lv_key1
-      iv_devclass  = iv_package
-      iv_transport = iv_transport ).
+      iv_key1     = lv_key1
+      iv_devclass = iv_package ).
+
+    lo_artifact->delete_tadir_entry( iv_key1 = lv_key1 ).
+
+    if ls_settings-transportable is not initial and iv_transport is not initial.
+
+      insert_to_transport(
+        io_artifact      = lo_artifact
+        iv_transport     = iv_transport
+        iv_package       = iv_package
+        iv_key1          = lv_key1
+        iv_artifact_type = ls_settings-artifact_type ).
+
+    endif.
 
   endmethod.
 
@@ -404,6 +460,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
     data lv_key     type /neptune/artifact_key.
 
     data lo_artifact type ref to /neptune/if_artifact_type.
+    data ls_settings type /neptune/aty.
 
     try.
         io_xml->read(
@@ -454,6 +511,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
     if lt_table_content is not initial.
 
       lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
+      ls_settings = lo_artifact->get_settings( ).
 
       lo_artifact->set_table_content(
         iv_key1                 = lv_key
@@ -462,6 +520,17 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
       lo_artifact->update_tadir_entry(
           iv_key1     = lv_key
           iv_devclass = ms_item-devclass ).
+
+      if ls_settings-transportable is not initial and iv_transport is not initial.
+
+        insert_to_transport(
+          io_artifact      = lo_artifact
+          iv_transport     = iv_transport
+          iv_package       = iv_package
+          iv_key1          = lv_key
+          iv_artifact_type = ls_settings-artifact_type ).
+
+      endif.
 
     endif.
 
