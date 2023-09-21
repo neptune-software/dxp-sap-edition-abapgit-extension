@@ -426,7 +426,12 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN11 IMPLEMENTATION.
 
 
   method zif_abapgit_object~is_locked.
-    return.
+
+    data lo_artifact type ref to /neptune/if_artifact_type.
+
+    lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
+    rv_is_locked = lo_artifact->check_artifact_is_locked( iv_key = ms_item-obj_name ).
+
   endmethod.
 
 
