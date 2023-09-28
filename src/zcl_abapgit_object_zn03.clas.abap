@@ -743,6 +743,10 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
     append lv_skip to mt_skip_paths.
     lv_skip = '*UPDNAM'.
     append lv_skip to mt_skip_paths.
+    lv_skip = '*APP_URL'.
+    append lv_skip to mt_skip_paths.
+    lv_skip = '*APP_CLIENT'.
+    append lv_skip to mt_skip_paths.
 
 
   endmethod.
