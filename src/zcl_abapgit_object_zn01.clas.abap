@@ -14,25 +14,25 @@ class zcl_abapgit_object_zn01 definition
 
     types:
       begin of ty_lcl_evtscr,
-                  applid    type /neptune/applid,
-                  field_id  type /neptune/field_id,
-                  event     type /neptune/event_id,
-                  file_name type string,
-                 end of ty_lcl_evtscr .
+                    applid    type /neptune/applid,
+                    field_id  type /neptune/field_id,
+                    event     type /neptune/event_id,
+                    file_name type string,
+                   end of ty_lcl_evtscr .
     types:
       ty_tt_lcl_evtscr type standard table of ty_lcl_evtscr .
     types:
       begin of ty_lcl_css,
-                  applid    type /neptune/applid,
-                  file_name type string,
-                 end of ty_lcl_css .
+                    applid    type /neptune/applid,
+                    file_name type string,
+                   end of ty_lcl_css .
     types:
       ty_tt_lcl_css type standard table of ty_lcl_css .
     types:
       begin of ty_code,
-                  file_name type string,
-                  code      type string,
-                 end of ty_code .
+                    file_name type string,
+                    code      type string,
+                   end of ty_code .
     types:
       ty_tt_code type standard table of ty_code with non-unique key file_name .
 
@@ -1045,7 +1045,12 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
 
   method zif_abapgit_object~is_locked.
-    return.
+
+    data lo_artifact type ref to /neptune/if_artifact_type.
+
+    lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
+    rv_is_locked = lo_artifact->check_artifact_is_locked( iv_key = ms_item-obj_name ).
+
   endmethod.
 
 
