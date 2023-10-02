@@ -7,7 +7,7 @@ public section.
 
   class-methods ADD_ABAPGIT_REPO
     importing
-      !IV_PARAMETERS type ANY
+      !IV_PARAMETERS type /NEPTUNE/MARKET_ABAPGIT_REPO
     exporting
       !RT_MESSAGES type /NEPTUNE/MESSAGE_TT .
   type-pools ABAP .
@@ -33,7 +33,7 @@ CLASS ZCL_ABAPGIT_MARKET_INTEGRATION IMPLEMENTATION.
 
 method add_abapgit_repo.
 
-  data: ls_logon       type /neptune/cl_nad_marketplace=>ty_abapgit_repo,
+  data: ls_logon       type /neptune/market_abapgit_repo,
         lv_user        type string,
         lv_password    type string,
         lv_credentials type string,
@@ -171,7 +171,7 @@ method delete_abapgit_repo.
           ei_repo = lo_repo ).
 
       if lo_repo is initial.
-        zcx_abapgit_exception=>raise( 'Unable to find repo for package ' && iv_devclass  ).
+        return.
       endif.
 
       lo_repo_srv = zcl_abapgit_repo_srv=>get_instance( ).
