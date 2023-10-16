@@ -26,22 +26,26 @@ method get_package_path.
         lo_dot  type ref to zcl_abapgit_dot_abapgit,
         lo_folder_logic type ref to zcl_abapgit_folder_logic.
 
-  zcl_abapgit_repo_srv=>get_instance( )->get_repo_from_package(
-    exporting
-      iv_package = iv_devclass
-    importing
-      ei_repo    = lo_repo ).
+  try.
 
-  create object lo_dot
-    exporting
-      is_data = lo_repo->ms_data-dot_abapgit.
+      zcl_abapgit_repo_srv=>get_instance( )->get_repo_from_package(
+        exporting
+          iv_package = iv_devclass
+        importing
+          ei_repo    = lo_repo ).
 
-  lo_folder_logic = zcl_abapgit_folder_logic=>get_instance( ).
+      create object lo_dot
+        exporting
+          is_data = lo_repo->ms_data-dot_abapgit.
 
-  rv_path = lo_folder_logic->package_to_path(
-    iv_top     = iv_devclass
-    io_dot     = lo_dot
-    iv_package = iv_sub_devclass ).
+      lo_folder_logic = zcl_abapgit_folder_logic=>get_instance( ).
 
+      rv_path = lo_folder_logic->package_to_path(
+        iv_top     = iv_devclass
+        io_dot     = lo_dot
+        iv_package = iv_sub_devclass ).
+
+    catch zcx_abapgit_exception.
+  endtry.
 endmethod.
 ENDCLASS.

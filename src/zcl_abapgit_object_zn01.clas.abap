@@ -1368,7 +1368,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
     data lt_lcl_script type ty_tt_lcl_script.
     data ls_lcl_script like line of lt_lcl_script.
 
-    data lt_script type standard table of /neptune/script with default key.
+    data lt_script type standard table of /neptune/_script with default key.
     data ls_script like line of lt_script.
 
     data: lt_code type ty_tt_code,

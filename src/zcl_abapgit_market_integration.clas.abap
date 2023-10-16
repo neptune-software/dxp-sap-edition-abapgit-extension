@@ -168,7 +168,7 @@ method delete_abapgit_repo.
         exporting
           iv_package = iv_devclass
         importing
-          ei_repo = lo_repo ).
+          ei_repo    = lo_repo ).
 
       if lo_repo is initial.
         return.
