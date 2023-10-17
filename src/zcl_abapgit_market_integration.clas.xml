@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_CLAS" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <VSEOCLASS>
+    <CLSNAME>ZCL_ABAPGIT_MARKET_INTEGRATION</CLSNAME>
+    <LANGU>E</LANGU>
+    <DESCRIPT>Marketplace Integration class</DESCRIPT>
+    <STATE>1</STATE>
+    <CLSCCINCL>X</CLSCCINCL>
+    <FIXPT>X</FIXPT>
+    <UNICODE>X</UNICODE>
+   </VSEOCLASS>
+   <DESCRIPTIONS_SUB>
+    <SEOSUBCOTX>
+     <CMPNAME>ADD_ABAPGIT_REPO</CMPNAME>
+     <SCONAME>IV_PARAMETERS</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Marketplace abapgit repo information</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>ADD_ABAPGIT_REPO</CMPNAME>
+     <SCONAME>RT_MESSAGES</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Return parameter table</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>CHECK_REPO_INSTALLED</CMPNAME>
+     <SCONAME>IV_DEVCLASS</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Package</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>CHECK_REPO_INSTALLED</CMPNAME>
+     <SCONAME>RT_MESSAGES</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Table Type /NEPTUNE/MESSAGE</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>DELETE_ABAPGIT_REPO</CMPNAME>
+     <SCONAME>IV_DEVCLASS</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Package</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>DELETE_ABAPGIT_REPO</CMPNAME>
+     <SCONAME>RT_MESSAGES</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Table Type /NEPTUNE/MESSAGE</DESCRIPT>
+    </SEOSUBCOTX>
+   </DESCRIPTIONS_SUB>
+  </asx:values>
+ </asx:abap>
+</abapGit>
