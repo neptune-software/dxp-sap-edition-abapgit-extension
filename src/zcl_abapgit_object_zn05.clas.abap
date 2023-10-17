@@ -357,6 +357,10 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
       lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
       ls_settings = lo_artifact->get_settings( ).
 
+      lo_artifact->delete_artifact(
+        iv_key1     = lv_key
+        iv_devclass = iv_package ).
+
       lo_artifact->set_table_content(
         iv_key1                 = lv_key
         it_insert_table_content = lt_table_content ).
