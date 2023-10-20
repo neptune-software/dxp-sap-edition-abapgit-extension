@@ -1197,6 +1197,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
     data ls_obj like line of it_obj.
 
+    data lv_ext type char10.
+
     field-symbols <lt_standard_table> type standard table.
 
     assign is_table_content-table_content->* to <lt_standard_table>.
@@ -1228,10 +1230,17 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
           translate ls_lcl_evtscr-file_name to lower case.
 
+          case is_table_content-tabname.
+            when '/NEPTUNE/_EVTTSC'.
+              lv_ext = 'ts'.
+            when '/NEPTUNE/_EVTSCR'.
+              lv_ext = 'js'.
+          endcase.
+
           concatenate ls_lcl_evtscr-file_name
                       ls_obj-field_name
                       ls_lcl_evtscr-event
-                      'js' into ls_lcl_evtscr-file_name separated by '.'.
+                      lv_ext into ls_lcl_evtscr-file_name separated by '.'.
 
           append ls_lcl_evtscr to lt_lcl_evtscr.
 
@@ -1806,7 +1815,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
             it_obj           = lt_obj
             is_table_content = ls_table_content ).
 
-        when '/NEPTUNE/_EVTSCR'.
+        when '/NEPTUNE/_EVTSCR' or '/NEPTUNE/_EVTTSC'.
 
           serialize__evtscr(
             it_obj           = lt_obj
@@ -1818,7 +1827,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
             it_obj           = lt_obj
             is_table_content = ls_table_content ).
 
-        when '/NEPTUNE/_SCRIPT'.
+        when '/NEPTUNE/_SCRIPT' or '/NEPTUNE/_TSCRIP'.
 
           serialize__script(
             it_obj           = lt_obj
