@@ -1603,7 +1603,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
             ir_data  = lr_data
             iv_key   = lv_key ).
 
-        when '/NEPTUNE/_SCRIPT'.
+        when '/NEPTUNE/SCRIPT'.
 
           deserialize_script(
             is_file  = ls_files
@@ -1611,7 +1611,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
             ir_data  = lr_data
             iv_key   = lv_key ).
 
-        when '/NEPTUNE/__SCRIPT'.
+        when '/NEPTUNE/_SCRIPT'.
 
           deserialize__script(
             is_file  = ls_files
@@ -1619,7 +1619,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
             ir_data  = lr_data
             iv_key   = lv_key ).
 
-        when '/NEPTUNE/_HTML'.
+        when '/NEPTUNE/HTML'.
 
           deserialize_html(
             is_file  = ls_files
@@ -1627,7 +1627,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
             ir_data  = lr_data
             iv_key   = lv_key ).
 
-        when '/NEPTUNE/__HTML'.
+        when '/NEPTUNE/_HTML'.
 
           deserialize__html(
             is_file  = ls_files
@@ -1675,6 +1675,10 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
       lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
       ls_settings = lo_artifact->get_settings( ).
+
+      lo_artifact->delete_artifact(
+        iv_key1     = lv_key
+        iv_devclass = iv_package ).
 
       lo_artifact->set_table_content(
         iv_key1                 = lv_key
