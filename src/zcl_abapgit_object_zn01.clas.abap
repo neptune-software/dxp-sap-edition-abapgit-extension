@@ -919,15 +919,15 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
       at end of field_id.
         read table it_obj into ls_obj with key applid = ls_html-applid
                                                field_id = ls_html-field_id.
-        if sy-subrc = 0.
-          case ls_obj-field_type.
-            when 'SCRIPT'.
-              lv_ext = 'js'.
-            when 'TYPESCRIPT'.
-              lv_ext = 'ts'.
-            when 'HTML'.
-              lv_ext = 'html'.
-          endcase.
+        if sy-subrc = 0 or ( sy-subrc <> 0 and ls_html-field_id is initial ).
+*          case ls_obj-field_type.
+*            when 'SCRIPT'.
+*              lv_ext = 'js'.
+*            when 'TYPESCRIPT'.
+*              lv_ext = 'ts'.
+*            when 'HTML'.
+          lv_ext = 'html'.
+*          endcase.
 
           concatenate me->ms_item-obj_name
                       me->ms_item-obj_type
@@ -937,8 +937,14 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
           translate ls_lcl_script-file_name to lower case.
 
+          if ls_obj-field_id is initial.
+* this is the " Header " section of the app
+            ls_obj-field_name = 'Header'.
+          endif.
+
           concatenate ls_lcl_script-file_name
                       ls_obj-field_name
+                      ls_obj-field_id
                       lv_ext into ls_lcl_script-file_name separated by '.'.
 
           append ls_lcl_script to lt_lcl_script.
@@ -1276,7 +1282,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
   endmethod.
 
 
-  method SERIALIZE__HTML.
+  method serialize__html.
 
     data ls_file type zif_abapgit_git_definitions=>ty_file.
 
@@ -1315,15 +1321,15 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
       at end of field_id.
         read table it_obj into ls_obj with key applid = ls_html-applid
                                                field_id = ls_html-field_id.
-        if sy-subrc = 0.
-          case ls_obj-field_type.
-            when 'SCRIPT'.
-              lv_ext = 'js'.
-            when 'TYPESCRIPT'.
-              lv_ext = 'ts'.
-            when 'HTML'.
-              lv_ext = 'html'.
-          endcase.
+        if sy-subrc = 0 or ( sy-subrc <> 0 and ls_html-field_id is initial ).
+*          case ls_obj-field_type.
+*            when 'SCRIPT'.
+*              lv_ext = 'js'.
+*            when 'TYPESCRIPT'.
+*              lv_ext = 'ts'.
+*            when 'HTML'.
+          lv_ext = 'html'.
+*          endcase.
 
           concatenate me->ms_item-obj_name
                       me->ms_item-obj_type
@@ -1333,8 +1339,14 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
           translate ls_lcl_script-file_name to lower case.
 
+          if ls_obj-field_id is initial.
+* this is the " Header " section of the app
+            ls_obj-field_name = 'Header'.
+          endif.
+
           concatenate ls_lcl_script-file_name
                       ls_obj-field_name
+                      ls_obj-field_id
                       lv_ext into ls_lcl_script-file_name separated by '.'.
 
           append ls_lcl_script to lt_lcl_script.
@@ -1484,7 +1496,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
     append lv_skip to mt_skip_paths.
     lv_skip = '*UPDNAM'.
     append lv_skip to mt_skip_paths.
-    lv_skip = 'TR_ORDER'.
+    lv_skip = '*TR_ORDER'.
     append lv_skip to mt_skip_paths.
 
 
