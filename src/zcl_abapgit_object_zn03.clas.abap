@@ -879,9 +879,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
 
         when others.
           deserialize_table(
-            is_file    = ls_files
-            iv_key     = lv_key
-            ir_data    = lr_data ).
+            is_file = ls_files
+            iv_key  = lv_key
+            ir_data = lr_data ).
       endcase.
 
 
