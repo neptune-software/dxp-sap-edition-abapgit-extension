@@ -18,8 +18,6 @@ class zcl_abapgit_object_zn19 definition
     types:
       ty_mapping_tt type standard table of ty_mapping with key key .
     types:
-      ty_t_medpack type standard table of /neptune/medpack with non-unique default key .
-    types:
       ty_t_mime_t type standard table of /neptune/mime_t with non-unique default key .
     types:
       begin of ty_lcl_mime.
@@ -268,11 +266,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN19 IMPLEMENTATION.
     data ls_mime like line of lt_mime.
     data ls_mime_t like line of it_mime_t.
 
-    data: ls_file          type zif_abapgit_git_definitions=>ty_file,
-          lv_path          type string,
-          lv_guid          type string,
-          lv_name          type string,
-          lv_ext           type char10.
+    data: ls_file type zif_abapgit_git_definitions=>ty_file,
+          lv_guid type string.
+
 
     field-symbols: <lt_standard_table> type standard table.
 
@@ -670,17 +666,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN19 IMPLEMENTATION.
     data: lo_artifact      type ref to /neptune/if_artifact_type,
           lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
           ls_table_content like line of lt_table_content,
-          lv_key           type /neptune/artifact_key,
-          ls_file          type zif_abapgit_git_definitions=>ty_file,
-          lv_path          type string,
-          lv_guid          type string.
+          lv_key           type /neptune/artifact_key.
 
-    field-symbols: <lt_standard_table> type standard table,
-                   <ls_line>           type any,
-                   <lv_data>           type any,
-                   <lv_name>           type any,
-                   <lv_parent>         type any,
-                   <lv_guid>           type any.
+    field-symbols: <lt_standard_table> type standard table.
 
     field-symbols <lt_mime_t> type ty_t_mime_t.
 

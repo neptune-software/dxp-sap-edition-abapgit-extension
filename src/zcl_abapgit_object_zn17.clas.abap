@@ -18,7 +18,6 @@ class zcl_abapgit_object_zn17 definition
     types:
       ty_mapping_tt type standard table of ty_mapping with key key .
 
-    class-data gt_mapping type ty_mapping_tt .
     data mt_skip_paths type string_table .
 
     methods serialize_table

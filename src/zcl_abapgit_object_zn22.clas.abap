@@ -122,8 +122,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
     data lo_ajson type ref to zcl_abapgit_ajson.
     data lx_ajson type ref to zcx_abapgit_ajson_error.
 
-    data lt_table_content type ref to data.
-
     data ls_file like line of it_files.
 
     field-symbols <lt_tab> type any table.
@@ -433,14 +431,10 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
     data ls_file type zif_abapgit_git_definitions=>ty_file.
 
     data lt_appcach type standard table of /neptune/appcach with default key.
-    data ls_appcach like line of lt_appcach.
-
-    data lv_code type string.
 
     field-symbols <lt_standard_table> type standard table.
     field-symbols <ls_line> type any.
     field-symbols <lv_code> type any.
-    field-symbols <ls_appcach> like line of lt_appcach.
 
     assign is_table_content-table_content->* to <lt_standard_table>.
     check sy-subrc = 0 and <lt_standard_table> is not initial.

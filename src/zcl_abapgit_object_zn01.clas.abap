@@ -895,7 +895,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
     data ls_obj like line of it_obj.
 
-    data lv_ext type char10.
+    CONSTANTS cv_ext(4) type c value 'html'.
 
     field-symbols <lt_standard_table> type standard table.
 
@@ -920,14 +920,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
         read table it_obj into ls_obj with key applid = ls_html-applid
                                                field_id = ls_html-field_id.
         if sy-subrc = 0 or ( sy-subrc <> 0 and ls_html-field_id is initial ).
-*          case ls_obj-field_type.
-*            when 'SCRIPT'.
-*              lv_ext = 'js'.
-*            when 'TYPESCRIPT'.
-*              lv_ext = 'ts'.
-*            when 'HTML'.
-          lv_ext = 'html'.
-*          endcase.
 
           concatenate me->ms_item-obj_name
                       me->ms_item-obj_type
@@ -945,7 +937,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
           concatenate ls_lcl_script-file_name
                       ls_obj-field_name
                       ls_obj-field_id
-                      lv_ext into ls_lcl_script-file_name separated by '.'.
+                      cv_ext into ls_lcl_script-file_name separated by '.'.
 
           append ls_lcl_script to lt_lcl_script.
 
@@ -1297,7 +1289,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
     data ls_obj like line of it_obj.
 
-    data lv_ext type char10.
+    constants cv_ext(4) type c value 'html'.
 
     field-symbols <lt_standard_table> type standard table.
 
@@ -1322,14 +1314,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
         read table it_obj into ls_obj with key applid = ls_html-applid
                                                field_id = ls_html-field_id.
         if sy-subrc = 0 or ( sy-subrc <> 0 and ls_html-field_id is initial ).
-*          case ls_obj-field_type.
-*            when 'SCRIPT'.
-*              lv_ext = 'js'.
-*            when 'TYPESCRIPT'.
-*              lv_ext = 'ts'.
-*            when 'HTML'.
-          lv_ext = 'html'.
-*          endcase.
 
           concatenate me->ms_item-obj_name
                       me->ms_item-obj_type
@@ -1347,7 +1331,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
           concatenate ls_lcl_script-file_name
                       ls_obj-field_name
                       ls_obj-field_id
-                      lv_ext into ls_lcl_script-file_name separated by '.'.
+                      cv_ext into ls_lcl_script-file_name separated by '.'.
 
           append ls_lcl_script to lt_lcl_script.
 

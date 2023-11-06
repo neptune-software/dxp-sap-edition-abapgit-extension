@@ -11,7 +11,7 @@ class zcl_abapgit_object_zn00 definition
   private section.
 
     types:
-    begin of ty_metadata,
+      begin of ty_metadata,
         version        type /neptune/lib_002-version,
         patchversion   type /neptune/lib_002-patchversion,
         sapui5_version type /neptune/global-sapui5_version,
