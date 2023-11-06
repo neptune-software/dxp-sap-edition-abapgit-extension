@@ -10,7 +10,6 @@ class zcl_abapgit_market_integration definition
         !iv_parameters type /neptune/market_abapgit_repo
       exporting
         !rt_messages type /neptune/message_tt .
-    type-pools abap .
     class-methods check_repo_installed
       importing
         !iv_devclass type devclass
