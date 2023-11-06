@@ -14,23 +14,23 @@ class zcl_abapgit_object_zn03 definition
 
     types:
       begin of ty_lcl_cushead,
-                  configuration type /neptune/cushead-configuration,
-                  file_name     type string,
-                 end of ty_lcl_cushead .
+                    configuration type /neptune/cushead-configuration,
+                    file_name     type string,
+                   end of ty_lcl_cushead .
     types:
       ty_tt_lcl_cushead type standard table of ty_lcl_cushead .
     types:
       begin of ty_lcl_cuslogi,
-                  configuration type /neptune/cuslogi-configuration,
-                  file_name     type string,
-                 end of ty_lcl_cuslogi .
+                    configuration type /neptune/cuslogi-configuration,
+                    file_name     type string,
+                   end of ty_lcl_cuslogi .
     types:
       ty_tt_lcl_cuslogi type standard table of ty_lcl_cuslogi .
     types:
       begin of ty_lcl_confxml,
-                  configuration type /neptune/confxml-configuration,
-                  file_name     type string,
-                 end of ty_lcl_confxml .
+                    configuration type /neptune/confxml-configuration,
+                    file_name     type string,
+                   end of ty_lcl_confxml .
     types:
       ty_tt_lcl_confxml type standard table of ty_lcl_confxml .
 
@@ -62,7 +62,6 @@ class zcl_abapgit_object_zn03 definition
       importing
         !is_file type zif_abapgit_git_definitions=>ty_file
         !ir_data type ref to data
-        !iv_tabname type tadir-obj_name
         !iv_key type /neptune/artifact_key
       raising
         zcx_abapgit_exception .
@@ -881,7 +880,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
         when others.
           deserialize_table(
             is_file    = ls_files
-            iv_tabname = lv_tabname
             iv_key     = lv_key
             ir_data    = lr_data ).
       endcase.

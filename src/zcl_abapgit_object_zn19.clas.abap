@@ -12,9 +12,9 @@ class zcl_abapgit_object_zn19 definition
 
     types:
       begin of ty_mapping,
-                        key type tadir-obj_name,
-                        name type string,
-                       end of ty_mapping .
+                          key type tadir-obj_name,
+                          name type string,
+                         end of ty_mapping .
     types:
       ty_mapping_tt type standard table of ty_mapping with key key .
     types:
@@ -38,9 +38,7 @@ class zcl_abapgit_object_zn19 definition
     methods serialize_table
       importing
         !iv_tabname type tabname
-        !it_table type any
-      raising
-        zcx_abapgit_exception .
+        !it_table type any .
     methods set_skip_fields .
     methods get_skip_fields
       returning
