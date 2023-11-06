@@ -1,97 +1,97 @@
-class zcl_abapgit_market_integration definition
-  public
-  final
-  create public .
+CLASS zcl_abapgit_market_integration DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
 
-  public section.
-    type-pools abap .
+  PUBLIC SECTION.
+    TYPE-POOLS abap .
 
-    class-methods add_abapgit_repo
-      importing
-        !iv_parameters type /neptune/market_abapgit_repo
-      exporting
-        !rt_messages type /neptune/message_tt .
-    class-methods check_repo_installed
-      importing
-        !iv_devclass type devclass
-      exporting
-        !ev_installed type abap_bool
-        !rt_messages type /neptune/message_tt .
-    class-methods delete_abapgit_repo
-      importing
-        !iv_devclass type devclass
-      exporting
-        !rt_messages type /neptune/message_tt .
-  protected section.
-  private section.
+    CLASS-METHODS add_abapgit_repo
+      IMPORTING
+        !iv_parameters TYPE /neptune/market_abapgit_repo
+      EXPORTING
+        !rt_messages TYPE /neptune/message_tt .
+    CLASS-METHODS check_repo_installed
+      IMPORTING
+        !iv_devclass TYPE devclass
+      EXPORTING
+        !ev_installed TYPE abap_bool
+        !rt_messages TYPE /neptune/message_tt .
+    CLASS-METHODS delete_abapgit_repo
+      IMPORTING
+        !iv_devclass TYPE devclass
+      EXPORTING
+        !rt_messages TYPE /neptune/message_tt .
+  PROTECTED SECTION.
+  PRIVATE SECTION.
 ENDCLASS.
 
 
 
-CLASS ZCL_ABAPGIT_MARKET_INTEGRATION IMPLEMENTATION.
+CLASS zcl_abapgit_market_integration IMPLEMENTATION.
 
 
-  method add_abapgit_repo.
+  METHOD add_abapgit_repo.
 
-    data: ls_logon       type /neptune/market_abapgit_repo,
-          lv_user        type string,
-          lv_password    type string,
-          lv_credentials type string,
-          lv_found       type i.
+    DATA: ls_logon       TYPE /neptune/market_abapgit_repo,
+          lv_user        TYPE string,
+          lv_password    TYPE string,
+          lv_credentials TYPE string,
+          lv_found       TYPE i.
 
-    data: lo_ex           type ref to zcx_abapgit_exception,
-          lo_ex_not_found type ref to zcx_abapgit_not_found,
-          lo_repo         type ref to zif_abapgit_repo.
+    DATA: lo_ex           TYPE REF TO zcx_abapgit_exception,
+          lo_ex_not_found TYPE REF TO zcx_abapgit_not_found,
+          lo_repo         TYPE REF TO zif_abapgit_repo.
 
-    data ls_message like line of rt_messages.
+    DATA ls_message LIKE LINE OF rt_messages.
 
-    data lo_utility type ref to cl_http_utility.
+    DATA lo_utility TYPE REF TO cl_http_utility.
 
-    move-corresponding iv_parameters to ls_logon.
-    if ls_logon-folder_logic is initial.
+    MOVE-CORRESPONDING iv_parameters TO ls_logon.
+    IF ls_logon-folder_logic IS INITIAL.
       ls_logon-folder_logic = zif_abapgit_dot_abapgit=>c_folder_logic-prefix.
-    endif.
+    ENDIF.
 
-    create object lo_utility.
+    CREATE OBJECT lo_utility.
 
-    call method lo_utility->decode_base64
-      exporting
+    CALL METHOD lo_utility->decode_base64
+      EXPORTING
         encoded = ls_logon-credentials
-      receiving
+      RECEIVING
         decoded = lv_credentials.
-    if lv_credentials is not initial.
-      split lv_credentials at ':' into lv_user lv_password.
-    endif.
+    IF lv_credentials IS NOT INITIAL.
+      SPLIT lv_credentials AT ':' INTO lv_user lv_password.
+    ENDIF.
 
 * chack pagage exists
-    select count( * )
-      from tdevc
-      into lv_found
-      where devclass = ls_logon-package.
-    if lv_found = 0.
+    SELECT COUNT( * )
+      FROM tdevc
+      INTO lv_found
+      WHERE devclass = ls_logon-package. "#EC CI_SUBRC
+    IF lv_found = 0.
 
       ls_message-type = 'E'.
       ls_message-message = 'Did not find package: ' && ls_logon-package.
-      append ls_message to rt_messages.
+      APPEND ls_message TO rt_messages.
 
       " Try adding prefix $ which is often used for local packages.
       " Repository name cannot start with $ but ABAP package can.
       ls_logon-package = '$' && ls_logon-package.
-      select count( * )
-        from tdevc
-        into lv_found
-        where devclass = ls_logon-package.
+      SELECT COUNT( * )
+        FROM tdevc
+        INTO lv_found
+        WHERE devclass = ls_logon-package. "#EC CI_SUBRC
 
-      if lv_found = 0.
+      IF lv_found = 0.
         ls_message-type = 'E'.
         ls_message-message = 'Did not find local package: ' && ls_logon-package.
-        append ls_message to rt_messages.
-        return.
-      endif.
-    endif.
+        APPEND ls_message TO rt_messages.
+        RETURN.
+      ENDIF.
+    ENDIF.
 
 * Add repo to abapGit
-    try.
+    TRY.
 
         zcl_abapgit_migrations=>run( ).
 
@@ -112,98 +112,98 @@ CLASS ZCL_ABAPGIT_MARKET_INTEGRATION IMPLEMENTATION.
 
         ls_message-type = 'S'.
         ls_message-message = 'GitHub Repository added to abapGit'.
-        append ls_message to rt_messages.
+        APPEND ls_message TO rt_messages.
 
-      catch zcx_abapgit_exception into lo_ex.
+      CATCH zcx_abapgit_exception INTO lo_ex.
         ls_message-type = 'E'.
         ls_message-message = lo_ex->if_message~get_text( ).
-        append ls_message to rt_messages.
+        APPEND ls_message TO rt_messages.
 
-      catch zcx_abapgit_not_found into lo_ex_not_found.
+      CATCH zcx_abapgit_not_found INTO lo_ex_not_found.
         ls_message-type = 'E'.
         ls_message-message = lo_ex_not_found->if_message~get_text( ).
-        append ls_message to rt_messages.
+        APPEND ls_message TO rt_messages.
 
-    endtry.
+    ENDTRY.
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method check_repo_installed.
+  METHOD check_repo_installed.
 
-    data ls_message like line of rt_messages.
+    DATA ls_message LIKE LINE OF rt_messages.
 
-    data: lo_ex           type ref to zcx_abapgit_exception,
-          lo_ex_not_found type ref to zcx_abapgit_not_found,
-          lo_repo         type ref to zif_abapgit_repo.
+    DATA: lo_ex           TYPE REF TO zcx_abapgit_exception,
+          lo_ex_not_found TYPE REF TO zcx_abapgit_not_found,
+          lo_repo         TYPE REF TO zif_abapgit_repo.
 
-    clear ev_installed.
+    CLEAR ev_installed.
 
-    try.
+    TRY.
         zcl_abapgit_migrations=>run( ).
 
         zcl_abapgit_repo_srv=>get_instance( )->get_repo_from_package(
-          exporting
+          EXPORTING
             iv_package = iv_devclass
-          importing
+          IMPORTING
             ei_repo    = lo_repo ).
 
-        if lo_repo is not initial.
+        IF lo_repo IS NOT INITIAL.
           ev_installed = abap_true.
-        endif.
+        ENDIF.
 
-      catch zcx_abapgit_exception into lo_ex.
+      CATCH zcx_abapgit_exception INTO lo_ex.
         ls_message-type = 'E'.
         ls_message-message = lo_ex->if_message~get_text( ).
-        append ls_message to rt_messages.
+        APPEND ls_message TO rt_messages.
 
-      catch zcx_abapgit_not_found into lo_ex_not_found.
+      CATCH zcx_abapgit_not_found INTO lo_ex_not_found.
         ls_message-type = 'E'.
         ls_message-message = lo_ex_not_found->if_message~get_text( ).
-        append ls_message to rt_messages.
+        APPEND ls_message TO rt_messages.
 
-    endtry.
-
-
-  endmethod.
+    ENDTRY.
 
 
-  method delete_abapgit_repo.
+  ENDMETHOD.
 
-    data ls_message like line of rt_messages.
 
-    data: lo_ex           type ref to zcx_abapgit_exception,
-          lo_ex_not_found type ref to zcx_abapgit_not_found,
-          lo_repo         type ref to zif_abapgit_repo,
-          lo_repo_srv     type ref to zif_abapgit_repo_srv.
+  METHOD delete_abapgit_repo.
 
-    try.
+    DATA ls_message LIKE LINE OF rt_messages.
+
+    DATA: lo_ex           TYPE REF TO zcx_abapgit_exception,
+          lo_ex_not_found TYPE REF TO zcx_abapgit_not_found,
+          lo_repo         TYPE REF TO zif_abapgit_repo,
+          lo_repo_srv     TYPE REF TO zif_abapgit_repo_srv.
+
+    TRY.
         zcl_abapgit_migrations=>run( ).
         zcl_abapgit_repo_srv=>get_instance( )->get_repo_from_package(
-          exporting
+          EXPORTING
             iv_package = iv_devclass
-          importing
+          IMPORTING
             ei_repo    = lo_repo ).
 
-        if lo_repo is initial.
-          return.
-        endif.
+        IF lo_repo IS INITIAL.
+          RETURN.
+        ENDIF.
 
         lo_repo_srv = zcl_abapgit_repo_srv=>get_instance( ).
         lo_repo_srv->delete( lo_repo ).
 
 
-      catch zcx_abapgit_exception into lo_ex.
+      CATCH zcx_abapgit_exception INTO lo_ex.
         ls_message-type = 'E'.
         ls_message-message = lo_ex->if_message~get_text( ).
-        append ls_message to rt_messages.
+        APPEND ls_message TO rt_messages.
 
-      catch zcx_abapgit_not_found into lo_ex_not_found.
+      CATCH zcx_abapgit_not_found INTO lo_ex_not_found.
         ls_message-type = 'E'.
         ls_message-message = lo_ex_not_found->if_message~get_text( ).
-        append ls_message to rt_messages.
+        APPEND ls_message TO rt_messages.
 
-    endtry.
+    ENDTRY.
 
-  endmethod.
+  ENDMETHOD.
 ENDCLASS.
