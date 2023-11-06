@@ -320,7 +320,7 @@ CLASS zcl_abapgit_object_zn18 IMPLEMENTATION.
       CATCH zcx_abapgit_exception INTO lx_ex.
         zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
     ENDTRY.
-  
+
   ENDMETHOD.
 
 

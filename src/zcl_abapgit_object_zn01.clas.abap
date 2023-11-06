@@ -14,33 +14,33 @@ class zcl_abapgit_object_zn01 definition
 
     types:
       begin of ty_lcl_evtscr,
-                      applid    type /neptune/applid,
-                      field_id  type /neptune/field_id,
-                      event     type /neptune/event_id,
-                      file_name type string,
-                     end of ty_lcl_evtscr .
+                        applid    type /neptune/applid,
+                        field_id  type /neptune/field_id,
+                        event     type /neptune/event_id,
+                        file_name type string,
+                       end of ty_lcl_evtscr .
     types:
       ty_tt_lcl_evtscr type standard table of ty_lcl_evtscr .
     types:
       begin of ty_lcl_css,
-                      applid    type /neptune/applid,
-                      file_name type string,
-                     end of ty_lcl_css .
+                        applid    type /neptune/applid,
+                        file_name type string,
+                       end of ty_lcl_css .
     types:
       ty_tt_lcl_css type standard table of ty_lcl_css .
     types:
       begin of ty_code,
-                      file_name type string,
-                      code      type string,
-                     end of ty_code .
+                        file_name type string,
+                        code      type string,
+                       end of ty_code .
     types:
       ty_tt_code type standard table of ty_code with non-unique key file_name .
     types:
       begin of ty_lcl_script,
-                      applid    type /neptune/applid,
-                      field_id  type /neptune/field_id,
-                      file_name type string,
-                     end of ty_lcl_script .
+                        applid    type /neptune/applid,
+                        field_id  type /neptune/field_id,
+                        file_name type string,
+                       end of ty_lcl_script .
     types:
       ty_tt_lcl_script type standard table of ty_lcl_script .
 
@@ -132,7 +132,7 @@ class zcl_abapgit_object_zn01 definition
         !it_files type zif_abapgit_git_definitions=>ty_files_tt
         !ir_data type ref to data
         !iv_key type /neptune/artifact_key
-      exceptions
+      raising
         zcx_abapgit_exception .
     methods deserialize__html
       importing
@@ -140,7 +140,7 @@ class zcl_abapgit_object_zn01 definition
         !it_files type zif_abapgit_git_definitions=>ty_files_tt
         !ir_data type ref to data
         !iv_key type /neptune/artifact_key
-      exceptions
+      raising
         zcx_abapgit_exception .
     methods deserialize__evtscr
       importing
@@ -148,7 +148,7 @@ class zcl_abapgit_object_zn01 definition
         !it_files type zif_abapgit_git_definitions=>ty_files_tt
         !ir_data type ref to data
         !iv_key type /neptune/artifact_key
-      exceptions
+      raising
         zcx_abapgit_exception .
     methods deserialize_css
       importing

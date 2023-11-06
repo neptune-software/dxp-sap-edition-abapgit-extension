@@ -322,7 +322,7 @@ CLASS zcl_abapgit_object_zn19 IMPLEMENTATION.
           ls_file          TYPE zif_abapgit_git_definitions=>ty_file.
 
     DATA lx_ex TYPE REF TO zcx_abapgit_exception.
-    
+
     DATA lt_skip_paths TYPE string_table.
 
     TRY.
