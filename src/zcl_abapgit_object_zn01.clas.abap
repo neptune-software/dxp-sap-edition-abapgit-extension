@@ -10,169 +10,169 @@ class zcl_abapgit_object_zn01 definition
 
     constants gc_crlf type abap_cr_lf value cl_abap_char_utilities=>cr_lf. "#EC NOTEXT
   protected section.
-private section.
+  private section.
 
-  types:
-    begin of ty_lcl_evtscr,
-                    applid    type /neptune/applid,
-                    field_id  type /neptune/field_id,
-                    event     type /neptune/event_id,
-                    file_name type string,
-                   end of ty_lcl_evtscr .
-  types:
-    ty_tt_lcl_evtscr type standard table of ty_lcl_evtscr .
-  types:
-    begin of ty_lcl_css,
-                    applid    type /neptune/applid,
-                    file_name type string,
-                   end of ty_lcl_css .
-  types:
-    ty_tt_lcl_css type standard table of ty_lcl_css .
-  types:
-    begin of ty_code,
-                    file_name type string,
-                    code      type string,
-                   end of ty_code .
-  types:
-    ty_tt_code type standard table of ty_code with non-unique key file_name .
-  types:
-    begin of ty_lcl_script,
-                    applid    type /neptune/applid,
-                    field_id  type /neptune/field_id,
-                    file_name type string,
-                   end of ty_lcl_script .
-  types:
-    ty_tt_lcl_script type standard table of ty_lcl_script .
+    types:
+      begin of ty_lcl_evtscr,
+                        applid    type /neptune/applid,
+                        field_id  type /neptune/field_id,
+                        event     type /neptune/event_id,
+                        file_name type string,
+                       end of ty_lcl_evtscr .
+    types:
+      ty_tt_lcl_evtscr type standard table of ty_lcl_evtscr .
+    types:
+      begin of ty_lcl_css,
+                        applid    type /neptune/applid,
+                        file_name type string,
+                       end of ty_lcl_css .
+    types:
+      ty_tt_lcl_css type standard table of ty_lcl_css .
+    types:
+      begin of ty_code,
+                        file_name type string,
+                        code      type string,
+                       end of ty_code .
+    types:
+      ty_tt_code type standard table of ty_code with non-unique key file_name .
+    types:
+      begin of ty_lcl_script,
+                        applid    type /neptune/applid,
+                        field_id  type /neptune/field_id,
+                        file_name type string,
+                       end of ty_lcl_script .
+    types:
+      ty_tt_lcl_script type standard table of ty_lcl_script .
 
-  data MT_SKIP_PATHS type STRING_TABLE .
+    data mt_skip_paths type string_table .
 
-  interface /NEPTUNE/IF_ARTIFACT_TYPE load .
-  methods SERIALIZE_HTML
-    importing
-      !IT_OBJ type /NEPTUNE/OBJ_TT
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
-  methods SERIALIZE_EVTSCR
-    importing
-      !IT_OBJ type /NEPTUNE/OBJ_TT
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
-  methods SERIALIZE_SCRIPT
-    importing
-      !IT_OBJ type /NEPTUNE/OBJ_TT
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
-  methods SERIALIZE__SCRIPT
-    importing
-      !IT_OBJ type /NEPTUNE/OBJ_TT
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
-  methods SERIALIZE__HTML
-    importing
-      !IT_OBJ type /NEPTUNE/OBJ_TT
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
-  methods SERIALIZE__EVTSCR
-    importing
-      !IT_OBJ type /NEPTUNE/OBJ_TT
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
-  methods SERIALIZE_TABLE
-    importing
-      !IV_TABNAME type TABNAME
-      !IT_TABLE type ANY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods SERIALIZE_CSS
-    importing
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
-  methods SERIALIZE__CSS
-    importing
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
-  interface ZIF_ABAPGIT_GIT_DEFINITIONS load .
-  methods DESERIALIZE_TABLE
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IR_DATA type ref to DATA
-      !IV_TABNAME type TADIR-OBJ_NAME
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-      !IV_DEVCLASS type DEVCLASS
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods GET_VALUES_FROM_FILENAME
-    importing
-      !IS_FILENAME type STRING
-    exporting
-      !EV_TABNAME type TADIR-OBJ_NAME .
-  methods SET_SKIP_FIELDS .
-  methods GET_SKIP_FIELDS
-    returning
-      value(RT_SKIP_PATHS) type STRING_TABLE .
-  methods DESERIALIZE_SCRIPT
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
-      !IR_DATA type ref to DATA
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods DESERIALIZE_HTML
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
-      !IR_DATA type ref to DATA
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods DESERIALIZE_EVTSCR
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
-      !IR_DATA type ref to DATA
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods DESERIALIZE__SCRIPT
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
-      !IR_DATA type ref to DATA
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-    exceptions
-      ZCX_ABAPGIT_EXCEPTION .
-  methods DESERIALIZE__HTML
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
-      !IR_DATA type ref to DATA
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-    exceptions
-      ZCX_ABAPGIT_EXCEPTION .
-  methods DESERIALIZE__EVTSCR
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
-      !IR_DATA type ref to DATA
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-    exceptions
-      ZCX_ABAPGIT_EXCEPTION .
-  methods DESERIALIZE_CSS
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
-      !IR_DATA type ref to DATA
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods DESERIALIZE__CSS
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
-      !IR_DATA type ref to DATA
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods INSERT_TO_TRANSPORT
-    importing
-      !IO_ARTIFACT type ref to /NEPTUNE/IF_ARTIFACT_TYPE
-      !IV_TRANSPORT type TRKORR
-      !IV_PACKAGE type DEVCLASS
-      !IV_KEY1 type ANY
-      !IV_ARTIFACT_TYPE type /NEPTUNE/ATY-ARTIFACT_TYPE .
+    interface /neptune/if_artifact_type load .
+    methods serialize_html
+      importing
+        !it_obj type /neptune/obj_tt
+        !is_table_content type /neptune/if_artifact_type=>ty_table_content .
+    methods serialize_evtscr
+      importing
+        !it_obj type /neptune/obj_tt
+        !is_table_content type /neptune/if_artifact_type=>ty_table_content .
+    methods serialize_script
+      importing
+        !it_obj type /neptune/obj_tt
+        !is_table_content type /neptune/if_artifact_type=>ty_table_content .
+    methods serialize__script
+      importing
+        !it_obj type /neptune/obj_tt
+        !is_table_content type /neptune/if_artifact_type=>ty_table_content .
+    methods serialize__html
+      importing
+        !it_obj type /neptune/obj_tt
+        !is_table_content type /neptune/if_artifact_type=>ty_table_content .
+    methods serialize__evtscr
+      importing
+        !it_obj type /neptune/obj_tt
+        !is_table_content type /neptune/if_artifact_type=>ty_table_content .
+    methods serialize_table
+      importing
+        !iv_tabname type tabname
+        !it_table type any
+      raising
+        zcx_abapgit_exception .
+    methods serialize_css
+      importing
+        !is_table_content type /neptune/if_artifact_type=>ty_table_content .
+    methods serialize__css
+      importing
+        !is_table_content type /neptune/if_artifact_type=>ty_table_content .
+    interface zif_abapgit_git_definitions load .
+    methods deserialize_table
+      importing
+        !is_file type zif_abapgit_git_definitions=>ty_file
+        !ir_data type ref to data
+        !iv_tabname type tadir-obj_name
+        !iv_key type /neptune/artifact_key
+        !iv_devclass type devclass
+      raising
+        zcx_abapgit_exception .
+    methods get_values_from_filename
+      importing
+        !is_filename type string
+      exporting
+        !ev_tabname type tadir-obj_name .
+    methods set_skip_fields .
+    methods get_skip_fields
+      returning
+        value(rt_skip_paths) type string_table .
+    methods deserialize_script
+      importing
+        !is_file type zif_abapgit_git_definitions=>ty_file
+        !it_files type zif_abapgit_git_definitions=>ty_files_tt
+        !ir_data type ref to data
+        !iv_key type /neptune/artifact_key
+      raising
+        zcx_abapgit_exception .
+    methods deserialize_html
+      importing
+        !is_file type zif_abapgit_git_definitions=>ty_file
+        !it_files type zif_abapgit_git_definitions=>ty_files_tt
+        !ir_data type ref to data
+        !iv_key type /neptune/artifact_key
+      raising
+        zcx_abapgit_exception .
+    methods deserialize_evtscr
+      importing
+        !is_file type zif_abapgit_git_definitions=>ty_file
+        !it_files type zif_abapgit_git_definitions=>ty_files_tt
+        !ir_data type ref to data
+        !iv_key type /neptune/artifact_key
+      raising
+        zcx_abapgit_exception .
+    methods deserialize__script
+      importing
+        !is_file type zif_abapgit_git_definitions=>ty_file
+        !it_files type zif_abapgit_git_definitions=>ty_files_tt
+        !ir_data type ref to data
+        !iv_key type /neptune/artifact_key
+      raising
+        zcx_abapgit_exception .
+    methods deserialize__html
+      importing
+        !is_file type zif_abapgit_git_definitions=>ty_file
+        !it_files type zif_abapgit_git_definitions=>ty_files_tt
+        !ir_data type ref to data
+        !iv_key type /neptune/artifact_key
+      raising
+        zcx_abapgit_exception .
+    methods deserialize__evtscr
+      importing
+        !is_file type zif_abapgit_git_definitions=>ty_file
+        !it_files type zif_abapgit_git_definitions=>ty_files_tt
+        !ir_data type ref to data
+        !iv_key type /neptune/artifact_key
+      raising
+        zcx_abapgit_exception .
+    methods deserialize_css
+      importing
+        !is_file type zif_abapgit_git_definitions=>ty_file
+        !it_files type zif_abapgit_git_definitions=>ty_files_tt
+        !ir_data type ref to data
+        !iv_key type /neptune/artifact_key
+      raising
+        zcx_abapgit_exception .
+    methods deserialize__css
+      importing
+        !is_file type zif_abapgit_git_definitions=>ty_file
+        !it_files type zif_abapgit_git_definitions=>ty_files_tt
+        !ir_data type ref to data
+        !iv_key type /neptune/artifact_key
+      raising
+        zcx_abapgit_exception .
+    methods insert_to_transport
+      importing
+        !io_artifact type ref to /neptune/if_artifact_type
+        !iv_transport type trkorr
+        !iv_package type devclass
+        !iv_key1 type any
+        !iv_artifact_type type /neptune/aty-artifact_type .
 ENDCLASS.
 
 
@@ -288,7 +288,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
   endmethod.
 
 
-  method DESERIALIZE_HTML.
+  method deserialize_html.
 
     data lt_lcl_script type ty_tt_lcl_script.
     data ls_lcl_script like line of lt_lcl_script.
@@ -342,7 +342,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
   endmethod.
 
 
-  method DESERIALIZE_SCRIPT.
+  method deserialize_script.
 
     data lt_lcl_script type ty_tt_lcl_script.
     data ls_lcl_script like line of lt_lcl_script.
@@ -562,7 +562,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
   endmethod.
 
 
-  method DESERIALIZE__HTML.
+  method deserialize__html.
 
     data lt_lcl_script type ty_tt_lcl_script.
     data ls_lcl_script like line of lt_lcl_script.
@@ -619,7 +619,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
   endmethod.
 
 
-  method DESERIALIZE__SCRIPT.
+  method deserialize__script.
 
     data lt_lcl_script type ty_tt_lcl_script.
     data ls_lcl_script like line of lt_lcl_script.
@@ -895,7 +895,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
     data ls_obj like line of it_obj.
 
-    data lv_ext type char10.
+    constants lc_ext(4) type c value 'html'.
 
     field-symbols <lt_standard_table> type standard table.
 
@@ -919,15 +919,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
       at end of field_id.
         read table it_obj into ls_obj with key applid = ls_html-applid
                                                field_id = ls_html-field_id.
-        if sy-subrc = 0.
-          case ls_obj-field_type.
-            when 'SCRIPT'.
-              lv_ext = 'js'.
-            when 'TYPESCRIPT'.
-              lv_ext = 'ts'.
-            when 'HTML'.
-              lv_ext = 'html'.
-          endcase.
+        if sy-subrc = 0 or ( sy-subrc <> 0 and ls_html-field_id is initial ).
 
           concatenate me->ms_item-obj_name
                       me->ms_item-obj_type
@@ -937,9 +929,15 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
           translate ls_lcl_script-file_name to lower case.
 
+          if ls_obj-field_id is initial.
+* this is the " Header " section of the app
+            ls_obj-field_name = 'Header'.
+          endif.
+
           concatenate ls_lcl_script-file_name
                       ls_obj-field_name
-                      lv_ext into ls_lcl_script-file_name separated by '.'.
+                      ls_obj-field_id
+                      lc_ext into ls_lcl_script-file_name separated by '.'.
 
           append ls_lcl_script to lt_lcl_script.
 
@@ -1197,6 +1195,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
     data ls_obj like line of it_obj.
 
+    data lv_ext type char10.
+
     field-symbols <lt_standard_table> type standard table.
 
     assign is_table_content-table_content->* to <lt_standard_table>.
@@ -1228,10 +1228,17 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
           translate ls_lcl_evtscr-file_name to lower case.
 
+          case is_table_content-tabname.
+            when '/NEPTUNE/_EVTTSC'.
+              lv_ext = 'ts'.
+            when '/NEPTUNE/_EVTSCR'.
+              lv_ext = 'js'.
+          endcase.
+
           concatenate ls_lcl_evtscr-file_name
                       ls_obj-field_name
                       ls_lcl_evtscr-event
-                      'js' into ls_lcl_evtscr-file_name separated by '.'.
+                      lv_ext into ls_lcl_evtscr-file_name separated by '.'.
 
           append ls_lcl_evtscr to lt_lcl_evtscr.
 
@@ -1267,7 +1274,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
   endmethod.
 
 
-  method SERIALIZE__HTML.
+  method serialize__html.
 
     data ls_file type zif_abapgit_git_definitions=>ty_file.
 
@@ -1282,7 +1289,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
     data ls_obj like line of it_obj.
 
-    data lv_ext type char10.
+    constants lc_ext(4) type c value 'html'.
 
     field-symbols <lt_standard_table> type standard table.
 
@@ -1306,15 +1313,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
       at end of field_id.
         read table it_obj into ls_obj with key applid = ls_html-applid
                                                field_id = ls_html-field_id.
-        if sy-subrc = 0.
-          case ls_obj-field_type.
-            when 'SCRIPT'.
-              lv_ext = 'js'.
-            when 'TYPESCRIPT'.
-              lv_ext = 'ts'.
-            when 'HTML'.
-              lv_ext = 'html'.
-          endcase.
+        if sy-subrc = 0 or ( sy-subrc <> 0 and ls_html-field_id is initial ).
 
           concatenate me->ms_item-obj_name
                       me->ms_item-obj_type
@@ -1324,9 +1323,15 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
           translate ls_lcl_script-file_name to lower case.
 
+          if ls_obj-field_id is initial.
+* this is the " Header " section of the app
+            ls_obj-field_name = 'Header'.
+          endif.
+
           concatenate ls_lcl_script-file_name
                       ls_obj-field_name
-                      lv_ext into ls_lcl_script-file_name separated by '.'.
+                      ls_obj-field_id
+                      lc_ext into ls_lcl_script-file_name separated by '.'.
 
           append ls_lcl_script to lt_lcl_script.
 
@@ -1401,14 +1406,23 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
         read table it_obj into ls_obj with key applid = ls_script-applid
                                                field_id = ls_script-field_id.
         if sy-subrc = 0.
-          case ls_obj-field_type.
-            when 'SCRIPT'.
-              lv_ext = 'js'.
-            when 'TYPESCRIPT'.
+          case is_table_content-tabname.
+            when '/NEPTUNE/_TSCRIP'.
               lv_ext = 'ts'.
-            when 'HTML'.
-              lv_ext = 'html'.
+            when others.
+              case ls_obj-field_type.
+                when 'SCRIPT'.
+                  lv_ext = 'js'.
+                when 'TYPESCRIPT'.
+                  " this is a different table
+                  " so this would be the transpiled verison of the typescript (js)
+                  lv_ext = 'js'.
+                when 'HTML'.
+                  lv_ext = 'html'.
+              endcase.
           endcase.
+
+
 
           concatenate me->ms_item-obj_name
                       me->ms_item-obj_type
@@ -1475,7 +1489,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
     append lv_skip to mt_skip_paths.
     lv_skip = '*UPDNAM'.
     append lv_skip to mt_skip_paths.
-    lv_skip = 'TR_ORDER'.
+    lv_skip = '*TR_ORDER'.
     append lv_skip to mt_skip_paths.
 
 
@@ -1806,7 +1820,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
             it_obj           = lt_obj
             is_table_content = ls_table_content ).
 
-        when '/NEPTUNE/_EVTSCR'.
+        when '/NEPTUNE/_EVTSCR' or '/NEPTUNE/_EVTTSC'.
 
           serialize__evtscr(
             it_obj           = lt_obj
@@ -1818,7 +1832,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
             it_obj           = lt_obj
             is_table_content = ls_table_content ).
 
-        when '/NEPTUNE/_SCRIPT'.
+        when '/NEPTUNE/_SCRIPT' or '/NEPTUNE/_TSCRIP'.
 
           serialize__script(
             it_obj           = lt_obj

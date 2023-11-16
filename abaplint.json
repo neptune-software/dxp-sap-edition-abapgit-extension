@@ -151,17 +151,6 @@
     "preferred_compare_operator": false,
     "check_comments": true,
     "check_subrc": true,
-    "keyword_case": {
-      "exclude": [],
-      "severity": "Error",
-      "style": "lower",
-      "ignoreExceptions": true,
-      "ignoreLowerClassImplmentationStatement": true,
-      "ignoreGlobalClassDefinition": true,
-      "ignoreGlobalInterface": true,
-      "ignoreFunctionModuleName": false,
-      "ignoreGlobalClassBoundaries": true,
-      "ignoreKeywords": []
-    }
+    "keyword_case": false
   }
 }

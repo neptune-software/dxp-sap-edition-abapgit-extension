@@ -14,23 +14,23 @@ class zcl_abapgit_object_zn03 definition
 
     types:
       begin of ty_lcl_cushead,
-                  configuration type /neptune/cushead-configuration,
-                  file_name     type string,
-                 end of ty_lcl_cushead .
+                    configuration type /neptune/cushead-configuration,
+                    file_name     type string,
+                   end of ty_lcl_cushead .
     types:
       ty_tt_lcl_cushead type standard table of ty_lcl_cushead .
     types:
       begin of ty_lcl_cuslogi,
-                  configuration type /neptune/cuslogi-configuration,
-                  file_name     type string,
-                 end of ty_lcl_cuslogi .
+                    configuration type /neptune/cuslogi-configuration,
+                    file_name     type string,
+                   end of ty_lcl_cuslogi .
     types:
       ty_tt_lcl_cuslogi type standard table of ty_lcl_cuslogi .
     types:
       begin of ty_lcl_confxml,
-                  configuration type /neptune/confxml-configuration,
-                  file_name     type string,
-                 end of ty_lcl_confxml .
+                    configuration type /neptune/confxml-configuration,
+                    file_name     type string,
+                   end of ty_lcl_confxml .
     types:
       ty_tt_lcl_confxml type standard table of ty_lcl_confxml .
 
@@ -62,7 +62,6 @@ class zcl_abapgit_object_zn03 definition
       importing
         !is_file type zif_abapgit_git_definitions=>ty_file
         !ir_data type ref to data
-        !iv_tabname type tadir-obj_name
         !iv_key type /neptune/artifact_key
       raising
         zcx_abapgit_exception .
@@ -121,8 +120,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
 
     data lo_ajson type ref to zcl_abapgit_ajson.
     data lx_ajson type ref to zcx_abapgit_ajson_error.
-
-    data lt_table_content type ref to data.
 
     data ls_file like line of it_files.
 
@@ -433,14 +430,10 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
     data ls_file type zif_abapgit_git_definitions=>ty_file.
 
     data lt_appcach type standard table of /neptune/appcach with default key.
-    data ls_appcach like line of lt_appcach.
-
-    data lv_code type string.
 
     field-symbols <lt_standard_table> type standard table.
     field-symbols <ls_line> type any.
     field-symbols <lv_code> type any.
-    field-symbols <ls_appcach> like line of lt_appcach.
 
     assign is_table_content-table_content->* to <lt_standard_table>.
     check sy-subrc = 0 and <lt_standard_table> is not initial.
@@ -886,10 +879,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
 
         when others.
           deserialize_table(
-            is_file    = ls_files
-            iv_tabname = lv_tabname
-            iv_key     = lv_key
-            ir_data    = lr_data ).
+            is_file = ls_files
+            iv_key  = lv_key
+            ir_data = lr_data ).
       endcase.
 
 
