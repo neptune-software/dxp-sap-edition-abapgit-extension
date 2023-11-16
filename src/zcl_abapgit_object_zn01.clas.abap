@@ -1406,14 +1406,23 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
         read table it_obj into ls_obj with key applid = ls_script-applid
                                                field_id = ls_script-field_id.
         if sy-subrc = 0.
-          case ls_obj-field_type.
-            when 'SCRIPT'.
-              lv_ext = 'js'.
-            when 'TYPESCRIPT'.
+          case is_table_content-tabname.
+            when '/NEPTUNE/_TSCRIP'.
               lv_ext = 'ts'.
-            when 'HTML'.
-              lv_ext = 'html'.
+            when others.
+              case ls_obj-field_type.
+                when 'SCRIPT'.
+                  lv_ext = 'js'.
+                when 'TYPESCRIPT'.
+                  " this is a different table
+                  " so this would be the transpiled verison of the typescript (js)
+                  lv_ext = 'js'.
+                when 'HTML'.
+                  lv_ext = 'html'.
+              endcase.
           endcase.
+
+
 
           concatenate me->ms_item-obj_name
                       me->ms_item-obj_type
