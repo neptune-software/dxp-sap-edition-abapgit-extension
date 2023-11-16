@@ -423,71 +423,12 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN10 IMPLEMENTATION.
 
 
   method zif_abapgit_object~map_filename_to_object.
-
-    data lt_parts type standard table of string with default key.
-    data: lv_artifact_name type string,
-          lv_key type string,
-          lv_filename type string.
-    data ls_mapping like line of gt_mapping.
-
-    split iv_filename at mc_name_separator into lv_artifact_name lv_filename.
-    split lv_filename at '.' into table lt_parts.
-    read table lt_parts into lv_key index 1.
-    check sy-subrc = 0.
-
-    if lv_artifact_name is not initial.
-      translate lv_key to upper case.
-      cs_item-obj_name = lv_key.
-
-      read table gt_mapping transporting no fields with key key = lv_key.
-      check sy-subrc <> 0.
-
-      ls_mapping-key = lv_key.
-      ls_mapping-name = lv_artifact_name.
-      append ls_mapping to gt_mapping.
-
-    endif.
-
+    return.
   endmethod.
 
 
   method zif_abapgit_object~map_object_to_filename.
-
-    data ls_mapping like line of gt_mapping.
-    data ls_tadir type /neptune/if_artifact_type=>ty_lcl_tadir.
-    data lv_key type /neptune/artifact_key.
-
-    check is_item-devclass is not initial.
-
-    lv_key = is_item-obj_name.
-
-    try.
-        " Ongoing from DXP 23 fetch wie tadir framework (all artifacts can be assigned to a devclass)
-        call method ('/NEPTUNE/CL_TADIR')=>('GET_ARTIFACT_ENTRY')
-*          call method  /neptune/cl_tadir=>get_artifact_entry
-          exporting
-            iv_key           = lv_key
-            iv_devclass      = is_item-devclass
-            iv_artifact_type = /neptune/if_artifact_type=>gc_artifact_type-login_screen
-          receiving
-            rs_tadir    = ls_tadir          ##called.
-
-      catch cx_sy_dyn_call_illegal_class
-            cx_sy_dyn_call_illegal_method.
-
-        return.
-
-    endtry.
-
-    if ls_tadir is not initial.
-      concatenate ls_tadir-artifact_name cv_filename into cv_filename separated by mc_name_separator.
-    else.
-      read table gt_mapping into ls_mapping with key key = is_item-obj_name.
-      if sy-subrc = 0.
-        concatenate ls_mapping-name cv_filename into cv_filename separated by mc_name_separator.
-      endif.
-    endif.
-
+    return.
   endmethod.
 
 

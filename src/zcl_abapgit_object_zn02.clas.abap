@@ -256,6 +256,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
 
     lv_key = me->ms_item-obj_name.
+    translate lv_key to lower case.
 
     lo_artifact->get_table_content(
       exporting iv_key1          = lv_key
@@ -286,6 +287,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
     ls_settings = lo_artifact->get_settings( ).
 
     lv_key1 = ms_item-obj_name.
+    translate lv_key1 to lower case.
 
     lo_artifact->delete_artifact(
       iv_key1     = lv_key1
@@ -425,9 +427,13 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
   method zif_abapgit_object~is_locked.
 
     data lo_artifact type ref to /neptune/if_artifact_type.
+    data lv_key type /neptune/artifact_key.
+
+    lv_key = ms_item-obj_name.
+    translate lv_key to lower case.
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
-    rv_is_locked = lo_artifact->check_artifact_is_locked( iv_key = ms_item-obj_name ).
+    rv_is_locked = lo_artifact->check_artifact_is_locked( iv_key = lv_key ).
 
   endmethod.
 
@@ -475,6 +481,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
     check is_item-devclass is not initial.
 
     lv_key = is_item-obj_name.
+    translate lv_key to lower case.
 
     try.
         " Ongoing from DXP 23 fetch wie tadir framework (all artifacts can be assigned to a devclass)
@@ -517,14 +524,16 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
 
+    lv_key = ms_item-obj_name.
+
+    translate lv_key to lower case.
+
     try.
         io_xml->add(
           iv_name = 'key'
-          ig_data = ms_item-obj_name ).
+          ig_data = lv_key ).
       catch zcx_abapgit_exception.
     endtry.
-
-    lv_key = ms_item-obj_name.
 
     lo_artifact->get_table_content(
       exporting iv_key1          = lv_key

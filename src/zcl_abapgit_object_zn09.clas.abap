@@ -14,17 +14,17 @@ class zcl_abapgit_object_zn09 definition
 
     types:
       begin of ty_mapping,
-                  key type tadir-obj_name,
-                  name type string,
-                 end of ty_mapping .
+                    key type tadir-obj_name,
+                    name type string,
+                   end of ty_mapping .
     types:
       ty_mapping_tt type standard table of ty_mapping with key key .
     types:
       begin of ty_lcl_enhtext,
-              enhancement type /neptune/enhancement,
-              spot        type /neptune/enhancement_spot,
-              file_name   type string,
-             end of ty_lcl_enhtext .
+                enhancement type /neptune/enhancement,
+                spot        type /neptune/enhancement_spot,
+                file_name   type string,
+               end of ty_lcl_enhtext .
     types:
       ty_tt_lcl_enhtext type standard table of ty_lcl_enhtext .
 
@@ -53,7 +53,6 @@ class zcl_abapgit_object_zn09 definition
         zcx_abapgit_exception .
     methods serialize_enhtext
       importing
-        !iv_name type /neptune/enhance-descr
         !is_table_content type /neptune/if_artifact_type=>ty_table_content .
     methods get_values_from_filename
       importing
@@ -277,7 +276,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
                     'js' into ls_lcl_enhtext-file_name separated by '.'.
 
         replace all occurrences of '/' in ls_lcl_enhtext-file_name with '#'.
-        concatenate iv_name ls_lcl_enhtext-file_name into ls_lcl_enhtext-file_name separated by mc_name_separator.
         translate ls_lcl_enhtext-file_name to lower case.
         append ls_lcl_enhtext to lt_lcl_enhtext.
 
@@ -587,71 +585,12 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
 
 
   method zif_abapgit_object~map_filename_to_object.
-
-    data lt_parts type standard table of string with default key.
-    data: lv_artifact_name type string,
-          lv_key type string,
-          lv_filename type string.
-    data ls_mapping like line of gt_mapping.
-
-    split iv_filename at mc_name_separator into lv_artifact_name lv_filename.
-    split lv_filename at '.' into table lt_parts.
-    read table lt_parts into lv_key index 1.
-    check sy-subrc = 0.
-
-    if lv_artifact_name is not initial.
-      translate lv_key to upper case.
-      cs_item-obj_name = lv_key.
-
-      read table gt_mapping transporting no fields with key key = lv_key.
-      check sy-subrc <> 0.
-
-      ls_mapping-key = lv_key.
-      ls_mapping-name = lv_artifact_name.
-      append ls_mapping to gt_mapping.
-
-    endif.
-
+    return.
   endmethod.
 
 
   method zif_abapgit_object~map_object_to_filename.
-
-    data ls_mapping like line of gt_mapping.
-    data ls_tadir type /neptune/if_artifact_type=>ty_lcl_tadir.
-    data lv_key type /neptune/artifact_key.
-
-    check is_item-devclass is not initial.
-
-    lv_key = is_item-obj_name.
-
-    try.
-        " Ongoing from DXP 23 fetch wie tadir framework (all artifacts can be assigned to a devclass)
-        call method ('/NEPTUNE/CL_TADIR')=>('GET_ARTIFACT_ENTRY')
-*          call method  /neptune/cl_tadir=>get_artifact_entry
-          exporting
-            iv_key           = lv_key
-            iv_devclass      = is_item-devclass
-            iv_artifact_type = /neptune/if_artifact_type=>gc_artifact_type-enhancement
-          receiving
-            rs_tadir    = ls_tadir          ##called.
-
-      catch cx_sy_dyn_call_illegal_class
-            cx_sy_dyn_call_illegal_method.
-
-        return.
-
-    endtry.
-
-    if ls_tadir is not initial.
-      concatenate ls_tadir-artifact_name cv_filename into cv_filename separated by mc_name_separator.
-    else.
-      read table gt_mapping into ls_mapping with key key = is_item-obj_name.
-      if sy-subrc = 0.
-        concatenate ls_mapping-name cv_filename into cv_filename separated by mc_name_separator.
-      endif.
-    endif.
-
+    return.
   endmethod.
 
 
@@ -663,8 +602,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
           lv_key           type /neptune/artifact_key.
 
     field-symbols: <lt_standard_table> type standard table,
-                   <ls_line>           type any,
-                   <lv_field_value>    type any.
+                   <ls_line>           type any.
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
 
@@ -684,26 +622,13 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
 * set fields that will be skipped in the serialization process
     set_skip_fields( ).
 
-    read table lt_table_content into ls_table_content with key tabname = '/NEPTUNE/ENHANCE'.
-    if sy-subrc = 0.
-      assign ls_table_content-table_content->* to <lt_standard_table>.
-      check sy-subrc = 0 and <lt_standard_table> is not initial.
-      read table <lt_standard_table> assigning <ls_line> index 1.
-      check sy-subrc = 0.
-      assign component 'DESCR' of structure <ls_line> to <lv_field_value> casting type /neptune/enhance-descr.
-      check sy-subrc = 0 and <lv_field_value> is not initial.
-    endif.
-
-
 * serialize
     loop at lt_table_content into ls_table_content.
 
       case ls_table_content-tabname.
         when '/NEPTUNE/ENHTEXT'.
 
-          serialize_enhtext(
-            iv_name          = <lv_field_value>
-            is_table_content = ls_table_content ).
+          serialize_enhtext( is_table_content = ls_table_content ).
 
         when others.
 
