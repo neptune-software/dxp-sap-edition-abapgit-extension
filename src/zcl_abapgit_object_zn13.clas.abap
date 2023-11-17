@@ -338,7 +338,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN13 IMPLEMENTATION.
           is_filename = ls_files-filename
         importing
           ev_tabname  = lv_tabname
-          ev_name	    = lv_name ).
+          ev_name     = lv_name ).
 
       create data lr_data type standard table of (lv_tabname) with non-unique default key.
 
@@ -453,7 +453,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN13 IMPLEMENTATION.
 
     if lv_artifact_name is not initial.
       translate lv_key to upper case.
-*      replace mc_colorset_lower in lv_key with mc_colorset_cammel.
       cs_item-obj_name = lv_key.
 
       read table gt_mapping transporting no fields with key key = lv_key.
