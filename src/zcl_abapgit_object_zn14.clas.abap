@@ -309,6 +309,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN14 IMPLEMENTATION.
     data lr_data    type ref to data.
     data lv_tabname type tadir-obj_name.
     data lv_key     type /neptune/artifact_key.
+    data lv_name    type /neptune/artifact_name.
 
     data lo_artifact type ref to /neptune/if_artifact_type.
     data ls_settings type /neptune/aty.
@@ -330,7 +331,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN14 IMPLEMENTATION.
         exporting
           is_filename = ls_files-filename
         importing
-          ev_tabname  = lv_tabname ).
+          ev_tabname  = lv_tabname
+          ev_name     = lv_name ).
 
       create data lr_data type standard table of (lv_tabname) with non-unique default key.
 
@@ -360,8 +362,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN14 IMPLEMENTATION.
         it_insert_table_content = lt_table_content ).
 
       lo_artifact->update_tadir_entry(
-          iv_key1     = lv_key
-          iv_devclass = ms_item-devclass ).
+          iv_key1          = lv_key
+          iv_devclass      = ms_item-devclass
+          iv_artifact_name = lv_name ).
 
       if ls_settings-transportable is not initial and iv_transport is not initial.
 
