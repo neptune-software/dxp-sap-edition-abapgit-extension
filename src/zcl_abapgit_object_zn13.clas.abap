@@ -525,7 +525,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN13 IMPLEMENTATION.
 
     translate lv_key to lower case.
 
-    replace mc_colorset_lower in lv_key with mc_colorset_cammel.
+*    replace mc_colorset_lower in lv_key with mc_colorset_cammel.
 
     try.
         io_xml->add(
@@ -533,6 +533,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN13 IMPLEMENTATION.
           ig_data = lv_key ).
       catch zcx_abapgit_exception.
     endtry.
+
+    replace mc_colorset_lower in lv_key with mc_colorset_cammel.
 
     lo_artifact->get_table_content(
       exporting iv_key1          = lv_key
