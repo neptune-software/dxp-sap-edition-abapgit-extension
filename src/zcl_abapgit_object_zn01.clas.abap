@@ -1635,7 +1635,7 @@ data lt_code_lines type string_table.
             ir_data  = lr_data
             iv_key   = lv_key ).
 
-        when '/NEPTUNE/_SCRIPT'.
+        when '/NEPTUNE/_SCRIPT' or '/NEPTUNE/_TSCRIP'.
 
           deserialize__script(
             is_file  = ls_files
