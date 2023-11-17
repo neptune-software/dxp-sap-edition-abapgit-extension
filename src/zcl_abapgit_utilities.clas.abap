@@ -43,7 +43,7 @@ method code_lines_to_string.
 
   concatenate lines of it_code_lines into rv_string separated by gc_eol.
 * when editing files via eg. GitHub web interface it adds a newline at end of file
-  rv_string = rv_string && cl_abap_char_utilities=>newline.
+*  rv_string = rv_string && cl_abap_char_utilities=>newline.
 
 endmethod.
 
