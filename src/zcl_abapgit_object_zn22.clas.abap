@@ -146,12 +146,13 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
       endif.
 
       assign component 'GLOBAL_STYLE' of structure <ls_line> to <lv_code>.
-      check <lv_code> is assigned and <lv_code> is not initial.
+      if <lv_code> is assigned and <lv_code> is not initial.
 
-      read table it_files into ls_file with key filename = <lv_code>.
-      if sy-subrc = 0.
-        <lv_code> = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
-        zcl_neptune_abapgit_utilities=>fix_string_deserialize( changing cv_string = <lv_code> ).
+        read table it_files into ls_file with key filename = <lv_code>.
+        if sy-subrc = 0.
+          <lv_code> = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
+          zcl_neptune_abapgit_utilities=>fix_string_deserialize( changing cv_string = <lv_code> ).
+        endif.
       endif.
     endloop.
   endmethod.
@@ -445,30 +446,30 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
     loop at <lt_standard_table> assigning <ls_line>.
 
       assign component 'GLOBAL_STYLE' of structure <ls_line> to <lv_code>.
-      check <lv_code> is assigned and <lv_code> is not initial.
+      if <lv_code> is assigned and <lv_code> is not initial.
 
-      concatenate me->ms_item-obj_name
-                  me->ms_item-obj_type
-                  is_table_content-tabname into ls_file-filename separated by '.'.
+        concatenate me->ms_item-obj_name
+                    me->ms_item-obj_type
+                    is_table_content-tabname into ls_file-filename separated by '.'.
 
-      replace all occurrences of '/' in ls_file-filename with '#'.
+        replace all occurrences of '/' in ls_file-filename with '#'.
 
-      concatenate ls_file-filename
-                  'css' into ls_file-filename separated by '.'.
+        concatenate ls_file-filename
+                    'css' into ls_file-filename separated by '.'.
 
-      translate ls_file-filename to lower case.
+        translate ls_file-filename to lower case.
 
-      try.
-          ls_file-path = '/'.
+        try.
+            ls_file-path = '/'.
 
-          zcl_neptune_abapgit_utilities=>fix_string_serialize( changing cv_string = <lv_code> ).
-          ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( <lv_code> ).
-          zif_abapgit_object~mo_files->add( ls_file ).
-        catch zcx_abapgit_exception.
-      endtry.
+            zcl_neptune_abapgit_utilities=>fix_string_serialize( changing cv_string = <lv_code> ).
+            ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( <lv_code> ).
+            zif_abapgit_object~mo_files->add( ls_file ).
+          catch zcx_abapgit_exception.
+        endtry.
 
-      <lv_code> = ls_file-filename.
-
+        <lv_code> = ls_file-filename.
+      endif.
     endloop.
 
     try.

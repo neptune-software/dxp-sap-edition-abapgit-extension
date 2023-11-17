@@ -83,17 +83,20 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN11 IMPLEMENTATION.
 
     if iv_tabname = '/NEPTUNE/CUSBANN' ##NO_TEXT.
       read table <lt_standard_table> assigning <ls_line> index 1.
-      check sy-subrc = 0.
+      if sy-subrc = 0.
 
-      assign component 'CONTENT' of structure <ls_line> to <lv_field> ##NO_TEXT.
-      check sy-subrc = 0 and <lv_field> is not initial.
+        assign component 'CONTENT' of structure <ls_line> to <lv_field> ##NO_TEXT.
+        if sy-subrc = 0 and <lv_field> is not initial.
 
-      read table it_files into ls_file with key filename = <lv_field>.
-      check sy-subrc = 0.
+          read table it_files into ls_file with key filename = <lv_field>.
+          if sy-subrc = 0.
 
-      <lv_field> = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
-      zcl_neptune_abapgit_utilities=>fix_string_deserialize( changing cv_string = <lv_field> ).
+            <lv_field> = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
+            zcl_neptune_abapgit_utilities=>fix_string_deserialize( changing cv_string = <lv_field> ).
 
+          endif.
+        endif.
+      endif.
     endif.
 
 
