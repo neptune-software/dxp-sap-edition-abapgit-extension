@@ -92,16 +92,19 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN07 IMPLEMENTATION.
 
     if iv_tabname = '/NEPTUNE/CUSLAY' ##NO_TEXT.
       read table <lt_standard_table> assigning <ls_line> index 1.
-      check sy-subrc = 0.
+      if sy-subrc = 0.
 
-      assign component 'CUSTOM_CSS' of structure <ls_line> to <lv_field> ##NO_TEXT.
-      check sy-subrc = 0 and <lv_field> is not initial.
+        assign component 'CUSTOM_CSS' of structure <ls_line> to <lv_field> ##NO_TEXT.
+        if sy-subrc = 0 and <lv_field> is not initial.
 
-      read table it_files into ls_file with key filename = <lv_field>.
-      check sy-subrc = 0.
+          read table it_files into ls_file with key filename = <lv_field>.
+          if sy-subrc = 0.
 
-      <lv_field> = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
+            <lv_field> = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
+          endif.
+        endif.
+      endif.
     endif.
 
 
@@ -560,23 +563,24 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN07 IMPLEMENTATION.
           if sy-subrc = 0 and <lv_field_value> is not initial.
 
             assign component 'NAME' of structure <ls_line> to <lv_name> casting type /neptune/cuslay-name.
-            check sy-subrc = 0.
+            if sy-subrc = 0.
 
-            concatenate ms_item-obj_name
-                        ms_item-obj_type
-                        ls_table_content-tabname
-                        'css' into ls_file-filename separated by '.'.
+              concatenate ms_item-obj_name
+                          ms_item-obj_type
+                          ls_table_content-tabname
+                          'css' into ls_file-filename separated by '.'.
 
-            replace all occurrences of '/' in ls_file-filename with '#'.
-            concatenate <lv_name> ls_file-filename into ls_file-filename separated by mc_name_separator.
-            translate ls_file-filename to lower case.
+              replace all occurrences of '/' in ls_file-filename with '#'.
+              concatenate <lv_name> ls_file-filename into ls_file-filename separated by mc_name_separator.
+              translate ls_file-filename to lower case.
 
-            ls_file-path = '/'.
-            ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( <lv_field_value> ).
+              ls_file-path = '/'.
+              ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( <lv_field_value> ).
 
-            zif_abapgit_object~mo_files->add( ls_file ).
+              zif_abapgit_object~mo_files->add( ls_file ).
 
-            <lv_field_value> = ls_file-filename.
+              <lv_field_value> = ls_file-filename.
+            endif.
           endif.
         endif.
       endif.

@@ -10,17 +10,8 @@ class zcl_abapgit_object_zn11 definition
   protected section.
   private section.
 
-    types:
-      begin of ty_mapping,
-                  key type tadir-obj_name,
-                  name type string,
-                 end of ty_mapping .
-    types:
-      ty_mapping_tt type standard table of ty_mapping with key key .
-
     constants:
       mc_name_separator(1) type c value '@'.                "#EC NOTEXT
-    class-data gt_mapping type ty_mapping_tt .
     data mt_skip_paths type string_table .
 
     methods serialize_table
@@ -92,16 +83,20 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN11 IMPLEMENTATION.
 
     if iv_tabname = '/NEPTUNE/CUSBANN' ##NO_TEXT.
       read table <lt_standard_table> assigning <ls_line> index 1.
-      check sy-subrc = 0.
+      if sy-subrc = 0.
 
-      assign component 'CONTENT' of structure <ls_line> to <lv_field> ##NO_TEXT.
-      check sy-subrc = 0 and <lv_field> is not initial.
+        assign component 'CONTENT' of structure <ls_line> to <lv_field> ##NO_TEXT.
+        if sy-subrc = 0 and <lv_field> is not initial.
 
-      read table it_files into ls_file with key filename = <lv_field>.
-      check sy-subrc = 0.
+          read table it_files into ls_file with key filename = <lv_field>.
+          if sy-subrc = 0.
 
-      <lv_field> = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
+            <lv_field> = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
+            zcl_neptune_abapgit_utilities=>fix_string_deserialize( changing cv_string = <lv_field> ).
 
+          endif.
+        endif.
+      endif.
     endif.
 
 
@@ -445,71 +440,12 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN11 IMPLEMENTATION.
 
 
   method zif_abapgit_object~map_filename_to_object.
-
-    data lt_parts type standard table of string with default key.
-    data: lv_artifact_name type string,
-          lv_key type string,
-          lv_filename type string.
-    data ls_mapping like line of gt_mapping.
-
-    split iv_filename at mc_name_separator into lv_artifact_name lv_filename.
-    split lv_filename at '.' into table lt_parts.
-    read table lt_parts into lv_key index 1.
-    check sy-subrc = 0.
-
-    if lv_artifact_name is not initial.
-      translate lv_key to upper case.
-      cs_item-obj_name = lv_key.
-
-      read table gt_mapping transporting no fields with key key = lv_key.
-      check sy-subrc <> 0.
-
-      ls_mapping-key = lv_key.
-      ls_mapping-name = lv_artifact_name.
-      append ls_mapping to gt_mapping.
-
-    endif.
-
+    return.
   endmethod.
 
 
   method zif_abapgit_object~map_object_to_filename.
-
-    data ls_mapping like line of gt_mapping.
-    data ls_tadir type /neptune/if_artifact_type=>ty_lcl_tadir.
-    data lv_key type /neptune/artifact_key.
-
-    check is_item-devclass is not initial.
-
-    lv_key = is_item-obj_name.
-
-    try.
-        " Ongoing from DXP 23 fetch wie tadir framework (all artifacts can be assigned to a devclass)
-        call method ('/NEPTUNE/CL_TADIR')=>('GET_ARTIFACT_ENTRY')
-*          call method  /neptune/cl_tadir=>get_artifact_entry
-          exporting
-            iv_key           = lv_key
-            iv_devclass      = is_item-devclass
-            iv_artifact_type = /neptune/if_artifact_type=>gc_artifact_type-banner
-          receiving
-            rs_tadir    = ls_tadir          ##called.
-
-      catch cx_sy_dyn_call_illegal_class
-            cx_sy_dyn_call_illegal_method.
-
-        return.
-
-    endtry.
-
-    if ls_tadir is not initial.
-      concatenate ls_tadir-artifact_name cv_filename into cv_filename separated by mc_name_separator.
-    else.
-      read table gt_mapping into ls_mapping with key key = is_item-obj_name.
-      if sy-subrc = 0.
-        concatenate ls_mapping-name cv_filename into cv_filename separated by mc_name_separator.
-      endif.
-    endif.
-
+    return.
   endmethod.
 
 
@@ -523,8 +459,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN11 IMPLEMENTATION.
 
     field-symbols: <lt_standard_table> type standard table,
                    <ls_line>           type any,
-                   <lv_field_value>    type any,
-                   <lv_name>           type any.
+                   <lv_field_value>    type any.
 
 **********************************************************************
 
@@ -559,19 +494,17 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN11 IMPLEMENTATION.
           assign component 'CONTENT' of structure <ls_line> to <lv_field_value>.
           if sy-subrc = 0 and <lv_field_value> is not initial.
 
-            assign component 'NAME' of structure <ls_line> to <lv_name> casting type /neptune/cusbann-name.
-            check sy-subrc = 0.
-
             concatenate ms_item-obj_name
                         ms_item-obj_type
                         ls_table_content-tabname
                         'html' into ls_file-filename separated by '.'.
 
             replace all occurrences of '/' in ls_file-filename with '#'.
-            concatenate <lv_name> ls_file-filename into ls_file-filename separated by mc_name_separator.
             translate ls_file-filename to lower case.
 
             ls_file-path = '/'.
+
+            zcl_neptune_abapgit_utilities=>fix_string_serialize( changing cv_string = <lv_field_value> ).
             ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( <lv_field_value> ).
 
             zif_abapgit_object~mo_files->add( ls_file ).

@@ -91,12 +91,14 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN16 IMPLEMENTATION.
 
       if iv_tabname = '/NEPTUNE/DOC_H' ##NO_TEXT.
         assign component 'DOC_TEXT' of structure <ls_line> to <lv_field> ##NO_TEXT.
-        check sy-subrc = 0 and <lv_field> is not initial.
+        if sy-subrc = 0 and <lv_field> is not initial.
 
-        read table it_files into ls_file with key filename = <lv_field>.
-        check sy-subrc = 0.
+          read table it_files into ls_file with key filename = <lv_field>.
+          if sy-subrc = 0.
 
-        <lv_field> = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
+            <lv_field> = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
+          endif.
+        endif.
       endif.
     endloop.
 

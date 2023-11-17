@@ -7,8 +7,6 @@ class zcl_abapgit_object_zn01 definition
   public section.
 
     interfaces zif_abapgit_object .
-
-    constants gc_crlf type abap_cr_lf value cl_abap_char_utilities=>cr_lf. "#EC NOTEXT
   protected section.
   private section.
 
@@ -217,7 +215,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
-        split lv_code at gc_crlf into table lt_code.
+        lt_code = zcl_neptune_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
         loop at lt_code into lv_code.
           ls_css-applid = iv_key.
           ls_css-seqnr  = sy-tabix.
@@ -271,7 +269,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
-        split lv_code at gc_crlf into table lt_code.
+        lt_code = zcl_neptune_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
         loop at lt_code into lv_code.
           ls_evtscr-applid = iv_key.
           ls_evtscr-seqnr  = sy-tabix.
@@ -325,7 +323,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
-        split lv_code at gc_crlf into table lt_code.
+        lt_code = zcl_neptune_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
         loop at lt_code into lv_code.
           ls_html-applid = iv_key.
           ls_html-seqnr  = sy-tabix.
@@ -379,7 +377,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
-        split lv_code at gc_crlf into table lt_code.
+        lt_code = zcl_neptune_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
         loop at lt_code into lv_code.
           ls_script-applid = iv_key.
           ls_script-seqnr  = sy-tabix.
@@ -487,7 +485,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
-        split lv_code at gc_crlf into table lt_code.
+        lt_code = zcl_neptune_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
         loop at lt_code into lv_code.
           ls_css-applid  = iv_key.
           ls_css-version = 1.
@@ -545,7 +543,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
           catch zcx_abapgit_exception.
         endtry.
 
-        split lv_code at gc_crlf into table lt_code.
+        lt_code = zcl_neptune_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
         loop at lt_code into lv_code.
           ls_evtscr-applid = iv_key.
           ls_evtscr-version = 1.
@@ -602,7 +600,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
           catch zcx_abapgit_exception.
         endtry.
 
-        split lv_code at gc_crlf into table lt_code.
+        lt_code = zcl_neptune_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
         loop at lt_code into lv_code.
           ls_html-applid = iv_key.
           ls_html-version = 1.
@@ -659,7 +657,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
           catch zcx_abapgit_exception.
         endtry.
 
-        split lv_code at gc_crlf into table lt_code.
+        lt_code = zcl_neptune_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
+
         loop at lt_code into lv_code.
           ls_script-applid = iv_key.
           ls_script-version = 1.
@@ -744,6 +743,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
     data lt_css type standard table of /neptune/css with default key.
     data ls_css like line of lt_css.
 
+    data lt_code_lines type string_table.
+
     field-symbols <lt_standard_table> type standard table.
 
     assign is_table_content-table_content->* to <lt_standard_table>.
@@ -759,11 +760,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
     move-corresponding ls_css to ls_lcl_css.
 
     loop at lt_css into ls_css.
-      if lv_code is initial.
-        lv_code = ls_css-text.
-      else.
-        concatenate lv_code ls_css-text into lv_code separated by gc_crlf.
-      endif.
+
+      append ls_css-text to lt_code_lines.
+
     endloop.
 
     concatenate me->ms_item-obj_name
@@ -784,6 +783,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
 ** loop at code table to add each entry as a file
         ls_file-path = '/'.
+
+        lv_code = zcl_neptune_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
 
         ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_code ).
       catch zcx_abapgit_exception.
@@ -811,6 +812,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
     data ls_obj like line of it_obj.
 
+    data lt_code_lines type string_table.
+
     field-symbols <lt_standard_table> type standard table.
 
     assign is_table_content-table_content->* to <lt_standard_table>.
@@ -824,11 +827,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
         clear ls_code.
       endat.
 
-      if ls_code-code is initial.
-        ls_code-code = ls_evtscr-text.
-      else.
-        concatenate ls_code-code ls_evtscr-text into ls_code-code separated by gc_crlf.
-      endif.
+      append ls_evtscr-text to lt_code_lines.
 
       at end of event.
         read table it_obj into ls_obj with key applid = ls_evtscr-applid
@@ -850,6 +849,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
           append ls_lcl_evtscr to lt_lcl_evtscr.
 
           ls_code-file_name = ls_lcl_evtscr-file_name.
+          ls_code-code = zcl_neptune_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
+          clear: lt_code_lines.
           append ls_code to lt_code.
         endif.
 
@@ -895,6 +896,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
     data ls_obj like line of it_obj.
 
+    data lt_code_lines type string_table.
+
     constants lc_ext(4) type c value 'html'.
 
     field-symbols <lt_standard_table> type standard table.
@@ -910,11 +913,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
         clear ls_code.
       endat.
 
-      if ls_code-code is initial.
-        ls_code-code = ls_html-text.
-      else.
-        concatenate ls_code-code ls_html-text into ls_code-code separated by gc_crlf.
-      endif.
+      append ls_html-text to lt_code_lines.
 
       at end of field_id.
         read table it_obj into ls_obj with key applid = ls_html-applid
@@ -942,6 +941,10 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
           append ls_lcl_script to lt_lcl_script.
 
           ls_code-file_name = ls_lcl_script-file_name.
+
+          ls_code-code = zcl_neptune_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
+          clear: lt_code_lines.
+
           append ls_code to lt_code.
         endif.
 
@@ -989,6 +992,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
     data lv_ext type char10.
 
+    data lt_code_lines type string_table.
+
     field-symbols <lt_standard_table> type standard table.
 
     assign is_table_content-table_content->* to <lt_standard_table>.
@@ -1002,11 +1007,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
         clear ls_code.
       endat.
 
-      if ls_code-code is initial.
-        ls_code-code = ls_script-text.
-      else.
-        concatenate ls_code-code ls_script-text into ls_code-code separated by gc_crlf.
-      endif.
+      append ls_script-text to lt_code_lines.
 
       at end of field_id.
         read table it_obj into ls_obj with key applid = ls_script-applid
@@ -1036,6 +1037,10 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
           append ls_lcl_script to lt_lcl_script.
 
           ls_code-file_name = ls_lcl_script-file_name.
+
+          ls_code-code = zcl_neptune_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
+          clear: lt_code_lines.
+
           append ls_code to lt_code.
         endif.
 
@@ -1130,6 +1135,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
     data lt_css type standard table of /neptune/_css_d with default key.
     data ls_css like line of lt_css.
 
+    data lt_code_lines type string_table.
+
     field-symbols <lt_standard_table> type standard table.
 
     assign is_table_content-table_content->* to <lt_standard_table>.
@@ -1145,11 +1152,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
     move-corresponding ls_css to ls_lcl_css.
 
     loop at lt_css into ls_css.
-      if lv_code is initial.
-        lv_code = ls_css-text.
-      else.
-        concatenate lv_code ls_css-text into lv_code separated by gc_crlf.
-      endif.
+
+      append ls_css-text to lt_code_lines.
+
     endloop.
 
     concatenate me->ms_item-obj_name
@@ -1169,6 +1174,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
 ** loop at code table to add each entry as a file
         ls_file-path = '/'.
+
+        lv_code = zcl_neptune_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
 
         ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_code ).
       catch zcx_abapgit_exception.
@@ -1195,6 +1202,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
     data ls_obj like line of it_obj.
 
+    data lt_code_lines type string_table.
+
     data lv_ext type char10.
 
     field-symbols <lt_standard_table> type standard table.
@@ -1210,11 +1219,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
         clear ls_code.
       endat.
 
-      if ls_code-code is initial.
-        ls_code-code = ls_evtscr-text.
-      else.
-        concatenate ls_code-code ls_evtscr-text into ls_code-code separated by gc_crlf.
-      endif.
+      append ls_evtscr-text to lt_code_lines.
 
       at end of event.
         read table it_obj into ls_obj with key applid = ls_evtscr-applid
@@ -1243,6 +1248,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
           append ls_lcl_evtscr to lt_lcl_evtscr.
 
           ls_code-file_name = ls_lcl_evtscr-file_name.
+          ls_code-code = zcl_neptune_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
+          clear: lt_code_lines.
           append ls_code to lt_code.
         endif.
 
@@ -1289,6 +1296,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
     data ls_obj like line of it_obj.
 
+    data lt_code_lines type string_table.
+
     constants lc_ext(4) type c value 'html'.
 
     field-symbols <lt_standard_table> type standard table.
@@ -1304,11 +1313,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
         clear ls_code.
       endat.
 
-      if ls_code-code is initial.
-        ls_code-code = ls_html-text.
-      else.
-        concatenate ls_code-code ls_html-text into ls_code-code separated by gc_crlf.
-      endif.
+      append ls_html-text to lt_code_lines.
 
       at end of field_id.
         read table it_obj into ls_obj with key applid = ls_html-applid
@@ -1336,6 +1341,10 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
           append ls_lcl_script to lt_lcl_script.
 
           ls_code-file_name = ls_lcl_script-file_name.
+
+          ls_code-code = zcl_neptune_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
+          clear: lt_code_lines.
+
           append ls_code to lt_code.
         endif.
 
@@ -1383,6 +1392,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
     data lv_ext type char10.
 
+    data lt_code_lines type string_table.
+
     field-symbols <lt_standard_table> type standard table.
 
     assign is_table_content-table_content->* to <lt_standard_table>.
@@ -1396,11 +1407,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
         clear ls_code.
       endat.
 
-      if ls_code-code is initial.
-        ls_code-code = ls_script-text.
-      else.
-        concatenate ls_code-code ls_script-text into ls_code-code separated by gc_crlf.
-      endif.
+      append ls_script-text to lt_code_lines.
 
       at end of field_id.
         read table it_obj into ls_obj with key applid = ls_script-applid
@@ -1439,6 +1446,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
           append ls_lcl_script to lt_lcl_script.
 
           ls_code-file_name = ls_lcl_script-file_name.
+          ls_code-code = zcl_neptune_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
+          clear: lt_code_lines.
+
           append ls_code to lt_code.
         endif.
 
@@ -1609,7 +1619,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
             iv_key   = lv_key ).
 
 
-        when '/NEPTUNE/_EVTSCR'.
+        when '/NEPTUNE/_EVTSCR' or '/NEPTUNE/_EVTTSC'.
 
           deserialize__evtscr(
             is_file  = ls_files
@@ -1625,7 +1635,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
             ir_data  = lr_data
             iv_key   = lv_key ).
 
-        when '/NEPTUNE/_SCRIPT'.
+        when '/NEPTUNE/_SCRIPT' or '/NEPTUNE/_TSCRIP'.
 
           deserialize__script(
             is_file  = ls_files

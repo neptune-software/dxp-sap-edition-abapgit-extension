@@ -212,8 +212,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN04 IMPLEMENTATION.
 
     lv_skip = '*MANDT'.
     append lv_skip to mt_skip_paths.
-    lv_skip = '*CONFIGURATION'.
-    append lv_skip to mt_skip_paths.
     lv_skip = '*CREDAT'.
     append lv_skip to mt_skip_paths.
     lv_skip = '*CRETIM'.

@@ -7,108 +7,106 @@ class zcl_abapgit_object_zn22 definition
   public section.
 
     interfaces zif_abapgit_object .
-
-    constants gc_crlf type abap_cr_lf value cl_abap_char_utilities=>cr_lf. "#EC NOTEXT
   protected section.
-private section.
+  private section.
 
-  types:
-    begin of ty_lcl_cushead,
-                  configuration type /neptune/cushead-configuration,
-                  file_name     type string,
-                 end of ty_lcl_cushead .
-  types:
-    ty_tt_lcl_cushead type standard table of ty_lcl_cushead .
-  types:
-    begin of ty_lcl_cuslogi,
-                  configuration type /neptune/cuslogi-configuration,
-                  file_name     type string,
-                 end of ty_lcl_cuslogi .
-  types:
-    ty_tt_lcl_cuslogi type standard table of ty_lcl_cuslogi .
-  types:
-    begin of ty_lcl_confxml,
-                  configuration type /neptune/confxml-configuration,
-                  file_name     type string,
-                 end of ty_lcl_confxml .
-  types:
-    ty_tt_lcl_confxml type standard table of ty_lcl_confxml .
+    types:
+      begin of ty_lcl_cushead,
+                    configuration type /neptune/cushead-configuration,
+                    file_name     type string,
+                   end of ty_lcl_cushead .
+    types:
+      ty_tt_lcl_cushead type standard table of ty_lcl_cushead .
+    types:
+      begin of ty_lcl_cuslogi,
+                    configuration type /neptune/cuslogi-configuration,
+                    file_name     type string,
+                   end of ty_lcl_cuslogi .
+    types:
+      ty_tt_lcl_cuslogi type standard table of ty_lcl_cuslogi .
+    types:
+      begin of ty_lcl_confxml,
+                    configuration type /neptune/confxml-configuration,
+                    file_name     type string,
+                   end of ty_lcl_confxml .
+    types:
+      ty_tt_lcl_confxml type standard table of ty_lcl_confxml .
 
-  data MT_SKIP_PATHS type STRING_TABLE .
+    data mt_skip_paths type string_table .
 
-  methods SERIALIZE_CUSHEAD
-    importing
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
-  methods SERIALIZE_CONFXML
-    importing
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
-  methods SERIALIZE_APPCACH
-    importing
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
-  methods SERIALIZE_CUSLOGI
-    importing
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
-  methods SERIALIZE_TABLE
-    importing
-      !IV_TABNAME type TABNAME
-      !IT_TABLE type ANY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods SET_SKIP_FIELDS .
-  methods GET_SKIP_FIELDS
-    returning
-      value(RT_SKIP_PATHS) type STRING_TABLE .
-  methods DESERIALIZE_TABLE
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IR_DATA type ref to DATA
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods GET_VALUES_FROM_FILENAME
-    importing
-      !IS_FILENAME type STRING
-    exporting
-      !EV_TABNAME type TADIR-OBJ_NAME .
-  methods DESERIALIZE_CUSHEAD
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
-      !IR_DATA type ref to DATA
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods DESERIALIZE_CONFXML
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
-      !IR_DATA type ref to DATA
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods DESERIALIZE_APPCACH
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
-      !IR_DATA type ref to DATA
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods DESERIALIZE_CUSLOGI
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
-      !IR_DATA type ref to DATA
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods INSERT_TO_TRANSPORT
-    importing
-      !IO_ARTIFACT type ref to /NEPTUNE/IF_ARTIFACT_TYPE
-      !IV_TRANSPORT type TRKORR
-      !IV_PACKAGE type DEVCLASS
-      !IV_KEY1 type ANY
-      !IV_ARTIFACT_TYPE type /NEPTUNE/ATY-ARTIFACT_TYPE .
+    methods serialize_cushead
+      importing
+        !is_table_content type /neptune/if_artifact_type=>ty_table_content .
+    methods serialize_confxml
+      importing
+        !is_table_content type /neptune/if_artifact_type=>ty_table_content .
+    methods serialize_appcach
+      importing
+        !is_table_content type /neptune/if_artifact_type=>ty_table_content .
+    methods serialize_cuslogi
+      importing
+        !is_table_content type /neptune/if_artifact_type=>ty_table_content .
+    methods serialize_table
+      importing
+        !iv_tabname type tabname
+        !it_table type any
+      raising
+        zcx_abapgit_exception .
+    methods set_skip_fields .
+    methods get_skip_fields
+      returning
+        value(rt_skip_paths) type string_table .
+    methods deserialize_table
+      importing
+        !is_file type zif_abapgit_git_definitions=>ty_file
+        !ir_data type ref to data
+        !iv_key type /neptune/artifact_key
+      raising
+        zcx_abapgit_exception .
+    methods get_values_from_filename
+      importing
+        !is_filename type string
+      exporting
+        !ev_tabname type tadir-obj_name .
+    methods deserialize_cushead
+      importing
+        !is_file type zif_abapgit_git_definitions=>ty_file
+        !it_files type zif_abapgit_git_definitions=>ty_files_tt
+        !ir_data type ref to data
+        !iv_key type /neptune/artifact_key
+      raising
+        zcx_abapgit_exception .
+    methods deserialize_confxml
+      importing
+        !is_file type zif_abapgit_git_definitions=>ty_file
+        !it_files type zif_abapgit_git_definitions=>ty_files_tt
+        !ir_data type ref to data
+        !iv_key type /neptune/artifact_key
+      raising
+        zcx_abapgit_exception .
+    methods deserialize_appcach
+      importing
+        !is_file type zif_abapgit_git_definitions=>ty_file
+        !it_files type zif_abapgit_git_definitions=>ty_files_tt
+        !ir_data type ref to data
+        !iv_key type /neptune/artifact_key
+      raising
+        zcx_abapgit_exception .
+    methods deserialize_cuslogi
+      importing
+        !is_file type zif_abapgit_git_definitions=>ty_file
+        !it_files type zif_abapgit_git_definitions=>ty_files_tt
+        !ir_data type ref to data
+        !iv_key type /neptune/artifact_key
+      raising
+        zcx_abapgit_exception .
+    methods insert_to_transport
+      importing
+        !io_artifact type ref to /neptune/if_artifact_type
+        !iv_transport type trkorr
+        !iv_package type devclass
+        !iv_key1 type any
+        !iv_artifact_type type /neptune/aty-artifact_type .
 ENDCLASS.
 
 
@@ -148,11 +146,13 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
       endif.
 
       assign component 'GLOBAL_STYLE' of structure <ls_line> to <lv_code>.
-      check <lv_code> is assigned and <lv_code> is not initial.
+      if <lv_code> is assigned and <lv_code> is not initial.
 
-      read table it_files into ls_file with key filename = <lv_code>.
-      if sy-subrc = 0.
-        <lv_code> = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
+        read table it_files into ls_file with key filename = <lv_code>.
+        if sy-subrc = 0.
+          <lv_code> = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
+          zcl_neptune_abapgit_utilities=>fix_string_deserialize( changing cv_string = <lv_code> ).
+        endif.
       endif.
     endloop.
   endmethod.
@@ -197,7 +197,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
-        split lv_code at gc_crlf into table lt_code.
+        lt_code = zcl_neptune_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
+
         loop at lt_code into lv_code.
           lv_seqnr = lv_seqnr + 1.
 
@@ -207,13 +208,13 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
 
           append ls_confxml to lt_confxml.
         endloop.
-*
-*
+
+
       endif.
     endloop.
-*
+
     <lt_tab> = lt_confxml.
-*
+
   endmethod.
 
 
@@ -256,7 +257,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
-        split lv_code at gc_crlf into table lt_code.
+        lt_code = zcl_neptune_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
+
         loop at lt_code into lv_code.
           lv_seqnr = lv_seqnr + 1.
 
@@ -314,7 +316,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
-        split lv_code at gc_crlf into table lt_code.
+        lt_code = zcl_neptune_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
+
         loop at lt_code into lv_code.
           lv_seqnr = lv_seqnr + 1.
 
@@ -324,13 +327,13 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
 
           append ls_cuslogi to lt_cuslogi.
         endloop.
-*
-*
+
+
       endif.
     endloop.
-*
+
     <lt_tab> = lt_cuslogi.
-*
+
   endmethod.
 
 
@@ -443,28 +446,30 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
     loop at <lt_standard_table> assigning <ls_line>.
 
       assign component 'GLOBAL_STYLE' of structure <ls_line> to <lv_code>.
-      check <lv_code> is assigned and <lv_code> is not initial.
+      if <lv_code> is assigned and <lv_code> is not initial.
 
-      concatenate me->ms_item-obj_name
-                  me->ms_item-obj_type
-                  is_table_content-tabname into ls_file-filename separated by '.'.
+        concatenate me->ms_item-obj_name
+                    me->ms_item-obj_type
+                    is_table_content-tabname into ls_file-filename separated by '.'.
 
-      replace all occurrences of '/' in ls_file-filename with '#'.
+        replace all occurrences of '/' in ls_file-filename with '#'.
 
-      concatenate ls_file-filename
-                  'css' into ls_file-filename separated by '.'.
+        concatenate ls_file-filename
+                    'css' into ls_file-filename separated by '.'.
 
-      translate ls_file-filename to lower case.
+        translate ls_file-filename to lower case.
 
-      try.
-          ls_file-path = '/'.
-          ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( <lv_code> ).
-          zif_abapgit_object~mo_files->add( ls_file ).
-        catch zcx_abapgit_exception.
-      endtry.
+        try.
+            ls_file-path = '/'.
 
-      <lv_code> = ls_file-filename.
+            zcl_neptune_abapgit_utilities=>fix_string_serialize( changing cv_string = <lv_code> ).
+            ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( <lv_code> ).
+            zif_abapgit_object~mo_files->add( ls_file ).
+          catch zcx_abapgit_exception.
+        endtry.
 
+        <lv_code> = ls_file-filename.
+      endif.
     endloop.
 
     try.
@@ -491,6 +496,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
 
     data lv_code type string.
 
+    data lt_code_lines type string_table.
+
     field-symbols <lt_standard_table> type standard table.
 
     assign is_table_content-table_content->* to <lt_standard_table>.
@@ -504,11 +511,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
         clear lv_code.
       endif.
 
-      if lv_code is initial.
-        lv_code = ls_confxml-value.
-      else.
-        concatenate lv_code ls_confxml-value into lv_code separated by gc_crlf.
-      endif.
+      append ls_confxml-value  to lt_code_lines.
 
     endloop.
 
@@ -532,6 +535,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
           it_table   = lt_lcl_confxml ).
 
         ls_file-path = '/'.
+        lv_code = zcl_neptune_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
+        clear: lt_code_lines.
         ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_code ).
         ls_file-filename = ls_lcl_confxml-file_name.
         zif_abapgit_object~mo_files->add( ls_file ).
@@ -554,6 +559,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
 
     data lv_code type string.
 
+    data lt_code_lines type string_table.
+
     field-symbols <lt_standard_table> type standard table.
 
     assign is_table_content-table_content->* to <lt_standard_table>.
@@ -567,12 +574,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
         clear lv_code.
       endif.
 
-      if lv_code is initial.
-        lv_code = ls_cushead-text.
-      else.
-        concatenate lv_code ls_cushead-text into lv_code separated by gc_crlf.
-      endif.
-
+      append ls_cushead-text  to lt_code_lines.
     endloop.
 
     concatenate me->ms_item-obj_name
@@ -595,6 +597,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
           it_table   = lt_lcl_cushead ).
 
         ls_file-path = '/'.
+        lv_code = zcl_neptune_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
+        clear: lt_code_lines.
         ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_code ).
         ls_file-filename = ls_lcl_cushead-file_name.
         zif_abapgit_object~mo_files->add( ls_file ).
@@ -617,6 +621,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
 
     data lv_code type string.
 
+    data lt_code_lines type string_table.
+
     field-symbols <lt_standard_table> type standard table.
 
     assign is_table_content-table_content->* to <lt_standard_table>.
@@ -630,11 +636,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
         clear lv_code.
       endif.
 
-      if lv_code is initial.
-        lv_code = ls_cuslogi-text.
-      else.
-        concatenate lv_code ls_cuslogi-text into lv_code separated by gc_crlf.
-      endif.
+      append ls_cuslogi-text  to lt_code_lines.
 
     endloop.
 
@@ -658,6 +660,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
           it_table   = lt_lcl_cuslogi ).
 
         ls_file-path = '/'.
+        lv_code = zcl_neptune_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
+        clear: lt_code_lines.
+
         ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_code ).
         ls_file-filename = ls_lcl_cuslogi-file_name.
         zif_abapgit_object~mo_files->add( ls_file ).
