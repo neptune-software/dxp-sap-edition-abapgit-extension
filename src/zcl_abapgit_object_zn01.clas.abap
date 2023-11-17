@@ -1619,7 +1619,7 @@ data lt_code_lines type string_table.
             iv_key   = lv_key ).
 
 
-        when '/NEPTUNE/_EVTSCR'.
+        when '/NEPTUNE/_EVTSCR' or '/NEPTUNE/_EVTTSC'.
 
           deserialize__evtscr(
             is_file  = ls_files

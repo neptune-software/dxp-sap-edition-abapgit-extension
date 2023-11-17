@@ -49,10 +49,14 @@ endmethod.
 
 
 method FIX_STRING_DESERIALIZE.
+* in the future when we swapp ace editor for monaco in all artifacts like Global Style in Launchpad
+* we will probablly need to replace NEWLINE with CR_LF.
 endmethod.
 
 
 method FIX_STRING_SERIALIZE.
+* in the future when we swapp ace editor for monaco in all artifacts like Global Style in Launchpad
+* we will probablly need to replace CR_LF with NEWLINE
 endmethod.
 
 
