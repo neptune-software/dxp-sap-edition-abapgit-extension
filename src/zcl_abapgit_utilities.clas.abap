@@ -24,6 +24,12 @@ public section.
       !IV_STRING type STRING
     returning
       value(RT_CODE_LINES) type STRING_TABLE .
+  class-methods FIX_STRING_SERIALIZE
+    changing
+      !CV_STRING type STRING .
+  class-methods FIX_STRING_DESERIALIZE
+    changing
+      !CV_STRING type STRING .
 protected section.
 private section.
 ENDCLASS.
@@ -39,6 +45,14 @@ method code_lines_to_string.
 * when editing files via eg. GitHub web interface it adds a newline at end of file
   rv_string = rv_string && cl_abap_char_utilities=>newline.
 
+endmethod.
+
+
+method FIX_STRING_DESERIALIZE.
+endmethod.
+
+
+method FIX_STRING_SERIALIZE.
 endmethod.
 
 

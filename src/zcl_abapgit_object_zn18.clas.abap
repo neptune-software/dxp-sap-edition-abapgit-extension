@@ -8,78 +8,82 @@ CLASS zcl_abapgit_object_zn18 DEFINITION
 
     INTERFACES zif_abapgit_object .
   PROTECTED SECTION.
-  PRIVATE SECTION.
+private section.
 
-    TYPES:
-      BEGIN OF ty_mapping,
+  types:
+    BEGIN OF ty_mapping,
                         key TYPE tadir-obj_name,
                         name TYPE string,
                        END OF ty_mapping .
-    TYPES:
-      ty_mapping_tt TYPE STANDARD TABLE OF ty_mapping WITH KEY key .
-    TYPES:
-      ty_t_mime_t TYPE STANDARD TABLE OF /neptune/mime_t WITH NON-UNIQUE DEFAULT KEY .
-    TYPES:
-      BEGIN OF ty_lcl_mime.
+  types:
+    ty_mapping_tt TYPE STANDARD TABLE OF ty_mapping WITH KEY key .
+  types:
+    ty_t_mime_t TYPE STANDARD TABLE OF /neptune/mime_t WITH NON-UNIQUE DEFAULT KEY .
+  types:
+    BEGIN OF ty_lcl_mime.
             INCLUDE TYPE /neptune/mime.
     TYPES: file_name      TYPE string,
       END OF ty_lcl_mime .
-    TYPES:
-      ty_tt_lcl_mime TYPE STANDARD TABLE OF ty_lcl_mime .
+  types:
+    ty_tt_lcl_mime TYPE STANDARD TABLE OF ty_lcl_mime .
 
-    CONSTANTS:
-      mc_name_separator(1) TYPE c VALUE '@'.                "#EC NOTEXT
-    CONSTANTS gc_mime_table TYPE tabname VALUE '/NEPTUNE/MIME'. "#EC NOTEXT
-    CONSTANTS gc_mime_t_table TYPE tabname VALUE '/NEPTUNE/MIME_T'. "#EC NOTEXT
-    DATA mt_skip_paths TYPE string_table .
-    CLASS-DATA gt_mapping TYPE ty_mapping_tt .
+  constants:
+    mc_name_separator(1) TYPE c value '@'. "#EC NOTEXT
+  constants GC_MIME_TABLE type TABNAME value '/NEPTUNE/MIME'. "#EC NOTEXT
+  constants GC_MIME_T_TABLE type TABNAME value '/NEPTUNE/MIME_T'. "#EC NOTEXT
+  data MT_SKIP_PATHS type STRING_TABLE .
+  class-data GT_MAPPING type TY_MAPPING_TT .
 
-    METHODS serialize_table
-      IMPORTING
-        !iv_tabname TYPE tabname
-        !it_table TYPE any .
-    METHODS set_skip_fields .
-    METHODS get_skip_fields
-      RETURNING
-        VALUE(rt_skip_paths) TYPE string_table .
-    INTERFACE zif_abapgit_git_definitions LOAD .
-    METHODS deserialize_mime_table
-      IMPORTING
-        !is_file TYPE zif_abapgit_git_definitions=>ty_file
-        !ir_data TYPE REF TO data
-        !it_files TYPE zif_abapgit_git_definitions=>ty_files_tt
-      RAISING
-        zcx_abapgit_exception .
-    METHODS deserialize_table
-      IMPORTING
-        !is_file TYPE zif_abapgit_git_definitions=>ty_file
-        !ir_data TYPE REF TO data
-        !iv_tabname TYPE tadir-obj_name
-      RAISING
-        zcx_abapgit_exception .
-    METHODS get_values_from_filename
-      IMPORTING
-        !is_filename TYPE string
-      EXPORTING
-        !ev_tabname TYPE tadir-obj_name
-        !ev_name TYPE /neptune/artifact_name .
-    METHODS get_full_file_path
-      IMPORTING
-        !iv_parent TYPE /neptune/mime_t-parent
-        !it_mime_t TYPE ty_t_mime_t
-      RETURNING
-        VALUE(rv_path) TYPE string .
-    INTERFACE /neptune/if_artifact_type LOAD .
-    METHODS serialize_mime_table
-      IMPORTING
-        !iv_key TYPE /neptune/artifact_key
-        !is_table_content TYPE /neptune/if_artifact_type=>ty_table_content
-        !it_mime_t TYPE ty_t_mime_t OPTIONAL .
+  methods SERIALIZE_TABLE
+    importing
+      !IV_TABNAME type TABNAME
+      !IT_TABLE type ANY
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods SET_SKIP_FIELDS .
+  methods GET_SKIP_FIELDS
+    returning
+      value(RT_SKIP_PATHS) type STRING_TABLE .
+  interface ZIF_ABAPGIT_GIT_DEFINITIONS load .
+  methods DESERIALIZE_MIME_TABLE
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IR_DATA type ref to DATA
+      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods DESERIALIZE_TABLE
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IR_DATA type ref to DATA
+      !IV_TABNAME type TADIR-OBJ_NAME
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods GET_VALUES_FROM_FILENAME
+    importing
+      !IS_FILENAME type STRING
+    exporting
+      !EV_TABNAME type TADIR-OBJ_NAME
+      !EV_NAME type /NEPTUNE/ARTIFACT_NAME .
+  methods GET_FULL_FILE_PATH
+    importing
+      !IV_PARENT type /NEPTUNE/MIME_T-PARENT
+      !IT_MIME_T type TY_T_MIME_T
+    returning
+      value(RV_PATH) type STRING .
+  interface /NEPTUNE/IF_ARTIFACT_TYPE load .
+  methods SERIALIZE_MIME_TABLE
+    importing
+      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
+      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT
+      !IT_MIME_T type TY_T_MIME_T optional
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
 ENDCLASS.
 
 
 
-CLASS zcl_abapgit_object_zn18 IMPLEMENTATION.
+CLASS ZCL_ABAPGIT_OBJECT_ZN18 IMPLEMENTATION.
 
 
   METHOD deserialize_mime_table.
@@ -271,18 +275,18 @@ CLASS zcl_abapgit_object_zn18 IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD serialize_table.
+  method serialize_table.
 
-    DATA: lo_ajson TYPE REF TO zcl_abapgit_ajson,
-          lx_ajson TYPE REF TO zcx_abapgit_ajson_error,
-          lv_json  TYPE string,
-          ls_file  TYPE zif_abapgit_git_definitions=>ty_file.
+    data: lo_ajson type ref to zcl_abapgit_ajson,
+          lx_ajson type ref to zcx_abapgit_ajson_error,
+          lv_json  type string,
+          ls_file  type zif_abapgit_git_definitions=>ty_file.
 
-    DATA lx_ex TYPE REF TO zcx_abapgit_exception.
+    data lx_ex type ref to zcx_abapgit_exception.
 
-    DATA lt_skip_paths TYPE string_table.
+    data lt_skip_paths type string_table.
 
-    TRY.
+    try.
         lo_ajson = zcl_abapgit_ajson=>create_empty( ).
         lo_ajson->keep_item_order( ).
         lo_ajson->set(
@@ -296,13 +300,13 @@ CLASS zcl_abapgit_object_zn18 IMPLEMENTATION.
 
 * Remove unwanted fields
         lt_skip_paths = get_skip_fields( ).
-        IF lt_skip_paths IS NOT INITIAL.
+        if lt_skip_paths is not initial.
           lo_ajson = zcl_abapgit_ajson=>create_from(
                         ii_source_json = lo_ajson
                         ii_filter      = zcl_abapgit_ajson_filter_lib=>create_path_filter(
                                             it_skip_paths     = lt_skip_paths
                                             iv_pattern_search = abap_true ) ).
-        ENDIF.
+        endif.
 
         lv_json = lo_ajson->stringify( 2 ).
 
@@ -315,13 +319,13 @@ CLASS zcl_abapgit_object_zn18 IMPLEMENTATION.
 
         zif_abapgit_object~mo_files->add( ls_file ).
 
-      CATCH zcx_abapgit_ajson_error INTO lx_ajson.
-        zcx_abapgit_ajson_error=>raise( lx_ajson->get_text( ) ).
-      CATCH zcx_abapgit_exception INTO lx_ex.
+      catch zcx_abapgit_ajson_error into lx_ajson.
         zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
-    ENDTRY.
+      catch zcx_abapgit_exception into lx_ex.
+        zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
+    endtry.
 
-  ENDMETHOD.
+  endmethod.
 
 
   METHOD set_skip_fields.

@@ -151,6 +151,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
       read table it_files into ls_file with key filename = <lv_code>.
       if sy-subrc = 0.
         <lv_code> = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
+        zcl_abapgit_utilities=>fix_string_deserialize( changing cv_string = <lv_code> ).
       endif.
     endloop.
   endmethod.
@@ -459,6 +460,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
 
       try.
           ls_file-path = '/'.
+
+          zcl_abapgit_utilities=>fix_string_serialize( changing cv_string = <lv_code> ).
           ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( <lv_code> ).
           zif_abapgit_object~mo_files->add( ls_file ).
         catch zcx_abapgit_exception.

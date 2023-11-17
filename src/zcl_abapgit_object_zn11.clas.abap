@@ -92,6 +92,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN11 IMPLEMENTATION.
       check sy-subrc = 0.
 
       <lv_field> = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
+      zcl_abapgit_utilities=>fix_string_deserialize( changing cv_string = <lv_field> ).
 
     endif.
 
@@ -499,6 +500,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN11 IMPLEMENTATION.
             translate ls_file-filename to lower case.
 
             ls_file-path = '/'.
+
+            zcl_abapgit_utilities=>fix_string_serialize( changing cv_string = <lv_field_value> ).
             ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( <lv_field_value> ).
 
             zif_abapgit_object~mo_files->add( ls_file ).
