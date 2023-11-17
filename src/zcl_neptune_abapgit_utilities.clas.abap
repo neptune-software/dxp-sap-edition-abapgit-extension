@@ -1,4 +1,4 @@
-class ZCL_ABAPGIT_UTILITIES definition
+class ZCL_NEPTUNE_ABAPGIT_UTILITIES definition
   public
   final
   create public .
@@ -36,10 +36,10 @@ ENDCLASS.
 
 
 
-CLASS ZCL_ABAPGIT_UTILITIES IMPLEMENTATION.
+CLASS ZCL_NEPTUNE_ABAPGIT_UTILITIES IMPLEMENTATION.
 
 
-method code_lines_to_string.
+method CODE_LINES_TO_STRING.
 
   concatenate lines of it_code_lines into rv_string separated by gc_eol respecting blanks.
 * when editing files via eg. GitHub web interface it adds a newline at end of file
@@ -60,7 +60,10 @@ method FIX_STRING_SERIALIZE.
 endmethod.
 
 
-method get_package_path.
+method GET_PACKAGE_PATH.
+**********************************************************************
+* this method is used in /neptune/cl_abapgit_user_exit=>change_tadir
+**********************************************************************
 
   data: lo_repo type ref to zif_abapgit_repo,
         lo_dot  type ref to zcl_abapgit_dot_abapgit,
@@ -90,7 +93,7 @@ method get_package_path.
 endmethod.
 
 
-method string_to_code_lines.
+method STRING_TO_CODE_LINES.
 
   split iv_string at gc_eol into table rt_code_lines.
 

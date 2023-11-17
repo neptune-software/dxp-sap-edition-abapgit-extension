@@ -1,12 +1,12 @@
-class ZCL_ABAPGIT_OBJECT_ZN01 definition
+class zcl_abapgit_object_zn01 definition
   public
-  inheriting from ZCL_ABAPGIT_OBJECTS_SUPER
+  inheriting from zcl_abapgit_objects_super
   final
   create public .
 
-public section.
+  public section.
 
-  interfaces ZIF_ABAPGIT_OBJECT .
+    interfaces zif_abapgit_object .
   protected section.
   private section.
 
@@ -215,7 +215,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
-        lt_code = zcl_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
+        lt_code = zcl_neptune_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
         loop at lt_code into lv_code.
           ls_css-applid = iv_key.
           ls_css-seqnr  = sy-tabix.
@@ -269,7 +269,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
-        lt_code = zcl_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
+        lt_code = zcl_neptune_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
         loop at lt_code into lv_code.
           ls_evtscr-applid = iv_key.
           ls_evtscr-seqnr  = sy-tabix.
@@ -323,7 +323,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
-        lt_code = zcl_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
+        lt_code = zcl_neptune_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
         loop at lt_code into lv_code.
           ls_html-applid = iv_key.
           ls_html-seqnr  = sy-tabix.
@@ -377,7 +377,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
-        lt_code = zcl_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
+        lt_code = zcl_neptune_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
         loop at lt_code into lv_code.
           ls_script-applid = iv_key.
           ls_script-seqnr  = sy-tabix.
@@ -485,7 +485,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
-        lt_code = zcl_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
+        lt_code = zcl_neptune_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
         loop at lt_code into lv_code.
           ls_css-applid  = iv_key.
           ls_css-version = 1.
@@ -543,7 +543,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
           catch zcx_abapgit_exception.
         endtry.
 
-        lt_code = zcl_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
+        lt_code = zcl_neptune_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
         loop at lt_code into lv_code.
           ls_evtscr-applid = iv_key.
           ls_evtscr-version = 1.
@@ -600,7 +600,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
           catch zcx_abapgit_exception.
         endtry.
 
-        lt_code = zcl_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
+        lt_code = zcl_neptune_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
         loop at lt_code into lv_code.
           ls_html-applid = iv_key.
           ls_html-version = 1.
@@ -657,7 +657,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
           catch zcx_abapgit_exception.
         endtry.
 
-        lt_code = zcl_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
+        lt_code = zcl_neptune_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
 
         loop at lt_code into lv_code.
           ls_script-applid = iv_key.
@@ -784,7 +784,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 ** loop at code table to add each entry as a file
         ls_file-path = '/'.
 
-        lv_code = zcl_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
+        lv_code = zcl_neptune_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
 
         ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_code ).
       catch zcx_abapgit_exception.
@@ -849,7 +849,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
           append ls_lcl_evtscr to lt_lcl_evtscr.
 
           ls_code-file_name = ls_lcl_evtscr-file_name.
-          ls_code-code = zcl_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
+          ls_code-code = zcl_neptune_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
           clear: lt_code_lines.
           append ls_code to lt_code.
         endif.
@@ -942,7 +942,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
           ls_code-file_name = ls_lcl_script-file_name.
 
-          ls_code-code = zcl_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
+          ls_code-code = zcl_neptune_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
           clear: lt_code_lines.
 
           append ls_code to lt_code.
@@ -1038,7 +1038,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
           ls_code-file_name = ls_lcl_script-file_name.
 
-          ls_code-code = zcl_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
+          ls_code-code = zcl_neptune_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
           clear: lt_code_lines.
 
           append ls_code to lt_code.
@@ -1175,7 +1175,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 ** loop at code table to add each entry as a file
         ls_file-path = '/'.
 
-        lv_code = zcl_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
+        lv_code = zcl_neptune_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
 
         ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_code ).
       catch zcx_abapgit_exception.
@@ -1248,7 +1248,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
           append ls_lcl_evtscr to lt_lcl_evtscr.
 
           ls_code-file_name = ls_lcl_evtscr-file_name.
-          ls_code-code = zcl_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
+          ls_code-code = zcl_neptune_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
           clear: lt_code_lines.
           append ls_code to lt_code.
         endif.
@@ -1342,7 +1342,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
           ls_code-file_name = ls_lcl_script-file_name.
 
-          ls_code-code = zcl_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
+          ls_code-code = zcl_neptune_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
           clear: lt_code_lines.
 
           append ls_code to lt_code.
@@ -1392,7 +1392,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
     data lv_ext type char10.
 
-data lt_code_lines type string_table.
+    data lt_code_lines type string_table.
 
     field-symbols <lt_standard_table> type standard table.
 
@@ -1446,7 +1446,7 @@ data lt_code_lines type string_table.
           append ls_lcl_script to lt_lcl_script.
 
           ls_code-file_name = ls_lcl_script-file_name.
-          ls_code-code = zcl_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
+          ls_code-code = zcl_neptune_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
           clear: lt_code_lines.
 
           append ls_code to lt_code.

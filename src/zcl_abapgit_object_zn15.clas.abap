@@ -1,12 +1,12 @@
-class ZCL_ABAPGIT_OBJECT_ZN15 definition
+class zcl_abapgit_object_zn15 definition
   public
-  inheriting from ZCL_ABAPGIT_OBJECTS_SUPER
+  inheriting from zcl_abapgit_objects_super
   final
   create public .
 
-public section.
+  public section.
 
-  interfaces ZIF_ABAPGIT_OBJECT .
+    interfaces zif_abapgit_object .
   protected section.
   private section.
 
@@ -124,7 +124,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
-        lt_code = zcl_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
+        lt_code = zcl_neptune_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
 
         loop at lt_code into lv_code.
 
@@ -303,7 +303,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
 ** loop at code table to add each entry as a file
         ls_file-path = '/'.
 
-        lv_code = zcl_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
+        lv_code = zcl_neptune_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
         clear: lt_code_lines.
         ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_code ).
       catch zcx_abapgit_exception.

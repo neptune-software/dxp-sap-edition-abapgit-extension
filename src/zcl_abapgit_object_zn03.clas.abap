@@ -1,12 +1,12 @@
-class ZCL_ABAPGIT_OBJECT_ZN03 definition
+class zcl_abapgit_object_zn03 definition
   public
-  inheriting from ZCL_ABAPGIT_OBJECTS_SUPER
+  inheriting from zcl_abapgit_objects_super
   final
   create public .
 
-public section.
+  public section.
 
-  interfaces ZIF_ABAPGIT_OBJECT .
+    interfaces zif_abapgit_object .
   protected section.
   private section.
 
@@ -151,7 +151,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
       read table it_files into ls_file with key filename = <lv_code>.
       if sy-subrc = 0.
         <lv_code> = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
-        zcl_abapgit_utilities=>fix_string_deserialize( changing cv_string = <lv_code> ).
+        zcl_neptune_abapgit_utilities=>fix_string_deserialize( changing cv_string = <lv_code> ).
       endif.
     endloop.
   endmethod.
@@ -196,7 +196,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
-        lt_code = zcl_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
+        lt_code = zcl_neptune_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
         loop at lt_code into lv_code.
           lv_seqnr = lv_seqnr + 1.
 
@@ -255,7 +255,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
-        lt_code = zcl_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
+        lt_code = zcl_neptune_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
         loop at lt_code into lv_code.
           lv_seqnr = lv_seqnr + 1.
 
@@ -313,7 +313,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
-        lt_code = zcl_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
+        lt_code = zcl_neptune_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
         loop at lt_code into lv_code.
           lv_seqnr = lv_seqnr + 1.
 
@@ -457,7 +457,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
 
       try.
           ls_file-path = '/'.
-          zcl_abapgit_utilities=>fix_string_serialize( changing cv_string = <lv_code> ).
+          zcl_neptune_abapgit_utilities=>fix_string_serialize( changing cv_string = <lv_code> ).
           ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( <lv_code> ).
           zif_abapgit_object~mo_files->add( ls_file ).
         catch zcx_abapgit_exception.
@@ -530,7 +530,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
           it_table   = lt_lcl_confxml ).
 
         ls_file-path = '/'.
-        lv_code = zcl_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
+        lv_code = zcl_neptune_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
 
         ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_code ).
         ls_file-filename = ls_lcl_confxml-file_name.
@@ -593,7 +593,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
           it_table   = lt_lcl_cushead ).
 
         ls_file-path = '/'.
-        lv_code = zcl_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
+        lv_code = zcl_neptune_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
 
         ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_code ).
         ls_file-filename = ls_lcl_cushead-file_name.
@@ -655,7 +655,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
           it_table   = lt_lcl_cuslogi ).
 
         ls_file-path = '/'.
-        lv_code = zcl_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
+        lv_code = zcl_neptune_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
 
         ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_code ).
         ls_file-filename = ls_lcl_cuslogi-file_name.
