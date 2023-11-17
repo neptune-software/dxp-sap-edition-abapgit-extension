@@ -195,8 +195,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
-*        split lv_code at gc_crlf into table lt_code.
-
         lt_code = zcl_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
 
         loop at lt_code into lv_code.
@@ -208,13 +206,13 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
 
           append ls_confxml to lt_confxml.
         endloop.
-*
-*
+
+
       endif.
     endloop.
-*
+
     <lt_tab> = lt_confxml.
-*
+
   endmethod.
 
 
@@ -257,7 +255,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
-*        split lv_code at gc_crlf into table lt_code.
         lt_code = zcl_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
 
         loop at lt_code into lv_code.
@@ -317,7 +314,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
-*        split lv_code at gc_crlf into table lt_code.
         lt_code = zcl_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
 
         loop at lt_code into lv_code.
@@ -329,13 +325,13 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
 
           append ls_cuslogi to lt_cuslogi.
         endloop.
-*
-*
+
+
       endif.
     endloop.
-*
+
     <lt_tab> = lt_cuslogi.
-*
+
   endmethod.
 
 
@@ -511,12 +507,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
         clear lv_code.
       endif.
 
-*      if lv_code is initial.
-*        lv_code = ls_confxml-value.
-*      else.
-*        concatenate lv_code ls_confxml-value into lv_code separated by gc_crlf.
-*      endif.
-
       append ls_confxml-value  to lt_code_lines.
 
     endloop.
@@ -580,12 +570,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
         clear lv_code.
       endif.
 
-*      if lv_code is initial.
-*        lv_code = ls_cushead-text.
-*      else.
-*        concatenate lv_code ls_cushead-text into lv_code separated by gc_crlf.
-*      endif.
-
       append ls_cushead-text  to lt_code_lines.
     endloop.
 
@@ -648,11 +632,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
         clear lv_code.
       endif.
 
-*      if lv_code is initial.
-*        lv_code = ls_cuslogi-text.
-*      else.
-*        concatenate lv_code ls_cuslogi-text into lv_code separated by gc_crlf.
-*      endif.
       append ls_cuslogi-text  to lt_code_lines.
 
     endloop.

@@ -124,7 +124,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
-*        split lv_code at gc_crlf into table lt_code.
         lt_code = zcl_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
 
         loop at lt_code into lv_code.
@@ -285,12 +284,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
         clear lv_code.
         move-corresponding ls_jshlptx to ls_lcl_jshlptx.
       endif.
-
-*      if lv_code is initial.
-*        lv_code = ls_jshlptx-text.
-*      else.
-*        concatenate lv_code ls_jshlptx-text into lv_code separated by gc_crlf.
-*      endif.
 
       append ls_jshlptx-text to lt_code_lines.
 

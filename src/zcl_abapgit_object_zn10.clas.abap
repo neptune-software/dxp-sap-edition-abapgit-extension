@@ -136,7 +136,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN10 IMPLEMENTATION.
 
     try.
         call method ('/NEPTUNE/CL_TADIR')=>('INSERT_TO_TRANSPORT')
-*            call method /neptune/cl_tadir=>insert_to_transport
             exporting
               iv_korrnum       = lv_task
               iv_devclass      = iv_package

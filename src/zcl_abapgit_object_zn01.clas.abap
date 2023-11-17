@@ -215,7 +215,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
-*        split lv_code at gc_crlf into table lt_code.
         lt_code = zcl_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
         loop at lt_code into lv_code.
           ls_css-applid = iv_key.
@@ -270,7 +269,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
-*        split lv_code at gc_crlf into table lt_code.
         lt_code = zcl_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
         loop at lt_code into lv_code.
           ls_evtscr-applid = iv_key.
@@ -325,7 +323,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
-*        split lv_code at gc_crlf into table lt_code.
         lt_code = zcl_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
         loop at lt_code into lv_code.
           ls_html-applid = iv_key.
@@ -380,7 +377,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
-*        split lv_code at gc_crlf into table lt_code.
         lt_code = zcl_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
         loop at lt_code into lv_code.
           ls_script-applid = iv_key.
@@ -489,7 +485,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
-*        split lv_code at gc_crlf into table lt_code.
         lt_code = zcl_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
         loop at lt_code into lv_code.
           ls_css-applid  = iv_key.
@@ -548,7 +543,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
           catch zcx_abapgit_exception.
         endtry.
 
-*        split lv_code at gc_crlf into table lt_code.
         lt_code = zcl_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
         loop at lt_code into lv_code.
           ls_evtscr-applid = iv_key.
@@ -606,7 +600,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
           catch zcx_abapgit_exception.
         endtry.
 
-*        split lv_code at gc_crlf into table lt_code.
         lt_code = zcl_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
         loop at lt_code into lv_code.
           ls_html-applid = iv_key.
@@ -664,7 +657,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
           catch zcx_abapgit_exception.
         endtry.
 
-*        split lv_code at gc_crlf into table lt_code.
         lt_code = zcl_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
 
         loop at lt_code into lv_code.
@@ -835,12 +827,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
         clear ls_code.
       endat.
 
-*      if ls_code-code is initial.
-*        ls_code-code = ls_evtscr-text.
-*      else.
-*        concatenate ls_code-code ls_evtscr-text into ls_code-code separated by gc_crlf.
-*      endif.
-
       append ls_evtscr-text to lt_code_lines.
 
       at end of event.
@@ -926,12 +912,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
         move-corresponding ls_html to ls_lcl_script.
         clear ls_code.
       endat.
-
-*      if ls_code-code is initial.
-*        ls_code-code = ls_html-text.
-*      else.
-*        concatenate ls_code-code ls_html-text into ls_code-code separated by gc_crlf.
-*      endif.
 
       append ls_html-text to lt_code_lines.
 
@@ -1239,12 +1219,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
         clear ls_code.
       endat.
 
-*      if ls_code-code is initial.
-*        ls_code-code = ls_evtscr-text.
-*      else.
-*        concatenate ls_code-code ls_evtscr-text into ls_code-code separated by gc_crlf.
-*      endif.
-
       append ls_evtscr-text to lt_code_lines.
 
       at end of event.
@@ -1339,12 +1313,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
         clear ls_code.
       endat.
 
-*      if ls_code-code is initial.
-*        ls_code-code = ls_html-text.
-*      else.
-*        concatenate ls_code-code ls_html-text into ls_code-code separated by gc_crlf.
-*      endif.
-
       append ls_html-text to lt_code_lines.
 
       at end of field_id.
@@ -1438,12 +1406,6 @@ data lt_code_lines type string_table.
         move-corresponding ls_script to ls_lcl_script.
         clear ls_code.
       endat.
-
-*      if ls_code-code is initial.
-*        ls_code-code = ls_script-text.
-*      else.
-*        concatenate ls_code-code ls_script-text into ls_code-code separated by gc_crlf.
-*      endif.
 
       append ls_script-text to lt_code_lines.
 

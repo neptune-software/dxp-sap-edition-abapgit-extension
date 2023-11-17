@@ -111,7 +111,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
-*        split lv_code at gc_crlf into table lt_code.
         lt_code = zcl_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
         loop at lt_code into lv_code.
           lv_seqnr = lv_seqnr + 1.
@@ -120,13 +119,13 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
           ls_enhtext-text   = lv_code.
           append ls_enhtext to lt_enhtext.
         endloop.
-*
-*
+
+
       endif.
     endloop.
-*
+
     <lt_tab> = lt_enhtext.
-*
+
   endmethod.
 
 
@@ -255,11 +254,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
         clear lv_code.
         move-corresponding ls_enhtext to ls_lcl_enhtext.
       endat.
-*      if lv_code is initial.
-*        lv_code = ls_enhtext-text.
-*      else.
-*        concatenate lv_code ls_enhtext-text into lv_code separated by gc_crlf.
-*      endif.
+
       append ls_enhtext-text to lt_code_lines.
 
       at end of spot.
