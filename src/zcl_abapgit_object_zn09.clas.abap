@@ -1,24 +1,15 @@
-class zcl_abapgit_object_zn09 definition
+class ZCL_ABAPGIT_OBJECT_ZN09 definition
   public
-  inheriting from zcl_abapgit_objects_super
+  inheriting from ZCL_ABAPGIT_OBJECTS_SUPER
   final
   create public .
 
-  public section.
+public section.
 
-    interfaces zif_abapgit_object .
-
-    constants gc_crlf type abap_cr_lf value cl_abap_char_utilities=>cr_lf. "#EC NOTEXT
+  interfaces ZIF_ABAPGIT_OBJECT .
   protected section.
   private section.
 
-    types:
-      begin of ty_mapping,
-                    key type tadir-obj_name,
-                    name type string,
-                   end of ty_mapping .
-    types:
-      ty_mapping_tt type standard table of ty_mapping with key key .
     types:
       begin of ty_lcl_enhtext,
                 enhancement type /neptune/enhancement,
@@ -30,7 +21,7 @@ class zcl_abapgit_object_zn09 definition
 
     constants:
       mc_name_separator(1) type c value '@'.                "#EC NOTEXT
-    class-data gt_mapping type ty_mapping_tt .
+
     data mt_skip_paths type string_table .
 
     methods serialize_table
@@ -120,7 +111,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
-        split lv_code at gc_crlf into table lt_code.
+*        split lv_code at gc_crlf into table lt_code.
+        lt_code = zcl_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
         loop at lt_code into lv_code.
           lv_seqnr = lv_seqnr + 1.
 
@@ -247,6 +239,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
     data lt_enhtext type standard table of /neptune/enhtext with default key.
     data ls_enhtext like line of lt_enhtext.
 
+    data lt_code_lines type string_table.
+
     field-symbols <lt_standard_table> type standard table.
 
     assign is_table_content-table_content->* to <lt_standard_table>.
@@ -261,11 +255,12 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
         clear lv_code.
         move-corresponding ls_enhtext to ls_lcl_enhtext.
       endat.
-      if lv_code is initial.
-        lv_code = ls_enhtext-text.
-      else.
-        concatenate lv_code ls_enhtext-text into lv_code separated by gc_crlf.
-      endif.
+*      if lv_code is initial.
+*        lv_code = ls_enhtext-text.
+*      else.
+*        concatenate lv_code ls_enhtext-text into lv_code separated by gc_crlf.
+*      endif.
+      append ls_enhtext-text to lt_code_lines.
 
       at end of spot.
 
@@ -282,6 +277,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
         try.
 ** loop at code table to add each entry as a file
             ls_file-path = '/'.
+            lv_code = zcl_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
+            clear: lt_code_lines.
 
             ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_code ).
           catch zcx_abapgit_exception.
@@ -601,8 +598,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
           ls_table_content like line of lt_table_content,
           lv_key           type /neptune/artifact_key.
 
-    field-symbols: <lt_standard_table> type standard table,
-                   <ls_line>           type any.
+    field-symbols: <lt_standard_table> type standard table.
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
 

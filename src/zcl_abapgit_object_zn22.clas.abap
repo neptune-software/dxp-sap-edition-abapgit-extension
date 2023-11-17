@@ -1,14 +1,12 @@
-class zcl_abapgit_object_zn22 definition
+class ZCL_ABAPGIT_OBJECT_ZN22 definition
   public
-  inheriting from zcl_abapgit_objects_super
+  inheriting from ZCL_ABAPGIT_OBJECTS_SUPER
   final
   create public .
 
-  public section.
+public section.
 
-    interfaces zif_abapgit_object .
-
-    constants gc_crlf type abap_cr_lf value cl_abap_char_utilities=>cr_lf. "#EC NOTEXT
+  interfaces ZIF_ABAPGIT_OBJECT .
   protected section.
 private section.
 
@@ -197,7 +195,10 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
-        split lv_code at gc_crlf into table lt_code.
+*        split lv_code at gc_crlf into table lt_code.
+
+        lt_code = zcl_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
+
         loop at lt_code into lv_code.
           lv_seqnr = lv_seqnr + 1.
 
@@ -256,7 +257,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
-        split lv_code at gc_crlf into table lt_code.
+*        split lv_code at gc_crlf into table lt_code.
+        lt_code = zcl_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
+
         loop at lt_code into lv_code.
           lv_seqnr = lv_seqnr + 1.
 
@@ -314,7 +317,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
-        split lv_code at gc_crlf into table lt_code.
+*        split lv_code at gc_crlf into table lt_code.
+        lt_code = zcl_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
+
         loop at lt_code into lv_code.
           lv_seqnr = lv_seqnr + 1.
 
@@ -491,6 +496,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
 
     data lv_code type string.
 
+    data lt_code_lines type string_table.
+
     field-symbols <lt_standard_table> type standard table.
 
     assign is_table_content-table_content->* to <lt_standard_table>.
@@ -504,11 +511,13 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
         clear lv_code.
       endif.
 
-      if lv_code is initial.
-        lv_code = ls_confxml-value.
-      else.
-        concatenate lv_code ls_confxml-value into lv_code separated by gc_crlf.
-      endif.
+*      if lv_code is initial.
+*        lv_code = ls_confxml-value.
+*      else.
+*        concatenate lv_code ls_confxml-value into lv_code separated by gc_crlf.
+*      endif.
+
+      append ls_confxml-value  to lt_code_lines.
 
     endloop.
 
@@ -532,6 +541,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
           it_table   = lt_lcl_confxml ).
 
         ls_file-path = '/'.
+        lv_code = zcl_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
+        clear: lt_code_lines.
         ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_code ).
         ls_file-filename = ls_lcl_confxml-file_name.
         zif_abapgit_object~mo_files->add( ls_file ).
@@ -554,6 +565,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
 
     data lv_code type string.
 
+    data lt_code_lines type string_table.
+
     field-symbols <lt_standard_table> type standard table.
 
     assign is_table_content-table_content->* to <lt_standard_table>.
@@ -567,12 +580,13 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
         clear lv_code.
       endif.
 
-      if lv_code is initial.
-        lv_code = ls_cushead-text.
-      else.
-        concatenate lv_code ls_cushead-text into lv_code separated by gc_crlf.
-      endif.
+*      if lv_code is initial.
+*        lv_code = ls_cushead-text.
+*      else.
+*        concatenate lv_code ls_cushead-text into lv_code separated by gc_crlf.
+*      endif.
 
+      append ls_cushead-text  to lt_code_lines.
     endloop.
 
     concatenate me->ms_item-obj_name
@@ -595,6 +609,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
           it_table   = lt_lcl_cushead ).
 
         ls_file-path = '/'.
+        lv_code = zcl_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
+        clear: lt_code_lines.
         ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_code ).
         ls_file-filename = ls_lcl_cushead-file_name.
         zif_abapgit_object~mo_files->add( ls_file ).
@@ -617,6 +633,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
 
     data lv_code type string.
 
+    data lt_code_lines type string_table.
+
     field-symbols <lt_standard_table> type standard table.
 
     assign is_table_content-table_content->* to <lt_standard_table>.
@@ -630,11 +648,12 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
         clear lv_code.
       endif.
 
-      if lv_code is initial.
-        lv_code = ls_cuslogi-text.
-      else.
-        concatenate lv_code ls_cuslogi-text into lv_code separated by gc_crlf.
-      endif.
+*      if lv_code is initial.
+*        lv_code = ls_cuslogi-text.
+*      else.
+*        concatenate lv_code ls_cuslogi-text into lv_code separated by gc_crlf.
+*      endif.
+      append ls_cuslogi-text  to lt_code_lines.
 
     endloop.
 
@@ -658,6 +677,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
           it_table   = lt_lcl_cuslogi ).
 
         ls_file-path = '/'.
+        lv_code = zcl_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
+        clear: lt_code_lines.
+
         ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_code ).
         ls_file-filename = ls_lcl_cuslogi-file_name.
         zif_abapgit_object~mo_files->add( ls_file ).

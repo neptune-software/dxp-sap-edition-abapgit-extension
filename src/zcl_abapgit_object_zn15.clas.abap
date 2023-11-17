@@ -1,14 +1,12 @@
-class zcl_abapgit_object_zn15 definition
+class ZCL_ABAPGIT_OBJECT_ZN15 definition
   public
-  inheriting from zcl_abapgit_objects_super
+  inheriting from ZCL_ABAPGIT_OBJECTS_SUPER
   final
   create public .
 
-  public section.
+public section.
 
-    interfaces zif_abapgit_object .
-
-    constants gc_crlf type abap_cr_lf value cl_abap_char_utilities=>cr_lf. "#EC NOTEXT
+  interfaces ZIF_ABAPGIT_OBJECT .
   protected section.
   private section.
 
@@ -126,8 +124,11 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
-        split lv_code at gc_crlf into table lt_code.
+*        split lv_code at gc_crlf into table lt_code.
+        lt_code = zcl_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
+
         loop at lt_code into lv_code.
+
           lv_seqnr = lv_seqnr + 1.
 
           ls_jshlptx-seqnr  = lv_seqnr.
@@ -268,6 +269,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
     data lt_jshlptx type standard table of /neptune/jshlptx with default key.
     data ls_jshlptx like line of lt_jshlptx.
 
+    data lt_code_lines type string_table.
+
     field-symbols <lt_standard_table> type standard table.
 
     assign is_table_content-table_content->* to <lt_standard_table>.
@@ -283,11 +286,13 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
         move-corresponding ls_jshlptx to ls_lcl_jshlptx.
       endif.
 
-      if lv_code is initial.
-        lv_code = ls_jshlptx-text.
-      else.
-        concatenate lv_code ls_jshlptx-text into lv_code separated by gc_crlf.
-      endif.
+*      if lv_code is initial.
+*        lv_code = ls_jshlptx-text.
+*      else.
+*        concatenate lv_code ls_jshlptx-text into lv_code separated by gc_crlf.
+*      endif.
+
+      append ls_jshlptx-text to lt_code_lines.
 
     endloop.
 
@@ -305,6 +310,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
 ** loop at code table to add each entry as a file
         ls_file-path = '/'.
 
+        lv_code = zcl_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
+        clear: lt_code_lines.
         ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_code ).
       catch zcx_abapgit_exception.
     endtry.
