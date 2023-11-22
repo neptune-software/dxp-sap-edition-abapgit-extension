@@ -13,16 +13,11 @@
       "url": "https://github.com/abapGit/abapGit",
       "folder": "/deps2",
       "files": "/src/**/*.*"
-    },
-    {
-      "url": "https://github.com/neptune-software/dxp-sap-edition-abap",
-      "folder": "/deps3",
-      "files": "/src/**/*.*"
     }
   ],
   "syntax": {
     "version": "v702",
-    "errorNamespace": "^(Z|Y|LCL_|(?!TY_BOOKINGS)TY_|LIF_|/NEPTUNE/|/NEP/)",
+    "errorNamespace": "^(Z|Y|LCL_|TY_|LIF_)",
     "globalConstants": [
       "abap_func_changing",
       "abap_func_exporting",
@@ -45,11 +40,6 @@
       "wizard_screen_end",
       "wizard_screen_start",
       "wizard_true"
-    ],
-    "globalMacros": [
-      "swf_evaluate",
-      "swf_refresh",
-      "swf_okcode_get"
     ]
   },
   "rules": {
@@ -68,24 +58,12 @@
     "unknown_types": true,
     "xml_consistency": true,
     "unused_variables": true,
-    "forbidden_void_type": {
-      "severity": "Error",
-      "check": [
-        "DFIES_TAB",
-        "AEZEIT",
-        "ERZEIT",
-        "MATNR",
-        "MARA",
-        "MAKT",
-        "MARC",
-        "MARD"
-      ]
-    },
+    "forbidden_void_type": true,
     "contains_tab": true,
     "dangerous_statement": true,
     "empty_line_in_statement": true,
     "no_public_attributes": true,
-    "select_performance": true,
+    "select_performance": false,
     "use_class_based_exceptions": true,
     "empty_statement": true,
     "identical_descriptions": true,
