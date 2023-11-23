@@ -18,11 +18,6 @@
      <DESCRIPT>Deserialize General Tables</DESCRIPT>
     </SEOCOMPOTX>
     <SEOCOMPOTX>
-     <CMPNAME>GET_SKIP_FIELDS</CMPNAME>
-     <LANGU>E</LANGU>
-     <DESCRIPT>Get fields that will be skiped</DESCRIPT>
-    </SEOCOMPOTX>
-    <SEOCOMPOTX>
      <CMPNAME>MV_ARTIFACT_TYPE</CMPNAME>
      <LANGU>E</LANGU>
      <DESCRIPT>Neptune Artifact Type</DESCRIPT>
@@ -36,11 +31,6 @@
      <CMPNAME>SERIALIZE_TABLE</CMPNAME>
      <LANGU>E</LANGU>
      <DESCRIPT>Serialize General tables</DESCRIPT>
-    </SEOCOMPOTX>
-    <SEOCOMPOTX>
-     <CMPNAME>SET_SKIP_FIELDS</CMPNAME>
-     <LANGU>E</LANGU>
-     <DESCRIPT>Set fields that will be skiped</DESCRIPT>
     </SEOCOMPOTX>
    </DESCRIPTIONS>
    <DESCRIPTIONS_SUB>
@@ -67,12 +57,6 @@
      <SCONAME>RT_JSHLPGR</SCONAME>
      <LANGU>E</LANGU>
      <DESCRIPT>App Designer - Neptune JS Helpers</DESCRIPT>
-    </SEOSUBCOTX>
-    <SEOSUBCOTX>
-     <CMPNAME>GET_SKIP_FIELDS</CMPNAME>
-     <SCONAME>RT_SKIP_PATHS</SCONAME>
-     <LANGU>E</LANGU>
-     <DESCRIPT>Table of Strings</DESCRIPT>
     </SEOSUBCOTX>
     <SEOSUBCOTX>
      <CMPNAME>GET_VALUES_FROM_FILENAME</CMPNAME>

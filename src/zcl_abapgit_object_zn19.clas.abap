@@ -42,10 +42,6 @@ private section.
       !IT_TABLE type ANY
     raising
       ZCX_ABAPGIT_EXCEPTION .
-  methods SET_SKIP_FIELDS .
-  methods GET_SKIP_FIELDS
-    returning
-      value(RT_SKIP_PATHS) type STRING_TABLE .
   interface ZIF_ABAPGIT_GIT_DEFINITIONS load .
   methods DESERIALIZE_MIME_TABLE
     importing
@@ -188,13 +184,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN19 IMPLEMENTATION.
         CLEAR lv_parent.
       ENDIF.
     ENDWHILE.
-
-  ENDMETHOD.
-
-
-  METHOD get_skip_fields.
-
-    rt_skip_paths = mt_skip_paths.
 
   ENDMETHOD.
 
@@ -372,31 +361,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN19 IMPLEMENTATION.
     endtry.
 
   endmethod.
-
-
-  METHOD set_skip_fields.
-
-    DATA lv_skip TYPE string.
-
-    lv_skip = '*MANDT' ##NO_TEXT.
-    APPEND lv_skip TO mt_skip_paths.
-    lv_skip = '*APPLID' ##NO_TEXT.
-    APPEND lv_skip TO mt_skip_paths.
-    lv_skip = '*CREDAT' ##NO_TEXT.
-    APPEND lv_skip TO mt_skip_paths.
-    lv_skip = '*CRETIM' ##NO_TEXT.
-    APPEND lv_skip TO mt_skip_paths.
-    lv_skip = '*CRENAM' ##NO_TEXT.
-    APPEND lv_skip TO mt_skip_paths.
-    lv_skip = '*UPDDAT' ##NO_TEXT.
-    APPEND lv_skip TO mt_skip_paths.
-    lv_skip = '*UPDTIM' ##NO_TEXT.
-    APPEND lv_skip TO mt_skip_paths.
-    lv_skip = '*UPDNAM' ##NO_TEXT.
-    APPEND lv_skip TO mt_skip_paths.
-
-
-  ENDMETHOD.
 
 
   METHOD zif_abapgit_object~changed_by.

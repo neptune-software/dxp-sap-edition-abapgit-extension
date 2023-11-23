@@ -53,10 +53,6 @@ private section.
       !IT_TABLE type ANY
     raising
       ZCX_ABAPGIT_EXCEPTION .
-  methods SET_SKIP_FIELDS .
-  methods GET_SKIP_FIELDS
-    returning
-      value(RT_SKIP_PATHS) type STRING_TABLE .
   methods DESERIALIZE_TABLE
     importing
       !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
@@ -362,13 +358,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
         unassign <lv_field>.
       endif.
     endloop.
-
-  endmethod.
-
-
-  method get_skip_fields.
-
-    rt_skip_paths = mt_skip_paths.
 
   endmethod.
 
@@ -714,35 +703,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
                            iv_ext   = 'json' ).
 
     zif_abapgit_object~mo_files->add( ls_file ).
-
-  endmethod.
-
-
-  method set_skip_fields.
-
-    data lv_skip type string.
-
-    lv_skip = '*MANDT'.
-    append lv_skip to mt_skip_paths.
-    lv_skip = '*CONFIGURATION'.
-    append lv_skip to mt_skip_paths.
-    lv_skip = '*CREDAT'.
-    append lv_skip to mt_skip_paths.
-    lv_skip = '*CRETIM'.
-    append lv_skip to mt_skip_paths.
-    lv_skip = '*CRENAM'.
-    append lv_skip to mt_skip_paths.
-    lv_skip = '*UPDDAT'.
-    append lv_skip to mt_skip_paths.
-    lv_skip = '*UPDTIM'.
-    append lv_skip to mt_skip_paths.
-    lv_skip = '*UPDNAM'.
-    append lv_skip to mt_skip_paths.
-    lv_skip = '*APP_URL'.
-    append lv_skip to mt_skip_paths.
-    lv_skip = '*APP_CLIENT'.
-    append lv_skip to mt_skip_paths.
-
 
   endmethod.
 

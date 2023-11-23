@@ -97,10 +97,6 @@ private section.
       !IS_FILENAME type STRING
     exporting
       !EV_TABNAME type TADIR-OBJ_NAME .
-  methods SET_SKIP_FIELDS .
-  methods GET_SKIP_FIELDS
-    returning
-      value(RT_SKIP_PATHS) type STRING_TABLE .
   methods DESERIALIZE_SCRIPT
     importing
       !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
@@ -673,11 +669,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
     <lt_tab> = lt_script.
 
-  endmethod.
-
-
-  method get_skip_fields.
-    rt_skip_paths = mt_skip_paths.
   endmethod.
 
 
@@ -1478,33 +1469,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
         endloop.
       catch zcx_abapgit_exception.
     endtry.
-
-  endmethod.
-
-
-  method set_skip_fields.
-
-    data lv_skip type string.
-
-    lv_skip = '*APPLID'.
-    append lv_skip to mt_skip_paths.
-    lv_skip = '*DEVCLASS'.
-    append lv_skip to mt_skip_paths.
-    lv_skip = '*CREDAT'.
-    append lv_skip to mt_skip_paths.
-    lv_skip = '*CRETIM'.
-    append lv_skip to mt_skip_paths.
-    lv_skip = '*CRENAM'.
-    append lv_skip to mt_skip_paths.
-    lv_skip = '*UPDDAT'.
-    append lv_skip to mt_skip_paths.
-    lv_skip = '*UPDTIM'.
-    append lv_skip to mt_skip_paths.
-    lv_skip = '*UPDNAM'.
-    append lv_skip to mt_skip_paths.
-    lv_skip = '*TR_ORDER'.
-    append lv_skip to mt_skip_paths.
-
 
   endmethod.
 

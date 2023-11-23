@@ -19,10 +19,6 @@ private section.
       !IT_TABLE type ANY
     raising
       ZCX_ABAPGIT_EXCEPTION .
-  methods SET_SKIP_FIELDS .
-  methods GET_SKIP_FIELDS
-    returning
-      value(RT_SKIP_PATHS) type STRING_TABLE .
   interface ZIF_ABAPGIT_GIT_DEFINITIONS load .
   methods DESERIALIZE_TABLE
     importing
@@ -104,13 +100,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN16 IMPLEMENTATION.
     endloop.
 
     <lt_tab> = <lt_standard_table>.
-
-  endmethod.
-
-
-  method get_skip_fields.
-
-    rt_skip_paths = mt_skip_paths.
 
   endmethod.
 
@@ -219,31 +208,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN16 IMPLEMENTATION.
                            iv_ext   = 'json' ).
 
     zif_abapgit_object~mo_files->add( ls_file ).
-
-  endmethod.
-
-
-  method set_skip_fields.
-
-    data lv_skip type string.
-
-    lv_skip = '*MANDT' ##NO_TEXT.
-    append lv_skip to mt_skip_paths.
-    lv_skip = '*APPLID' ##NO_TEXT.
-    append lv_skip to mt_skip_paths.
-    lv_skip = '*CREDAT' ##NO_TEXT.
-    append lv_skip to mt_skip_paths.
-    lv_skip = '*CRETIM' ##NO_TEXT.
-    append lv_skip to mt_skip_paths.
-    lv_skip = '*CRENAM' ##NO_TEXT.
-    append lv_skip to mt_skip_paths.
-    lv_skip = '*UPDDAT' ##NO_TEXT.
-    append lv_skip to mt_skip_paths.
-    lv_skip = '*UPDTIM' ##NO_TEXT.
-    append lv_skip to mt_skip_paths.
-    lv_skip = '*UPDNAM' ##NO_TEXT.
-    append lv_skip to mt_skip_paths.
-
 
   endmethod.
 
