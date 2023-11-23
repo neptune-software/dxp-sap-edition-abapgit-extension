@@ -10,12 +10,11 @@ public section.
       !IV_PARAMETERS type /NEPTUNE/MARKET_ABAPGIT_REPO
     exporting
       !RT_MESSAGES type /NEPTUNE/MESSAGE_TT .
-  type-pools ABAP .
   class-methods CHECK_REPO_INSTALLED
     importing
       !IV_DEVCLASS type DEVCLASS
     exporting
-      !EV_INSTALLED type ABAP_BOOL
+      !EV_INSTALLED type BOOLE_D
       !RT_MESSAGES type /NEPTUNE/MESSAGE_TT .
   class-methods DELETE_ABAPGIT_REPO
     importing

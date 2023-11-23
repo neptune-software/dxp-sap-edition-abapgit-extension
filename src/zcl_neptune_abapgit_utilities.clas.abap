@@ -104,7 +104,7 @@ method get_skip_fields_for_artifact.
 
   data: lo_artifact_type   type ref to /neptune/if_artifact_type,
         lt_artifact_fields type /neptune/if_artifact_type=>ty_t_artifact_fields,
-        l_field            like line of rt_fields.
+        ls_field           like line of rt_fields.
 
   field-symbols: <ls_artifact_field> like line of lt_artifact_fields.
 
@@ -113,11 +113,11 @@ method get_skip_fields_for_artifact.
 
   loop at lt_artifact_fields assigning <ls_artifact_field>.
     if iv_serialize eq abap_true.
-      concatenate '*' <ls_artifact_field>-fieldname into l_field.
+      concatenate '*' <ls_artifact_field>-fieldname into ls_field.
     else.
-      l_field = <ls_artifact_field>-fieldname.
+      ls_field = <ls_artifact_field>-fieldname.
     endif.
-    insert l_field into table rt_fields.
+    insert ls_field into table rt_fields.
   endloop.
 
 endmethod.
