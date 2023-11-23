@@ -14,6 +14,7 @@ private section.
   constants:
     mc_name_separator(1) type c value '@'. "#EC NOTEXT
   data MT_SKIP_PATHS type STRING_TABLE .
+  data MV_ARTIFACT_TYPE type /NEPTUNE/ARTIFACT_TYPE .
 
   methods SERIALIZE_TABLE
     importing
@@ -173,7 +174,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN12 IMPLEMENTATION.
                       ii_filter      = zcl_abapgit_ajson_filter_lib=>create_empty_filter( ) ).
 
 * Remove unwanted fields
-        lt_skip_paths = get_skip_fields( ).
+        lt_skip_paths = zcl_neptune_abapgit_utilities=>get_skip_fields_for_artifact(
+                                                          iv_artifact_type = mv_artifact_type
+                                                          iv_serialize     = abap_true ).
         if lt_skip_paths is not initial.
           lo_ajson = zcl_abapgit_ajson=>create_from(
                         ii_source_json = lo_ajson
@@ -238,8 +241,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN12 IMPLEMENTATION.
     lv_key = ms_item-obj_name.
 
     lo_artifact->get_table_content(
-      exporting iv_key1          = lv_key
-      importing et_table_content = lt_table_content ).
+      exporting iv_key1                 = lv_key
+                iv_only_sys_independent = abap_true
+      importing et_table_content        = lt_table_content ).
 
     read table lt_table_content into ls_table_content with table key tabname = '/NEPTUNE/SPLASH'.
     if sy-subrc = 0.
@@ -435,6 +439,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN12 IMPLEMENTATION.
     field-symbols <lt_standard_table> type standard table.
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
+    mv_artifact_type = lo_artifact->artifact_type.
 
     try.
         io_xml->add(
@@ -446,11 +451,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN12 IMPLEMENTATION.
     lv_key = ms_item-obj_name.
 
     lo_artifact->get_table_content(
-      exporting iv_key1          = lv_key
-      importing et_table_content = lt_table_content ).
-
-* set fields that will be skipped in the serialization process
-    set_skip_fields( ).
+      exporting iv_key1                 = lv_key
+                iv_only_sys_independent = abap_true
+      importing et_table_content        = lt_table_content ).
 
 * serialize
     loop at lt_table_content into ls_table_content.

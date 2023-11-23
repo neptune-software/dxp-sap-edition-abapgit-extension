@@ -23,6 +23,11 @@
      <DESCRIPT>Get fields that will be skiped</DESCRIPT>
     </SEOCOMPOTX>
     <SEOCOMPOTX>
+     <CMPNAME>MV_ARTIFACT_TYPE</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Neptune Artifact Type</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
      <CMPNAME>SERIALIZE_CSS</CMPNAME>
      <LANGU>E</LANGU>
      <DESCRIPT>Serialize /NEPTUNE/CSS</DESCRIPT>

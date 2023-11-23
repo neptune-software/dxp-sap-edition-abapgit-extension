@@ -8,52 +8,53 @@ class zcl_abapgit_object_zn08 definition
 
     interfaces zif_abapgit_object .
   protected section.
-  private section.
+private section.
 
-    types:
-      begin of ty_mapping,
+  types:
+    begin of ty_mapping,
                   key type tadir-obj_name,
                   name type string,
                  end of ty_mapping .
-    types:
-      ty_mapping_tt type standard table of ty_mapping with key key .
+  types:
+    ty_mapping_tt type standard table of ty_mapping with key key .
 
-    constants:
-      mc_name_separator(1) type c value '@'.                "#EC NOTEXT
-    class-data gt_mapping type ty_mapping_tt .
-    data mt_skip_paths type string_table .
+  constants:
+    mc_name_separator(1) type c value '@'. "#EC NOTEXT
+  class-data GT_MAPPING type TY_MAPPING_TT .
+  data MT_SKIP_PATHS type STRING_TABLE .
+  data MV_ARTIFACT_TYPE type /NEPTUNE/ARTIFACT_TYPE .
 
-    methods serialize_table
-      importing
-        !iv_tabname type tabname
-        !it_table type any
-      raising
-        zcx_abapgit_exception .
-    methods set_skip_fields .
-    methods get_skip_fields
-      returning
-        value(rt_skip_paths) type string_table .
-    interface zif_abapgit_git_definitions load .
-    methods deserialize_table
-      importing
-        !is_file type zif_abapgit_git_definitions=>ty_file
-        !ir_data type ref to data
-        !iv_tabname type tadir-obj_name
-      raising
-        zcx_abapgit_exception .
-    methods get_values_from_filename
-      importing
-        !is_filename type string
-      exporting
-        !ev_tabname type tadir-obj_name
-        !ev_name type /neptune/artifact_name .
-    methods insert_to_transport
-      importing
-        !io_artifact type ref to /neptune/if_artifact_type
-        !iv_transport type trkorr
-        !iv_package type devclass
-        !iv_key1 type any
-        !iv_artifact_type type /neptune/aty-artifact_type .
+  methods SERIALIZE_TABLE
+    importing
+      !IV_TABNAME type TABNAME
+      !IT_TABLE type ANY
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods SET_SKIP_FIELDS .
+  methods GET_SKIP_FIELDS
+    returning
+      value(RT_SKIP_PATHS) type STRING_TABLE .
+  interface ZIF_ABAPGIT_GIT_DEFINITIONS load .
+  methods DESERIALIZE_TABLE
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IR_DATA type ref to DATA
+      !IV_TABNAME type TADIR-OBJ_NAME
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods GET_VALUES_FROM_FILENAME
+    importing
+      !IS_FILENAME type STRING
+    exporting
+      !EV_TABNAME type TADIR-OBJ_NAME
+      !EV_NAME type /NEPTUNE/ARTIFACT_NAME .
+  methods INSERT_TO_TRANSPORT
+    importing
+      !IO_ARTIFACT type ref to /NEPTUNE/IF_ARTIFACT_TYPE
+      !IV_TRANSPORT type TRKORR
+      !IV_PACKAGE type DEVCLASS
+      !IV_KEY1 type ANY
+      !IV_ARTIFACT_TYPE type /NEPTUNE/ATY-ARTIFACT_TYPE .
 ENDCLASS.
 
 
@@ -181,7 +182,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN08 IMPLEMENTATION.
                       ii_filter      = zcl_abapgit_ajson_filter_lib=>create_empty_filter( ) ).
 
 * Remove unwanted fields
-        lt_skip_paths = get_skip_fields( ).
+        lt_skip_paths = zcl_neptune_abapgit_utilities=>get_skip_fields_for_artifact(
+                                                          iv_artifact_type = mv_artifact_type
+                                                          iv_serialize     = abap_true ).
         if lt_skip_paths is not initial.
           lo_ajson = zcl_abapgit_ajson=>create_from(
                         ii_source_json = lo_ajson
@@ -246,8 +249,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN08 IMPLEMENTATION.
     lv_key = ms_item-obj_name.
 
     lo_artifact->get_table_content(
-      exporting iv_key1          = lv_key
-      importing et_table_content = lt_table_content ).
+      exporting iv_key1                 = lv_key
+                iv_only_sys_independent = abap_true
+      importing et_table_content        = lt_table_content ).
 
     read table lt_table_content into ls_table_content with table key tabname = '/NEPTUNE/CUSTIL'.
     if sy-subrc = 0.
@@ -507,6 +511,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN08 IMPLEMENTATION.
 **********************************************************************
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
+    mv_artifact_type = lo_artifact->artifact_type.
 
     try.
         io_xml->add(
@@ -518,11 +523,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN08 IMPLEMENTATION.
     lv_key = ms_item-obj_name.
 
     lo_artifact->get_table_content(
-      exporting iv_key1          = lv_key
-      importing et_table_content = lt_table_content ).
-
-* set fields that will be skipped in the serialization process
-    set_skip_fields( ).
+      exporting iv_key1                 = lv_key
+                iv_only_sys_independent = abap_true
+      importing et_table_content        = lt_table_content ).
 
 * serialize
     loop at lt_table_content into ls_table_content.

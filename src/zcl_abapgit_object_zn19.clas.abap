@@ -34,6 +34,7 @@ private section.
   constants GC_MIME_T_TABLE type TABNAME value '/NEPTUNE/MIME_T'. "#EC NOTEXT
   data MT_SKIP_PATHS type STRING_TABLE .
   class-data GT_MAPPING type TY_MAPPING_TT .
+  data MV_ARTIFACT_TYPE type /NEPTUNE/ARTIFACT_TYPE .
 
   methods SERIALIZE_TABLE
     importing
@@ -342,7 +343,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN19 IMPLEMENTATION.
                       ii_filter      = zcl_abapgit_ajson_filter_lib=>create_empty_filter( ) ).
 
 * Remove unwanted fields
-        lt_skip_paths = get_skip_fields( ).
+        lt_skip_paths = zcl_neptune_abapgit_utilities=>get_skip_fields_for_artifact(
+                                                          iv_artifact_type = mv_artifact_type
+                                                          iv_serialize     = abap_true ).
         if lt_skip_paths is not initial.
           lo_ajson = zcl_abapgit_ajson=>create_from(
                         ii_source_json = lo_ajson
@@ -412,8 +415,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN19 IMPLEMENTATION.
     lv_key = ms_item-obj_name.
 
     lo_artifact->get_table_content(
-      EXPORTING iv_key1          = lv_key
-      IMPORTING et_table_content = lt_table_content ).
+      exporting iv_key1                 = lv_key
+                iv_only_sys_independent = abap_true
+      importing et_table_content        = lt_table_content ).
 
     READ TABLE lt_table_content INTO ls_table_content WITH TABLE KEY tabname = gc_medpack.
     IF sy-subrc = 0.
@@ -680,6 +684,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN19 IMPLEMENTATION.
     FIELD-SYMBOLS <lt_mime_t> TYPE ty_t_mime_t.
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
+    mv_artifact_type = lo_artifact->artifact_type.
 
     TRY.
         io_xml->add(
@@ -691,12 +696,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN19 IMPLEMENTATION.
     lv_key = ms_item-obj_name.
 
     lo_artifact->get_table_content(
-      EXPORTING iv_key1          = lv_key
-      IMPORTING et_table_content = lt_table_content ).
-
-* set fields that will be skipped in the serialization process
-    set_skip_fields( ).
-
+      exporting iv_key1                 = lv_key
+                iv_only_sys_independent = abap_true
+      importing et_table_content        = lt_table_content ).
 
 * get folders table
     READ TABLE lt_table_content INTO ls_table_content WITH KEY tabname = gc_mime_t_table.

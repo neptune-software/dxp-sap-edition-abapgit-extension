@@ -23,6 +23,11 @@
      <DESCRIPT>Get fields that will be skiped</DESCRIPT>
     </SEOCOMPOTX>
     <SEOCOMPOTX>
+     <CMPNAME>MV_ARTIFACT_TYPE</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Neptune Artifact Type</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
      <CMPNAME>SERIALIZE_TABLE</CMPNAME>
      <LANGU>E</LANGU>
      <DESCRIPT>Serialize General tables</DESCRIPT>
