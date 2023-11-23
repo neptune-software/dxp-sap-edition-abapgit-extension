@@ -1,773 +1,772 @@
-class zcl_abapgit_object_zn01 definition
-  public
-  inheriting from zcl_abapgit_objects_super
-  final
-  create public .
+CLASS zcl_abapgit_object_zn01 DEFINITION
+  PUBLIC
+  INHERITING FROM zcl_abapgit_objects_super
+  FINAL
+  CREATE PUBLIC .
 
-  public section.
+  PUBLIC SECTION.
 
-    interfaces zif_abapgit_object .
-  protected section.
-private section.
+    INTERFACES zif_abapgit_object .
+  PROTECTED SECTION.
+  PRIVATE SECTION.
 
-  types:
-    begin of ty_lcl_evtscr,
-                        applid    type /neptune/applid,
-                        field_id  type /neptune/field_id,
-                        event     type /neptune/event_id,
-                        file_name type string,
-                       end of ty_lcl_evtscr .
-  types:
-    ty_tt_lcl_evtscr type standard table of ty_lcl_evtscr .
-  types:
-    begin of ty_lcl_css,
-                        applid    type /neptune/applid,
-                        file_name type string,
-                       end of ty_lcl_css .
-  types:
-    ty_tt_lcl_css type standard table of ty_lcl_css .
-  types:
-    begin of ty_code,
-                        file_name type string,
-                        code      type string,
-                       end of ty_code .
-  types:
-    ty_tt_code type standard table of ty_code with non-unique key file_name .
-  types:
-    begin of ty_lcl_script,
-                        applid    type /neptune/applid,
-                        field_id  type /neptune/field_id,
-                        file_name type string,
-                       end of ty_lcl_script .
-  types:
-    ty_tt_lcl_script type standard table of ty_lcl_script .
+    TYPES:
+      BEGIN OF ty_lcl_evtscr,
+                        applid    TYPE /neptune/applid,
+                        field_id  TYPE /neptune/field_id,
+                        event     TYPE /neptune/event_id,
+                        file_name TYPE string,
+                       END OF ty_lcl_evtscr .
+    TYPES:
+      ty_tt_lcl_evtscr TYPE STANDARD TABLE OF ty_lcl_evtscr .
+    TYPES:
+      BEGIN OF ty_lcl_css,
+                        applid    TYPE /neptune/applid,
+                        file_name TYPE string,
+                       END OF ty_lcl_css .
+    TYPES:
+      ty_tt_lcl_css TYPE STANDARD TABLE OF ty_lcl_css .
+    TYPES:
+      BEGIN OF ty_code,
+                        file_name TYPE string,
+                        code      TYPE string,
+                       END OF ty_code .
+    TYPES:
+      ty_tt_code TYPE STANDARD TABLE OF ty_code WITH NON-UNIQUE KEY file_name .
+    TYPES:
+      BEGIN OF ty_lcl_script,
+                        applid    TYPE /neptune/applid,
+                        field_id  TYPE /neptune/field_id,
+                        file_name TYPE string,
+                       END OF ty_lcl_script .
+    TYPES:
+      ty_tt_lcl_script TYPE STANDARD TABLE OF ty_lcl_script .
 
-  data MT_SKIP_PATHS type STRING_TABLE .
-  data MV_ARTIFACT_TYPE type /NEPTUNE/ARTIFACT_TYPE .
+    DATA mv_artifact_type TYPE /neptune/artifact_type .
 
-  interface /NEPTUNE/IF_ARTIFACT_TYPE load .
-  methods SERIALIZE_HTML
-    importing
-      !IT_OBJ type /NEPTUNE/OBJ_TT
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
-  methods SERIALIZE_EVTSCR
-    importing
-      !IT_OBJ type /NEPTUNE/OBJ_TT
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
-  methods SERIALIZE_SCRIPT
-    importing
-      !IT_OBJ type /NEPTUNE/OBJ_TT
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
-  methods SERIALIZE__SCRIPT
-    importing
-      !IT_OBJ type /NEPTUNE/OBJ_TT
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
-  methods SERIALIZE__HTML
-    importing
-      !IT_OBJ type /NEPTUNE/OBJ_TT
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
-  methods SERIALIZE__EVTSCR
-    importing
-      !IT_OBJ type /NEPTUNE/OBJ_TT
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
-  methods SERIALIZE_TABLE
-    importing
-      !IV_TABNAME type TABNAME
-      !IT_TABLE type ANY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods SERIALIZE_CSS
-    importing
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
-  methods SERIALIZE__CSS
-    importing
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
-  interface ZIF_ABAPGIT_GIT_DEFINITIONS load .
-  methods DESERIALIZE_TABLE
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IR_DATA type ref to DATA
-      !IV_TABNAME type TADIR-OBJ_NAME
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-      !IV_DEVCLASS type DEVCLASS
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods GET_VALUES_FROM_FILENAME
-    importing
-      !IS_FILENAME type STRING
-    exporting
-      !EV_TABNAME type TADIR-OBJ_NAME .
-  methods DESERIALIZE_SCRIPT
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
-      !IR_DATA type ref to DATA
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods DESERIALIZE_HTML
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
-      !IR_DATA type ref to DATA
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods DESERIALIZE_EVTSCR
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
-      !IR_DATA type ref to DATA
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods DESERIALIZE__SCRIPT
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
-      !IR_DATA type ref to DATA
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods DESERIALIZE__HTML
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
-      !IR_DATA type ref to DATA
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods DESERIALIZE__EVTSCR
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
-      !IR_DATA type ref to DATA
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods DESERIALIZE_CSS
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
-      !IR_DATA type ref to DATA
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods DESERIALIZE__CSS
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
-      !IR_DATA type ref to DATA
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods INSERT_TO_TRANSPORT
-    importing
-      !IO_ARTIFACT type ref to /NEPTUNE/IF_ARTIFACT_TYPE
-      !IV_TRANSPORT type TRKORR
-      !IV_PACKAGE type DEVCLASS
-      !IV_KEY1 type ANY
-      !IV_ARTIFACT_TYPE type /NEPTUNE/ATY-ARTIFACT_TYPE .
+    INTERFACE /neptune/if_artifact_type LOAD .
+    METHODS serialize_html
+      IMPORTING
+      !it_obj TYPE /neptune/obj_tt
+      !is_table_content TYPE /neptune/if_artifact_type=>ty_table_content .
+    METHODS serialize_evtscr
+      IMPORTING
+      !it_obj TYPE /neptune/obj_tt
+      !is_table_content TYPE /neptune/if_artifact_type=>ty_table_content .
+    METHODS serialize_script
+      IMPORTING
+      !it_obj TYPE /neptune/obj_tt
+      !is_table_content TYPE /neptune/if_artifact_type=>ty_table_content .
+    METHODS serialize__script
+      IMPORTING
+      !it_obj TYPE /neptune/obj_tt
+      !is_table_content TYPE /neptune/if_artifact_type=>ty_table_content .
+    METHODS serialize__html
+      IMPORTING
+      !it_obj TYPE /neptune/obj_tt
+      !is_table_content TYPE /neptune/if_artifact_type=>ty_table_content .
+    METHODS serialize__evtscr
+      IMPORTING
+      !it_obj TYPE /neptune/obj_tt
+      !is_table_content TYPE /neptune/if_artifact_type=>ty_table_content .
+    METHODS serialize_table
+      IMPORTING
+      !iv_tabname TYPE tabname
+      !it_table TYPE any
+      RAISING
+      zcx_abapgit_exception .
+    METHODS serialize_css
+      IMPORTING
+      !is_table_content TYPE /neptune/if_artifact_type=>ty_table_content .
+    METHODS serialize__css
+      IMPORTING
+      !is_table_content TYPE /neptune/if_artifact_type=>ty_table_content .
+    INTERFACE zif_abapgit_git_definitions LOAD .
+    METHODS deserialize_table
+      IMPORTING
+      !is_file TYPE zif_abapgit_git_definitions=>ty_file
+      !ir_data TYPE REF TO data
+      !iv_tabname TYPE tadir-obj_name
+      !iv_key TYPE /neptune/artifact_key
+      !iv_devclass TYPE devclass
+      RAISING
+      zcx_abapgit_exception .
+    METHODS get_values_from_filename
+      IMPORTING
+      !is_filename TYPE string
+      EXPORTING
+      !ev_tabname TYPE tadir-obj_name .
+    METHODS deserialize_script
+      IMPORTING
+      !is_file TYPE zif_abapgit_git_definitions=>ty_file
+      !it_files TYPE zif_abapgit_git_definitions=>ty_files_tt
+      !ir_data TYPE REF TO data
+      !iv_key TYPE /neptune/artifact_key
+      RAISING
+      zcx_abapgit_exception .
+    METHODS deserialize_html
+      IMPORTING
+      !is_file TYPE zif_abapgit_git_definitions=>ty_file
+      !it_files TYPE zif_abapgit_git_definitions=>ty_files_tt
+      !ir_data TYPE REF TO data
+      !iv_key TYPE /neptune/artifact_key
+      RAISING
+      zcx_abapgit_exception .
+    METHODS deserialize_evtscr
+      IMPORTING
+      !is_file TYPE zif_abapgit_git_definitions=>ty_file
+      !it_files TYPE zif_abapgit_git_definitions=>ty_files_tt
+      !ir_data TYPE REF TO data
+      !iv_key TYPE /neptune/artifact_key
+      RAISING
+      zcx_abapgit_exception .
+    METHODS deserialize__script
+      IMPORTING
+      !is_file TYPE zif_abapgit_git_definitions=>ty_file
+      !it_files TYPE zif_abapgit_git_definitions=>ty_files_tt
+      !ir_data TYPE REF TO data
+      !iv_key TYPE /neptune/artifact_key
+      RAISING
+      zcx_abapgit_exception .
+    METHODS deserialize__html
+      IMPORTING
+      !is_file TYPE zif_abapgit_git_definitions=>ty_file
+      !it_files TYPE zif_abapgit_git_definitions=>ty_files_tt
+      !ir_data TYPE REF TO data
+      !iv_key TYPE /neptune/artifact_key
+      RAISING
+      zcx_abapgit_exception .
+    METHODS deserialize__evtscr
+      IMPORTING
+      !is_file TYPE zif_abapgit_git_definitions=>ty_file
+      !it_files TYPE zif_abapgit_git_definitions=>ty_files_tt
+      !ir_data TYPE REF TO data
+      !iv_key TYPE /neptune/artifact_key
+      RAISING
+      zcx_abapgit_exception .
+    METHODS deserialize_css
+      IMPORTING
+      !is_file TYPE zif_abapgit_git_definitions=>ty_file
+      !it_files TYPE zif_abapgit_git_definitions=>ty_files_tt
+      !ir_data TYPE REF TO data
+      !iv_key TYPE /neptune/artifact_key
+      RAISING
+      zcx_abapgit_exception .
+    METHODS deserialize__css
+      IMPORTING
+      !is_file TYPE zif_abapgit_git_definitions=>ty_file
+      !it_files TYPE zif_abapgit_git_definitions=>ty_files_tt
+      !ir_data TYPE REF TO data
+      !iv_key TYPE /neptune/artifact_key
+      RAISING
+      zcx_abapgit_exception .
+    METHODS insert_to_transport
+      IMPORTING
+      !io_artifact TYPE REF TO /neptune/if_artifact_type
+      !iv_transport TYPE trkorr
+      !iv_package TYPE devclass
+      !iv_key1 TYPE any
+      !iv_artifact_type TYPE /neptune/aty-artifact_type .
 ENDCLASS.
 
 
 
-CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
+CLASS zcl_abapgit_object_zn01 IMPLEMENTATION.
 
 
-  method deserialize_css.
+  METHOD deserialize_css.
 
-    data lt_lcl_css type ty_tt_lcl_css.
-    data ls_lcl_css like line of lt_lcl_css.
+    DATA lt_lcl_css TYPE ty_tt_lcl_css.
+    DATA ls_lcl_css LIKE LINE OF lt_lcl_css.
 
-    data lt_css type standard table of /neptune/css with default key.
-    data ls_css like line of lt_css.
+    DATA lt_css TYPE STANDARD TABLE OF /neptune/css WITH DEFAULT KEY.
+    DATA ls_css LIKE LINE OF lt_css.
 
-    data lo_ajson type ref to zcl_abapgit_ajson.
-    data lx_ajson type ref to zcx_abapgit_ajson_error.
+    DATA lo_ajson TYPE REF TO zcl_abapgit_ajson.
+    DATA lx_ajson TYPE REF TO zcx_abapgit_ajson_error.
 
-    data ls_file like line of it_files.
+    DATA ls_file LIKE LINE OF it_files.
 
-    data lt_code type string_table.
-    data lv_code type string.
+    DATA lt_code TYPE string_table.
+    DATA lv_code TYPE string.
 
-    field-symbols <lt_tab> type any table.
+    FIELD-SYMBOLS <lt_tab> TYPE ANY TABLE.
 
-    assign ir_data->* to <lt_tab>.
-    check sy-subrc = 0.
+    ASSIGN ir_data->* TO <lt_tab>.
+    CHECK sy-subrc = 0.
 
-    try.
+    TRY.
         lo_ajson = zcl_abapgit_ajson=>parse( zcl_abapgit_convert=>xstring_to_string_utf8( is_file-data ) ).
-        lo_ajson->zif_abapgit_ajson~to_abap( importing ev_container = lt_lcl_css ).
-      catch zcx_abapgit_ajson_error into lx_ajson.
+        lo_ajson->zif_abapgit_ajson~to_abap( IMPORTING ev_container = lt_lcl_css ).
+      CATCH zcx_abapgit_ajson_error INTO lx_ajson.
         zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
-    endtry.
+    ENDTRY.
 
-    loop at lt_lcl_css into ls_lcl_css.
+    LOOP AT lt_lcl_css INTO ls_lcl_css.
 
-      move-corresponding ls_lcl_css to ls_css.
+      MOVE-CORRESPONDING ls_lcl_css TO ls_css.
 
-      read table it_files into ls_file with key filename = ls_lcl_css-file_name.
-      if sy-subrc = 0.
+      READ TABLE it_files INTO ls_file WITH KEY filename = ls_lcl_css-file_name.
+      IF sy-subrc = 0.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
         lt_code = zcl_neptune_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
-        loop at lt_code into lv_code.
+        LOOP AT lt_code INTO lv_code.
           ls_css-applid = iv_key.
           ls_css-seqnr  = sy-tabix.
           ls_css-text   = lv_code.
-          append ls_css to lt_css.
-        endloop.
+          APPEND ls_css TO lt_css.
+        ENDLOOP.
 
 
-      endif.
-    endloop.
+      ENDIF.
+    ENDLOOP.
 
     <lt_tab> = lt_css.
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method deserialize_evtscr.
+  METHOD deserialize_evtscr.
 
-    data lt_lcl_evtscr type ty_tt_lcl_evtscr.
-    data ls_lcl_evtscr like line of lt_lcl_evtscr.
+    DATA lt_lcl_evtscr TYPE ty_tt_lcl_evtscr.
+    DATA ls_lcl_evtscr LIKE LINE OF lt_lcl_evtscr.
 
-    data lt_evtscr type standard table of /neptune/evtscr with default key.
-    data ls_evtscr like line of lt_evtscr.
+    DATA lt_evtscr TYPE STANDARD TABLE OF /neptune/evtscr WITH DEFAULT KEY.
+    DATA ls_evtscr LIKE LINE OF lt_evtscr.
 
-    data lo_ajson type ref to zcl_abapgit_ajson.
-    data lx_ajson type ref to zcx_abapgit_ajson_error.
+    DATA lo_ajson TYPE REF TO zcl_abapgit_ajson.
+    DATA lx_ajson TYPE REF TO zcx_abapgit_ajson_error.
 
-    data ls_file like line of it_files.
+    DATA ls_file LIKE LINE OF it_files.
 
-    data lt_code type string_table.
-    data lv_code type string.
+    DATA lt_code TYPE string_table.
+    DATA lv_code TYPE string.
 
-    field-symbols <lt_tab> type any table.
+    FIELD-SYMBOLS <lt_tab> TYPE ANY TABLE.
 
-    assign ir_data->* to <lt_tab>.
-    check sy-subrc = 0.
+    ASSIGN ir_data->* TO <lt_tab>.
+    CHECK sy-subrc = 0.
 
-    try.
+    TRY.
         lo_ajson = zcl_abapgit_ajson=>parse( zcl_abapgit_convert=>xstring_to_string_utf8( is_file-data ) ).
-        lo_ajson->zif_abapgit_ajson~to_abap( importing ev_container = lt_lcl_evtscr ).
-      catch zcx_abapgit_ajson_error into lx_ajson.
+        lo_ajson->zif_abapgit_ajson~to_abap( IMPORTING ev_container = lt_lcl_evtscr ).
+      CATCH zcx_abapgit_ajson_error INTO lx_ajson.
         zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
-    endtry.
+    ENDTRY.
 
-    loop at lt_lcl_evtscr into ls_lcl_evtscr.
+    LOOP AT lt_lcl_evtscr INTO ls_lcl_evtscr.
 
-      move-corresponding ls_lcl_evtscr to ls_evtscr.
+      MOVE-CORRESPONDING ls_lcl_evtscr TO ls_evtscr.
 
-      read table it_files into ls_file with key filename = ls_lcl_evtscr-file_name.
-      if sy-subrc = 0.
+      READ TABLE it_files INTO ls_file WITH KEY filename = ls_lcl_evtscr-file_name.
+      IF sy-subrc = 0.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
         lt_code = zcl_neptune_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
-        loop at lt_code into lv_code.
+        LOOP AT lt_code INTO lv_code.
           ls_evtscr-applid = iv_key.
           ls_evtscr-seqnr  = sy-tabix.
           ls_evtscr-text   = lv_code.
-          append ls_evtscr to lt_evtscr.
-        endloop.
+          APPEND ls_evtscr TO lt_evtscr.
+        ENDLOOP.
 
 
-      endif.
-    endloop.
+      ENDIF.
+    ENDLOOP.
 
     <lt_tab> = lt_evtscr.
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method deserialize_html.
+  METHOD deserialize_html.
 
-    data lt_lcl_script type ty_tt_lcl_script.
-    data ls_lcl_script like line of lt_lcl_script.
+    DATA lt_lcl_script TYPE ty_tt_lcl_script.
+    DATA ls_lcl_script LIKE LINE OF lt_lcl_script.
 
-    data lt_html type standard table of /neptune/html with default key.
-    data ls_html like line of lt_html.
+    DATA lt_html TYPE STANDARD TABLE OF /neptune/html WITH DEFAULT KEY.
+    DATA ls_html LIKE LINE OF lt_html.
 
-    data lo_ajson type ref to zcl_abapgit_ajson.
-    data lx_ajson type ref to zcx_abapgit_ajson_error.
+    DATA lo_ajson TYPE REF TO zcl_abapgit_ajson.
+    DATA lx_ajson TYPE REF TO zcx_abapgit_ajson_error.
 
-    data ls_file like line of it_files.
+    DATA ls_file LIKE LINE OF it_files.
 
-    data lt_code type string_table.
-    data lv_code type string.
+    DATA lt_code TYPE string_table.
+    DATA lv_code TYPE string.
 
-    field-symbols <lt_tab> type any table.
+    FIELD-SYMBOLS <lt_tab> TYPE ANY TABLE.
 
-    assign ir_data->* to <lt_tab>.
-    check sy-subrc = 0.
+    ASSIGN ir_data->* TO <lt_tab>.
+    CHECK sy-subrc = 0.
 
-    try.
+    TRY.
         lo_ajson = zcl_abapgit_ajson=>parse( zcl_abapgit_convert=>xstring_to_string_utf8( is_file-data ) ).
-        lo_ajson->zif_abapgit_ajson~to_abap( importing ev_container = lt_lcl_script ).
-      catch zcx_abapgit_ajson_error into lx_ajson.
+        lo_ajson->zif_abapgit_ajson~to_abap( IMPORTING ev_container = lt_lcl_script ).
+      CATCH zcx_abapgit_ajson_error INTO lx_ajson.
         zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
-    endtry.
+    ENDTRY.
 
-    loop at lt_lcl_script into ls_lcl_script.
+    LOOP AT lt_lcl_script INTO ls_lcl_script.
 
-      move-corresponding ls_lcl_script to ls_html.
+      MOVE-CORRESPONDING ls_lcl_script TO ls_html.
 
-      read table it_files into ls_file with key filename = ls_lcl_script-file_name.
-      if sy-subrc = 0.
+      READ TABLE it_files INTO ls_file WITH KEY filename = ls_lcl_script-file_name.
+      IF sy-subrc = 0.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
         lt_code = zcl_neptune_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
-        loop at lt_code into lv_code.
+        LOOP AT lt_code INTO lv_code.
           ls_html-applid = iv_key.
           ls_html-seqnr  = sy-tabix.
           ls_html-text   = lv_code.
-          append ls_html to lt_html.
-        endloop.
+          APPEND ls_html TO lt_html.
+        ENDLOOP.
 
 
-      endif.
-    endloop.
+      ENDIF.
+    ENDLOOP.
 
     <lt_tab> = lt_html.
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method deserialize_script.
+  METHOD deserialize_script.
 
-    data lt_lcl_script type ty_tt_lcl_script.
-    data ls_lcl_script like line of lt_lcl_script.
+    DATA lt_lcl_script TYPE ty_tt_lcl_script.
+    DATA ls_lcl_script LIKE LINE OF lt_lcl_script.
 
-    data lt_script type standard table of /neptune/script with default key.
-    data ls_script like line of lt_script.
+    DATA lt_script TYPE STANDARD TABLE OF /neptune/script WITH DEFAULT KEY.
+    DATA ls_script LIKE LINE OF lt_script.
 
-    data lo_ajson type ref to zcl_abapgit_ajson.
-    data lx_ajson type ref to zcx_abapgit_ajson_error.
+    DATA lo_ajson TYPE REF TO zcl_abapgit_ajson.
+    DATA lx_ajson TYPE REF TO zcx_abapgit_ajson_error.
 
-    data ls_file like line of it_files.
+    DATA ls_file LIKE LINE OF it_files.
 
-    data lt_code type string_table.
-    data lv_code type string.
+    DATA lt_code TYPE string_table.
+    DATA lv_code TYPE string.
 
-    field-symbols <lt_tab> type any table.
+    FIELD-SYMBOLS <lt_tab> TYPE ANY TABLE.
 
-    assign ir_data->* to <lt_tab>.
-    check sy-subrc = 0.
+    ASSIGN ir_data->* TO <lt_tab>.
+    CHECK sy-subrc = 0.
 
-    try.
+    TRY.
         lo_ajson = zcl_abapgit_ajson=>parse( zcl_abapgit_convert=>xstring_to_string_utf8( is_file-data ) ).
-        lo_ajson->zif_abapgit_ajson~to_abap( importing ev_container = lt_lcl_script ).
-      catch zcx_abapgit_ajson_error into lx_ajson.
+        lo_ajson->zif_abapgit_ajson~to_abap( IMPORTING ev_container = lt_lcl_script ).
+      CATCH zcx_abapgit_ajson_error INTO lx_ajson.
         zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
-    endtry.
+    ENDTRY.
 
-    loop at lt_lcl_script into ls_lcl_script.
+    LOOP AT lt_lcl_script INTO ls_lcl_script.
 
-      move-corresponding ls_lcl_script to ls_script.
+      MOVE-CORRESPONDING ls_lcl_script TO ls_script.
 
-      read table it_files into ls_file with key filename = ls_lcl_script-file_name.
-      if sy-subrc = 0.
+      READ TABLE it_files INTO ls_file WITH KEY filename = ls_lcl_script-file_name.
+      IF sy-subrc = 0.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
         lt_code = zcl_neptune_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
-        loop at lt_code into lv_code.
+        LOOP AT lt_code INTO lv_code.
           ls_script-applid = iv_key.
           ls_script-seqnr  = sy-tabix.
           ls_script-text   = lv_code.
-          append ls_script to lt_script.
-        endloop.
+          APPEND ls_script TO lt_script.
+        ENDLOOP.
 
 
-      endif.
-    endloop.
+      ENDIF.
+    ENDLOOP.
 
     <lt_tab> = lt_script.
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method deserialize_table.
+  METHOD deserialize_table.
 
-    data lo_ajson type ref to zcl_abapgit_ajson.
-    data lx_ajson type ref to zcx_abapgit_ajson_error.
+    DATA lo_ajson TYPE REF TO zcl_abapgit_ajson.
+    DATA lx_ajson TYPE REF TO zcx_abapgit_ajson_error.
 
-    data lt_table_content type ref to data.
+    DATA lt_table_content TYPE REF TO data.
 
-    field-symbols <lt_tab> type any table.
-    field-symbols <ls_line> type any.
-    field-symbols <lv_field> type any.
-    field-symbols <lt_standard_table> type standard table.
+    FIELD-SYMBOLS <lt_tab> TYPE ANY TABLE.
+    FIELD-SYMBOLS <ls_line> TYPE any.
+    FIELD-SYMBOLS <lv_field> TYPE any.
+    FIELD-SYMBOLS <lt_standard_table> TYPE STANDARD TABLE.
 
-    assign ir_data->* to <lt_tab>.
-    check sy-subrc = 0.
+    ASSIGN ir_data->* TO <lt_tab>.
+    CHECK sy-subrc = 0.
 
-    create data lt_table_content type standard table of (iv_tabname) with non-unique default key.
-    assign lt_table_content->* to <lt_standard_table>.
-    check sy-subrc = 0.
+    CREATE DATA lt_table_content TYPE STANDARD TABLE OF (iv_tabname) WITH NON-UNIQUE DEFAULT KEY.
+    ASSIGN lt_table_content->* TO <lt_standard_table>.
+    CHECK sy-subrc = 0.
 
-    try.
+    TRY.
         lo_ajson = zcl_abapgit_ajson=>parse( zcl_abapgit_convert=>xstring_to_string_utf8( is_file-data ) ).
 
-        lo_ajson->zif_abapgit_ajson~to_abap( importing ev_container = <lt_standard_table> ).
-      catch zcx_abapgit_ajson_error into lx_ajson.
+        lo_ajson->zif_abapgit_ajson~to_abap( IMPORTING ev_container = <lt_standard_table> ).
+      CATCH zcx_abapgit_ajson_error INTO lx_ajson.
         zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
-    endtry.
+    ENDTRY.
 
 
-    loop at <lt_standard_table> assigning <ls_line>.
-      assign component 'APPLID' of structure <ls_line> to <lv_field>.
-      if <lv_field> is assigned.
+    LOOP AT <lt_standard_table> ASSIGNING <ls_line>.
+      ASSIGN COMPONENT 'APPLID' OF STRUCTURE <ls_line> TO <lv_field>.
+      IF <lv_field> IS ASSIGNED.
         <lv_field> = iv_key.
-        unassign <lv_field>.
-      endif.
+        UNASSIGN <lv_field>.
+      ENDIF.
 
-      assign component 'VERSION' of structure <ls_line> to <lv_field>.
-      if <lv_field> is assigned.
+      ASSIGN COMPONENT 'VERSION' OF STRUCTURE <ls_line> TO <lv_field>.
+      IF <lv_field> IS ASSIGNED.
         <lv_field> = 1.
-        unassign <lv_field>.
-      endif.
+        UNASSIGN <lv_field>.
+      ENDIF.
 
-      assign component 'DEVCLASS' of structure <ls_line> to <lv_field>.
-      if <lv_field> is assigned.
+      ASSIGN COMPONENT 'DEVCLASS' OF STRUCTURE <ls_line> TO <lv_field>.
+      IF <lv_field> IS ASSIGNED.
         <lv_field> = iv_devclass.
-        unassign <lv_field>.
-      endif.
+        UNASSIGN <lv_field>.
+      ENDIF.
 
-    endloop.
+    ENDLOOP.
 
     <lt_tab> = <lt_standard_table>.
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method deserialize__css.
+  METHOD deserialize__css.
 
-    data lt_lcl_css type ty_tt_lcl_css.
-    data ls_lcl_css like line of lt_lcl_css.
+    DATA lt_lcl_css TYPE ty_tt_lcl_css.
+    DATA ls_lcl_css LIKE LINE OF lt_lcl_css.
 
-    data lt_css type standard table of /neptune/_css_d with default key.
-    data ls_css like line of lt_css.
+    DATA lt_css TYPE STANDARD TABLE OF /neptune/_css_d WITH DEFAULT KEY.
+    DATA ls_css LIKE LINE OF lt_css.
 
-    data lo_ajson type ref to zcl_abapgit_ajson.
-    data lx_ajson type ref to zcx_abapgit_ajson_error.
+    DATA lo_ajson TYPE REF TO zcl_abapgit_ajson.
+    DATA lx_ajson TYPE REF TO zcx_abapgit_ajson_error.
 
-    data ls_file like line of it_files.
+    DATA ls_file LIKE LINE OF it_files.
 
-    data lt_code type string_table.
-    data lv_code type string.
+    DATA lt_code TYPE string_table.
+    DATA lv_code TYPE string.
 
-    field-symbols <lt_tab> type any table.
+    FIELD-SYMBOLS <lt_tab> TYPE ANY TABLE.
 
-    assign ir_data->* to <lt_tab>.
-    check sy-subrc = 0.
+    ASSIGN ir_data->* TO <lt_tab>.
+    CHECK sy-subrc = 0.
 
-    try.
+    TRY.
         lo_ajson = zcl_abapgit_ajson=>parse( zcl_abapgit_convert=>xstring_to_string_utf8( is_file-data ) ).
-        lo_ajson->zif_abapgit_ajson~to_abap( importing ev_container = lt_lcl_css ).
-      catch zcx_abapgit_ajson_error into lx_ajson.
+        lo_ajson->zif_abapgit_ajson~to_abap( IMPORTING ev_container = lt_lcl_css ).
+      CATCH zcx_abapgit_ajson_error INTO lx_ajson.
         zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
-    endtry.
+    ENDTRY.
 
-    loop at lt_lcl_css into ls_lcl_css.
+    LOOP AT lt_lcl_css INTO ls_lcl_css.
 
-      move-corresponding ls_lcl_css to ls_css.
+      MOVE-CORRESPONDING ls_lcl_css TO ls_css.
 
-      read table it_files into ls_file with key filename = ls_lcl_css-file_name.
-      if sy-subrc = 0.
+      READ TABLE it_files INTO ls_file WITH KEY filename = ls_lcl_css-file_name.
+      IF sy-subrc = 0.
 
         lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
 
         lt_code = zcl_neptune_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
-        loop at lt_code into lv_code.
+        LOOP AT lt_code INTO lv_code.
           ls_css-applid  = iv_key.
           ls_css-version = 1.
           ls_css-seqnr   = sy-tabix.
           ls_css-text    = lv_code.
-          append ls_css to lt_css.
-        endloop.
+          APPEND ls_css TO lt_css.
+        ENDLOOP.
 
 
-      endif.
-    endloop.
+      ENDIF.
+    ENDLOOP.
 
     <lt_tab> = lt_css.
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method deserialize__evtscr.
+  METHOD deserialize__evtscr.
 
-    data lt_lcl_evtscr type ty_tt_lcl_evtscr.
-    data ls_lcl_evtscr like line of lt_lcl_evtscr.
+    DATA lt_lcl_evtscr TYPE ty_tt_lcl_evtscr.
+    DATA ls_lcl_evtscr LIKE LINE OF lt_lcl_evtscr.
 
-    data lt_evtscr type standard table of /neptune/_evtscr with default key.
-    data ls_evtscr like line of lt_evtscr.
+    DATA lt_evtscr TYPE STANDARD TABLE OF /neptune/_evtscr WITH DEFAULT KEY.
+    DATA ls_evtscr LIKE LINE OF lt_evtscr.
 
-    data lo_ajson type ref to zcl_abapgit_ajson.
-    data lx_ajson type ref to zcx_abapgit_ajson_error.
+    DATA lo_ajson TYPE REF TO zcl_abapgit_ajson.
+    DATA lx_ajson TYPE REF TO zcx_abapgit_ajson_error.
 
-    data ls_file like line of it_files.
+    DATA ls_file LIKE LINE OF it_files.
 
-    data lt_code type string_table.
-    data lv_code type string.
+    DATA lt_code TYPE string_table.
+    DATA lv_code TYPE string.
 
-    field-symbols <lt_tab> type any table.
+    FIELD-SYMBOLS <lt_tab> TYPE ANY TABLE.
 
-    assign ir_data->* to <lt_tab>.
-    check sy-subrc = 0.
+    ASSIGN ir_data->* TO <lt_tab>.
+    CHECK sy-subrc = 0.
 
-    try.
+    TRY.
         lo_ajson = zcl_abapgit_ajson=>parse( zcl_abapgit_convert=>xstring_to_string_utf8( is_file-data ) ).
-        lo_ajson->zif_abapgit_ajson~to_abap( importing ev_container = lt_lcl_evtscr ).
-      catch zcx_abapgit_ajson_error into lx_ajson.
+        lo_ajson->zif_abapgit_ajson~to_abap( IMPORTING ev_container = lt_lcl_evtscr ).
+      CATCH zcx_abapgit_ajson_error INTO lx_ajson.
         zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
-      catch zcx_abapgit_exception.
-    endtry.
+      CATCH zcx_abapgit_exception.
+    ENDTRY.
 
-    loop at lt_lcl_evtscr into ls_lcl_evtscr.
+    LOOP AT lt_lcl_evtscr INTO ls_lcl_evtscr.
 
-      move-corresponding ls_lcl_evtscr to ls_evtscr.
+      MOVE-CORRESPONDING ls_lcl_evtscr TO ls_evtscr.
 
-      read table it_files into ls_file with key filename = ls_lcl_evtscr-file_name.
-      if sy-subrc = 0.
-        try.
+      READ TABLE it_files INTO ls_file WITH KEY filename = ls_lcl_evtscr-file_name.
+      IF sy-subrc = 0.
+        TRY.
             lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
-          catch zcx_abapgit_exception.
-        endtry.
+          CATCH zcx_abapgit_exception.
+        ENDTRY.
 
         lt_code = zcl_neptune_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
-        loop at lt_code into lv_code.
+        LOOP AT lt_code INTO lv_code.
           ls_evtscr-applid = iv_key.
           ls_evtscr-version = 1.
           ls_evtscr-seqnr  = sy-tabix.
           ls_evtscr-text   = lv_code.
-          append ls_evtscr to lt_evtscr.
-        endloop.
+          APPEND ls_evtscr TO lt_evtscr.
+        ENDLOOP.
 
-      endif.
-    endloop.
+      ENDIF.
+    ENDLOOP.
 
     <lt_tab> = lt_evtscr.
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method deserialize__html.
+  METHOD deserialize__html.
 
-    data lt_lcl_script type ty_tt_lcl_script.
-    data ls_lcl_script like line of lt_lcl_script.
+    DATA lt_lcl_script TYPE ty_tt_lcl_script.
+    DATA ls_lcl_script LIKE LINE OF lt_lcl_script.
 
-    data lt_html type standard table of /neptune/_html with default key.
-    data ls_html like line of lt_html.
+    DATA lt_html TYPE STANDARD TABLE OF /neptune/_html WITH DEFAULT KEY.
+    DATA ls_html LIKE LINE OF lt_html.
 
-    data lo_ajson type ref to zcl_abapgit_ajson.
-    data lx_ajson type ref to zcx_abapgit_ajson_error.
+    DATA lo_ajson TYPE REF TO zcl_abapgit_ajson.
+    DATA lx_ajson TYPE REF TO zcx_abapgit_ajson_error.
 
-    data ls_file like line of it_files.
+    DATA ls_file LIKE LINE OF it_files.
 
-    data lt_code type string_table.
-    data lv_code type string.
+    DATA lt_code TYPE string_table.
+    DATA lv_code TYPE string.
 
-    field-symbols <lt_tab> type any table.
+    FIELD-SYMBOLS <lt_tab> TYPE ANY TABLE.
 
-    assign ir_data->* to <lt_tab>.
-    check sy-subrc = 0.
+    ASSIGN ir_data->* TO <lt_tab>.
+    CHECK sy-subrc = 0.
 
-    try.
+    TRY.
         lo_ajson = zcl_abapgit_ajson=>parse( zcl_abapgit_convert=>xstring_to_string_utf8( is_file-data ) ).
-        lo_ajson->zif_abapgit_ajson~to_abap( importing ev_container = lt_lcl_script ).
-      catch zcx_abapgit_ajson_error into lx_ajson.
+        lo_ajson->zif_abapgit_ajson~to_abap( IMPORTING ev_container = lt_lcl_script ).
+      CATCH zcx_abapgit_ajson_error INTO lx_ajson.
         zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
-      catch zcx_abapgit_exception.
-    endtry.
+      CATCH zcx_abapgit_exception.
+    ENDTRY.
 
-    loop at lt_lcl_script into ls_lcl_script.
+    LOOP AT lt_lcl_script INTO ls_lcl_script.
 
-      move-corresponding ls_lcl_script to ls_html.
+      MOVE-CORRESPONDING ls_lcl_script TO ls_html.
 
-      read table it_files into ls_file with key filename = ls_lcl_script-file_name.
-      if sy-subrc = 0.
-        try.
+      READ TABLE it_files INTO ls_file WITH KEY filename = ls_lcl_script-file_name.
+      IF sy-subrc = 0.
+        TRY.
             lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
-          catch zcx_abapgit_exception.
-        endtry.
+          CATCH zcx_abapgit_exception.
+        ENDTRY.
 
         lt_code = zcl_neptune_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
-        loop at lt_code into lv_code.
+        LOOP AT lt_code INTO lv_code.
           ls_html-applid = iv_key.
           ls_html-version = 1.
           ls_html-seqnr  = sy-tabix.
           ls_html-text   = lv_code.
-          append ls_html to lt_html.
-        endloop.
+          APPEND ls_html TO lt_html.
+        ENDLOOP.
 
-      endif.
-    endloop.
+      ENDIF.
+    ENDLOOP.
 
     <lt_tab> = lt_html.
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method deserialize__script.
+  METHOD deserialize__script.
 
-    data lt_lcl_script type ty_tt_lcl_script.
-    data ls_lcl_script like line of lt_lcl_script.
+    DATA lt_lcl_script TYPE ty_tt_lcl_script.
+    DATA ls_lcl_script LIKE LINE OF lt_lcl_script.
 
-    data lt_script type standard table of /neptune/_script with default key.
-    data ls_script like line of lt_script.
+    DATA lt_script TYPE STANDARD TABLE OF /neptune/_script WITH DEFAULT KEY.
+    DATA ls_script LIKE LINE OF lt_script.
 
-    data lo_ajson type ref to zcl_abapgit_ajson.
-    data lx_ajson type ref to zcx_abapgit_ajson_error.
+    DATA lo_ajson TYPE REF TO zcl_abapgit_ajson.
+    DATA lx_ajson TYPE REF TO zcx_abapgit_ajson_error.
 
-    data ls_file like line of it_files.
+    DATA ls_file LIKE LINE OF it_files.
 
-    data lt_code type string_table.
-    data lv_code type string.
+    DATA lt_code TYPE string_table.
+    DATA lv_code TYPE string.
 
-    field-symbols <lt_tab> type any table.
+    FIELD-SYMBOLS <lt_tab> TYPE ANY TABLE.
 
-    assign ir_data->* to <lt_tab>.
-    check sy-subrc = 0.
+    ASSIGN ir_data->* TO <lt_tab>.
+    CHECK sy-subrc = 0.
 
-    try.
+    TRY.
         lo_ajson = zcl_abapgit_ajson=>parse( zcl_abapgit_convert=>xstring_to_string_utf8( is_file-data ) ).
-        lo_ajson->zif_abapgit_ajson~to_abap( importing ev_container = lt_lcl_script ).
-      catch zcx_abapgit_ajson_error into lx_ajson.
+        lo_ajson->zif_abapgit_ajson~to_abap( IMPORTING ev_container = lt_lcl_script ).
+      CATCH zcx_abapgit_ajson_error INTO lx_ajson.
         zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
-      catch zcx_abapgit_exception.
-    endtry.
+      CATCH zcx_abapgit_exception.
+    ENDTRY.
 
-    loop at lt_lcl_script into ls_lcl_script.
+    LOOP AT lt_lcl_script INTO ls_lcl_script.
 
-      move-corresponding ls_lcl_script to ls_script.
+      MOVE-CORRESPONDING ls_lcl_script TO ls_script.
 
-      read table it_files into ls_file with key filename = ls_lcl_script-file_name.
-      if sy-subrc = 0.
-        try.
+      READ TABLE it_files INTO ls_file WITH KEY filename = ls_lcl_script-file_name.
+      IF sy-subrc = 0.
+        TRY.
             lv_code = zcl_abapgit_convert=>xstring_to_string_utf8( ls_file-data ).
-          catch zcx_abapgit_exception.
-        endtry.
+          CATCH zcx_abapgit_exception.
+        ENDTRY.
 
         lt_code = zcl_neptune_abapgit_utilities=>string_to_code_lines( iv_string = lv_code ).
 
-        loop at lt_code into lv_code.
+        LOOP AT lt_code INTO lv_code.
           ls_script-applid = iv_key.
           ls_script-version = 1.
           ls_script-seqnr  = sy-tabix.
           ls_script-text   = lv_code.
-          append ls_script to lt_script.
-        endloop.
+          APPEND ls_script TO lt_script.
+        ENDLOOP.
 
-      endif.
-    endloop.
+      ENDIF.
+    ENDLOOP.
 
     <lt_tab> = lt_script.
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method get_values_from_filename.
+  METHOD get_values_from_filename.
 
-    data lt_comp type standard table of string with default key.
-    data ls_comp like line of lt_comp.
+    DATA lt_comp TYPE STANDARD TABLE OF string WITH DEFAULT KEY.
+    DATA ls_comp LIKE LINE OF lt_comp.
 
-    split is_filename at '.' into table lt_comp.
+    SPLIT is_filename AT '.' INTO TABLE lt_comp.
 
-    read table lt_comp into ls_comp index 3.
-    if sy-subrc = 0.
-      replace all occurrences of '#' in ls_comp with '/'.
-      translate ls_comp to upper case.
+    READ TABLE lt_comp INTO ls_comp INDEX 3.
+    IF sy-subrc = 0.
+      REPLACE ALL OCCURRENCES OF '#' IN ls_comp WITH '/'.
+      TRANSLATE ls_comp TO UPPER CASE.
       ev_tabname = ls_comp.
-    endif.
+    ENDIF.
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method insert_to_transport.
+  METHOD insert_to_transport.
 
-    data ls_message type /neptune/message.
-    data lv_task type trkorr.
+    DATA ls_message TYPE /neptune/message.
+    DATA lv_task TYPE trkorr.
 
     /neptune/cl_nad_transport=>transport_task_find(
-      exporting
+      EXPORTING
         transport = iv_transport
-      importing
+      IMPORTING
         task      = lv_task ).
 
     io_artifact->insert_to_transport(
-      exporting
+      EXPORTING
         iv_korrnum = lv_task
         iv_key1    = iv_key1
-      importing
+      IMPORTING
         ev_message = ls_message ).
 
-    try.
-        call method ('/NEPTUNE/CL_TADIR')=>('INSERT_TO_TRANSPORT')
+    TRY.
+        CALL METHOD ('/NEPTUNE/CL_TADIR')=>('INSERT_TO_TRANSPORT')
 *            call method /neptune/cl_tadir=>insert_to_transport
-            exporting
+            EXPORTING
               iv_korrnum       = lv_task
               iv_devclass      = iv_package
               iv_artifact_key  = iv_key1
               iv_artifact_type = iv_artifact_type
-            importing
+            IMPORTING
               ev_message      = ls_message.
-      catch cx_sy_dyn_call_illegal_class
+      CATCH cx_sy_dyn_call_illegal_class
             cx_sy_dyn_call_illegal_method.
-    endtry.
+    ENDTRY.
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method serialize_css.
+  METHOD serialize_css.
 
-    data ls_file type zif_abapgit_git_definitions=>ty_file.
-    data lv_code type string.
+    DATA ls_file TYPE zif_abapgit_git_definitions=>ty_file.
+    DATA lv_code TYPE string.
 
-    data lt_lcl_css type ty_tt_lcl_css.
-    data ls_lcl_css like line of lt_lcl_css.
+    DATA lt_lcl_css TYPE ty_tt_lcl_css.
+    DATA ls_lcl_css LIKE LINE OF lt_lcl_css.
 
-    data lt_css type standard table of /neptune/css with default key.
-    data ls_css like line of lt_css.
+    DATA lt_css TYPE STANDARD TABLE OF /neptune/css WITH DEFAULT KEY.
+    DATA ls_css LIKE LINE OF lt_css.
 
-    data lt_code_lines type string_table.
+    DATA lt_code_lines TYPE string_table.
 
-    field-symbols <lt_standard_table> type standard table.
+    FIELD-SYMBOLS <lt_standard_table> TYPE STANDARD TABLE.
 
-    assign is_table_content-table_content->* to <lt_standard_table>.
-    check sy-subrc = 0 and <lt_standard_table> is not initial.
+    ASSIGN is_table_content-table_content->* TO <lt_standard_table>.
+    CHECK sy-subrc = 0 AND <lt_standard_table> IS NOT INITIAL.
 
     lt_css = <lt_standard_table>.
 
-    sort lt_css.
+    SORT lt_css.
 
-    read table lt_css into ls_css index 1.
-    check sy-subrc = 0.
+    READ TABLE lt_css INTO ls_css INDEX 1.
+    CHECK sy-subrc = 0.
 
-    move-corresponding ls_css to ls_lcl_css.
+    MOVE-CORRESPONDING ls_css TO ls_lcl_css.
 
-    loop at lt_css into ls_css.
+    LOOP AT lt_css INTO ls_css.
 
-      append ls_css-text to lt_code_lines.
+      APPEND ls_css-text TO lt_code_lines.
 
-    endloop.
+    ENDLOOP.
 
-    concatenate me->ms_item-obj_name
+    CONCATENATE me->ms_item-obj_name
                 me->ms_item-obj_type
                 is_table_content-tabname
-                'css' into ls_lcl_css-file_name separated by '.'.
+                'css' INTO ls_lcl_css-file_name SEPARATED BY '.'.
 
-    replace all occurrences of '/' in ls_lcl_css-file_name with '#'.
+    REPLACE ALL OCCURRENCES OF '/' IN ls_lcl_css-file_name WITH '#'.
 
-    translate ls_lcl_css-file_name to lower case.
-    append ls_lcl_css to lt_lcl_css.
+    TRANSLATE ls_lcl_css-file_name TO LOWER CASE.
+    APPEND ls_lcl_css TO lt_lcl_css.
 
-    try.
+    TRY.
 ** Add adjusted table to files
         serialize_table(
           iv_tabname = is_table_content-tabname
@@ -779,84 +778,84 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
         lv_code = zcl_neptune_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
 
         ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_code ).
-      catch zcx_abapgit_exception.
-    endtry.
+      CATCH zcx_abapgit_exception.
+    ENDTRY.
 
     ls_file-filename = ls_lcl_css-file_name.
 
     zif_abapgit_object~mo_files->add( ls_file ).
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method serialize_evtscr.
+  METHOD serialize_evtscr.
 
-    data ls_file type zif_abapgit_git_definitions=>ty_file.
+    DATA ls_file TYPE zif_abapgit_git_definitions=>ty_file.
 
-    data lt_lcl_evtscr type ty_tt_lcl_evtscr.
-    data ls_lcl_evtscr like line of lt_lcl_evtscr.
+    DATA lt_lcl_evtscr TYPE ty_tt_lcl_evtscr.
+    DATA ls_lcl_evtscr LIKE LINE OF lt_lcl_evtscr.
 
-    data lt_evtscr type standard table of /neptune/evtscr with default key.
-    data ls_evtscr like line of lt_evtscr.
+    DATA lt_evtscr TYPE STANDARD TABLE OF /neptune/evtscr WITH DEFAULT KEY.
+    DATA ls_evtscr LIKE LINE OF lt_evtscr.
 
-    data: lt_code type ty_tt_code,
-          ls_code like line of lt_code.
+    DATA: lt_code TYPE ty_tt_code,
+          ls_code LIKE LINE OF lt_code.
 
-    data ls_obj like line of it_obj.
+    DATA ls_obj LIKE LINE OF it_obj.
 
-    data lt_code_lines type string_table.
+    DATA lt_code_lines TYPE string_table.
 
-    field-symbols <lt_standard_table> type standard table.
+    FIELD-SYMBOLS <lt_standard_table> TYPE STANDARD TABLE.
 
-    assign is_table_content-table_content->* to <lt_standard_table>.
-    check sy-subrc = 0 and <lt_standard_table> is not initial.
+    ASSIGN is_table_content-table_content->* TO <lt_standard_table>.
+    CHECK sy-subrc = 0 AND <lt_standard_table> IS NOT INITIAL.
 
     lt_evtscr = <lt_standard_table>.
 
-    loop at lt_evtscr into ls_evtscr.
-      at new event.
-        move-corresponding ls_evtscr to ls_lcl_evtscr.
-        clear ls_code.
-      endat.
+    LOOP AT lt_evtscr INTO ls_evtscr.
+      AT NEW event.
+        MOVE-CORRESPONDING ls_evtscr TO ls_lcl_evtscr.
+        CLEAR ls_code.
+      ENDAT.
 
-      append ls_evtscr-text to lt_code_lines.
+      APPEND ls_evtscr-text TO lt_code_lines.
 
-      at end of event.
-        read table it_obj into ls_obj with key applid = ls_evtscr-applid
+      AT END OF event.
+        READ TABLE it_obj INTO ls_obj WITH KEY applid = ls_evtscr-applid
                                                field_id = ls_evtscr-field_id.
-        if sy-subrc = 0.
-          concatenate me->ms_item-obj_name
+        IF sy-subrc = 0.
+          CONCATENATE me->ms_item-obj_name
                       me->ms_item-obj_type
-                      is_table_content-tabname into ls_lcl_evtscr-file_name separated by '.'.
+                      is_table_content-tabname INTO ls_lcl_evtscr-file_name SEPARATED BY '.'.
 
-          replace all occurrences of '/' in ls_lcl_evtscr-file_name with '#'.
+          REPLACE ALL OCCURRENCES OF '/' IN ls_lcl_evtscr-file_name WITH '#'.
 
-          translate ls_lcl_evtscr-file_name to lower case.
+          TRANSLATE ls_lcl_evtscr-file_name TO LOWER CASE.
 
-          concatenate ls_lcl_evtscr-file_name
+          CONCATENATE ls_lcl_evtscr-file_name
                       ls_obj-field_name
                       ls_lcl_evtscr-event
-                      'js' into ls_lcl_evtscr-file_name separated by '.'.
+                      'js' INTO ls_lcl_evtscr-file_name SEPARATED BY '.'.
 
-          append ls_lcl_evtscr to lt_lcl_evtscr.
+          APPEND ls_lcl_evtscr TO lt_lcl_evtscr.
 
           ls_code-file_name = ls_lcl_evtscr-file_name.
           ls_code-code = zcl_neptune_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
-          clear: lt_code_lines.
-          append ls_code to lt_code.
-        endif.
+          CLEAR: lt_code_lines.
+          APPEND ls_code TO lt_code.
+        ENDIF.
 
-      endat.
-    endloop.
+      ENDAT.
+    ENDLOOP.
 
-    try.
+    TRY.
 ** Add adjusted table to files
         serialize_table(
           iv_tabname = is_table_content-tabname
           it_table   = lt_lcl_evtscr ).
 
 ** loop at code table to add each entry as a file
-        loop at lt_code into ls_code.
+        LOOP AT lt_code INTO ls_code.
 
           ls_file-path = '/'.
 
@@ -866,91 +865,91 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
           zif_abapgit_object~mo_files->add( ls_file ).
 
-        endloop.
-      catch zcx_abapgit_exception.
-    endtry.
+        ENDLOOP.
+      CATCH zcx_abapgit_exception.
+    ENDTRY.
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method serialize_html.
+  METHOD serialize_html.
 
-    data ls_file type zif_abapgit_git_definitions=>ty_file.
+    DATA ls_file TYPE zif_abapgit_git_definitions=>ty_file.
 
-    data lt_lcl_script type ty_tt_lcl_script.
-    data ls_lcl_script like line of lt_lcl_script.
+    DATA lt_lcl_script TYPE ty_tt_lcl_script.
+    DATA ls_lcl_script LIKE LINE OF lt_lcl_script.
 
-    data lt_html type standard table of /neptune/html with default key.
-    data ls_html like line of lt_html.
+    DATA lt_html TYPE STANDARD TABLE OF /neptune/html WITH DEFAULT KEY.
+    DATA ls_html LIKE LINE OF lt_html.
 
-    data: lt_code type ty_tt_code,
-          ls_code like line of lt_code.
+    DATA: lt_code TYPE ty_tt_code,
+          ls_code LIKE LINE OF lt_code.
 
-    data ls_obj like line of it_obj.
+    DATA ls_obj LIKE LINE OF it_obj.
 
-    data lt_code_lines type string_table.
+    DATA lt_code_lines TYPE string_table.
 
-    constants lc_ext(4) type c value 'html'.
+    CONSTANTS lc_ext(4) TYPE c VALUE 'html'.
 
-    field-symbols <lt_standard_table> type standard table.
+    FIELD-SYMBOLS <lt_standard_table> TYPE STANDARD TABLE.
 
-    assign is_table_content-table_content->* to <lt_standard_table>.
-    check sy-subrc = 0 and <lt_standard_table> is not initial.
+    ASSIGN is_table_content-table_content->* TO <lt_standard_table>.
+    CHECK sy-subrc = 0 AND <lt_standard_table> IS NOT INITIAL.
 
     lt_html = <lt_standard_table>.
 
-    loop at lt_html into ls_html.
-      at new field_id.
-        move-corresponding ls_html to ls_lcl_script.
-        clear ls_code.
-      endat.
+    LOOP AT lt_html INTO ls_html.
+      AT NEW field_id.
+        MOVE-CORRESPONDING ls_html TO ls_lcl_script.
+        CLEAR ls_code.
+      ENDAT.
 
-      append ls_html-text to lt_code_lines.
+      APPEND ls_html-text TO lt_code_lines.
 
-      at end of field_id.
-        read table it_obj into ls_obj with key applid = ls_html-applid
+      AT END OF field_id.
+        READ TABLE it_obj INTO ls_obj WITH KEY applid = ls_html-applid
                                                field_id = ls_html-field_id.
-        if sy-subrc = 0 or ( sy-subrc <> 0 and ls_html-field_id is initial ).
+        IF sy-subrc = 0 OR ( sy-subrc <> 0 AND ls_html-field_id IS INITIAL ).
 
-          concatenate me->ms_item-obj_name
+          CONCATENATE me->ms_item-obj_name
                       me->ms_item-obj_type
-                      is_table_content-tabname into ls_lcl_script-file_name separated by '.'.
+                      is_table_content-tabname INTO ls_lcl_script-file_name SEPARATED BY '.'.
 
-          replace all occurrences of '/' in ls_lcl_script-file_name with '#'.
+          REPLACE ALL OCCURRENCES OF '/' IN ls_lcl_script-file_name WITH '#'.
 
-          translate ls_lcl_script-file_name to lower case.
+          TRANSLATE ls_lcl_script-file_name TO LOWER CASE.
 
-          if ls_obj-field_id is initial.
+          IF ls_obj-field_id IS INITIAL.
 * this is the " Header " section of the app
             ls_obj-field_name = 'Header'.
-          endif.
+          ENDIF.
 
-          concatenate ls_lcl_script-file_name
+          CONCATENATE ls_lcl_script-file_name
                       ls_obj-field_name
                       ls_obj-field_id
-                      lc_ext into ls_lcl_script-file_name separated by '.'.
+                      lc_ext INTO ls_lcl_script-file_name SEPARATED BY '.'.
 
-          append ls_lcl_script to lt_lcl_script.
+          APPEND ls_lcl_script TO lt_lcl_script.
 
           ls_code-file_name = ls_lcl_script-file_name.
 
           ls_code-code = zcl_neptune_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
-          clear: lt_code_lines.
+          CLEAR: lt_code_lines.
 
-          append ls_code to lt_code.
-        endif.
+          APPEND ls_code TO lt_code.
+        ENDIF.
 
-      endat.
-    endloop.
+      ENDAT.
+    ENDLOOP.
 
-    try.
+    TRY.
 ** Add adjusted table to files
         serialize_table(
           iv_tabname = is_table_content-tabname
           it_table   = lt_lcl_script ).
 
 ** loop at code table to add each entry as a file
-        loop at lt_code into ls_code.
+        LOOP AT lt_code INTO ls_code.
 
           ls_file-path = '/'.
 
@@ -960,93 +959,93 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
           zif_abapgit_object~mo_files->add( ls_file ).
 
-        endloop.
-      catch zcx_abapgit_exception.
-    endtry.
+        ENDLOOP.
+      CATCH zcx_abapgit_exception.
+    ENDTRY.
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method serialize_script.
+  METHOD serialize_script.
 
-    data ls_file type zif_abapgit_git_definitions=>ty_file.
+    DATA ls_file TYPE zif_abapgit_git_definitions=>ty_file.
 
-    data lt_lcl_script type ty_tt_lcl_script.
-    data ls_lcl_script like line of lt_lcl_script.
+    DATA lt_lcl_script TYPE ty_tt_lcl_script.
+    DATA ls_lcl_script LIKE LINE OF lt_lcl_script.
 
-    data lt_script type standard table of /neptune/script with default key.
-    data ls_script like line of lt_script.
+    DATA lt_script TYPE STANDARD TABLE OF /neptune/script WITH DEFAULT KEY.
+    DATA ls_script LIKE LINE OF lt_script.
 
-    data: lt_code type ty_tt_code,
-          ls_code like line of lt_code.
+    DATA: lt_code TYPE ty_tt_code,
+          ls_code LIKE LINE OF lt_code.
 
-    data ls_obj like line of it_obj.
+    DATA ls_obj LIKE LINE OF it_obj.
 
-    data lv_ext type char10.
+    DATA lv_ext TYPE char10.
 
-    data lt_code_lines type string_table.
+    DATA lt_code_lines TYPE string_table.
 
-    field-symbols <lt_standard_table> type standard table.
+    FIELD-SYMBOLS <lt_standard_table> TYPE STANDARD TABLE.
 
-    assign is_table_content-table_content->* to <lt_standard_table>.
-    check sy-subrc = 0 and <lt_standard_table> is not initial.
+    ASSIGN is_table_content-table_content->* TO <lt_standard_table>.
+    CHECK sy-subrc = 0 AND <lt_standard_table> IS NOT INITIAL.
 
     lt_script = <lt_standard_table>.
 
-    loop at lt_script into ls_script.
-      at new field_id.
-        move-corresponding ls_script to ls_lcl_script.
-        clear ls_code.
-      endat.
+    LOOP AT lt_script INTO ls_script.
+      AT NEW field_id.
+        MOVE-CORRESPONDING ls_script TO ls_lcl_script.
+        CLEAR ls_code.
+      ENDAT.
 
-      append ls_script-text to lt_code_lines.
+      APPEND ls_script-text TO lt_code_lines.
 
-      at end of field_id.
-        read table it_obj into ls_obj with key applid = ls_script-applid
+      AT END OF field_id.
+        READ TABLE it_obj INTO ls_obj WITH KEY applid = ls_script-applid
                                                field_id = ls_script-field_id.
-        if sy-subrc = 0.
-          case ls_obj-field_type.
-            when 'SCRIPT'.
+        IF sy-subrc = 0.
+          CASE ls_obj-field_type.
+            WHEN 'SCRIPT'.
               lv_ext = 'js'.
-            when 'TYPESCRIPT'.
+            WHEN 'TYPESCRIPT'.
               lv_ext = 'ts'.
-            when 'HTML'.
+            WHEN 'HTML'.
               lv_ext = 'html'.
-          endcase.
+          ENDCASE.
 
-          concatenate me->ms_item-obj_name
+          CONCATENATE me->ms_item-obj_name
                       me->ms_item-obj_type
-                      is_table_content-tabname into ls_lcl_script-file_name separated by '.'.
+                      is_table_content-tabname INTO ls_lcl_script-file_name SEPARATED BY '.'.
 
-          replace all occurrences of '/' in ls_lcl_script-file_name with '#'.
+          REPLACE ALL OCCURRENCES OF '/' IN ls_lcl_script-file_name WITH '#'.
 
-          translate ls_lcl_script-file_name to lower case.
+          TRANSLATE ls_lcl_script-file_name TO LOWER CASE.
 
-          concatenate ls_lcl_script-file_name
+          CONCATENATE ls_lcl_script-file_name
                       ls_obj-field_name
-                      lv_ext into ls_lcl_script-file_name separated by '.'.
+                      lv_ext INTO ls_lcl_script-file_name SEPARATED BY '.'.
 
-          append ls_lcl_script to lt_lcl_script.
+          APPEND ls_lcl_script TO lt_lcl_script.
 
           ls_code-file_name = ls_lcl_script-file_name.
 
           ls_code-code = zcl_neptune_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
-          clear: lt_code_lines.
+          CLEAR: lt_code_lines.
 
-          append ls_code to lt_code.
-        endif.
+          APPEND ls_code TO lt_code.
+        ENDIF.
 
-      endat.
-    endloop.
+      ENDAT.
+    ENDLOOP.
 
-    try.
+    TRY.
 ** Add adjusted table to files
         serialize_table(
           iv_tabname = is_table_content-tabname
           it_table   = lt_lcl_script ).
 
 ** loop at code table to add each entry as a file
-        loop at lt_code into ls_code.
+        LOOP AT lt_code INTO ls_code.
 
           ls_file-path = '/'.
 
@@ -1056,25 +1055,25 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
           zif_abapgit_object~mo_files->add( ls_file ).
 
-        endloop.
-      catch zcx_abapgit_exception.
-    endtry.
+        ENDLOOP.
+      CATCH zcx_abapgit_exception.
+    ENDTRY.
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method serialize_table.
+  METHOD serialize_table.
 
-    data: lo_ajson         type ref to zcl_abapgit_ajson,
-          lx_ajson         type ref to zcx_abapgit_ajson_error,
-          lv_json          type string,
-          ls_file          type zif_abapgit_git_definitions=>ty_file.
+    DATA: lo_ajson         TYPE REF TO zcl_abapgit_ajson,
+          lx_ajson         TYPE REF TO zcx_abapgit_ajson_error,
+          lv_json          TYPE string,
+          ls_file          TYPE zif_abapgit_git_definitions=>ty_file.
 
-    data lt_skip_paths type string_table.
+    DATA lt_skip_paths TYPE string_table.
 
-    check it_table is not initial.
+    CHECK it_table IS NOT INITIAL.
 
-    try.
+    TRY.
         lo_ajson = zcl_abapgit_ajson=>create_empty( ).
         lo_ajson->keep_item_order( ).
         lo_ajson->set(
@@ -1090,24 +1089,24 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
         lt_skip_paths = zcl_neptune_abapgit_utilities=>get_skip_fields_for_artifact(
                                                           iv_artifact_type = mv_artifact_type
                                                           iv_serialize     = abap_true ).
-        if lt_skip_paths is not initial.
+        IF lt_skip_paths IS NOT INITIAL.
           lo_ajson = zcl_abapgit_ajson=>create_from(
             ii_source_json = lo_ajson
             ii_filter      = zcl_abapgit_ajson_filter_lib=>create_path_filter(
                                                              it_skip_paths     = lt_skip_paths
                                                              iv_pattern_search = abap_true ) ).
-        endif.
+        ENDIF.
 
         lv_json = lo_ajson->stringify( 2 ).
-      catch zcx_abapgit_ajson_error into lx_ajson.
+      CATCH zcx_abapgit_ajson_error INTO lx_ajson.
         zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
-    endtry.
+    ENDTRY.
 
     ls_file-path = '/'.
-    try.
+    TRY.
         ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_json ).
-      catch zcx_abapgit_exception.
-    endtry.
+      CATCH zcx_abapgit_exception.
+    ENDTRY.
     ls_file-filename = zcl_abapgit_filename_logic=>object_to_file(
                            is_item  = ms_item
                            iv_extra = iv_tabname
@@ -1115,52 +1114,52 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
     zif_abapgit_object~mo_files->add( ls_file ).
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method serialize__css.
+  METHOD serialize__css.
 
-    data ls_file type zif_abapgit_git_definitions=>ty_file.
-    data lv_code type string.
+    DATA ls_file TYPE zif_abapgit_git_definitions=>ty_file.
+    DATA lv_code TYPE string.
 
-    data lt_lcl_css type ty_tt_lcl_css.
-    data ls_lcl_css like line of lt_lcl_css.
+    DATA lt_lcl_css TYPE ty_tt_lcl_css.
+    DATA ls_lcl_css LIKE LINE OF lt_lcl_css.
 
-    data lt_css type standard table of /neptune/_css_d with default key.
-    data ls_css like line of lt_css.
+    DATA lt_css TYPE STANDARD TABLE OF /neptune/_css_d WITH DEFAULT KEY.
+    DATA ls_css LIKE LINE OF lt_css.
 
-    data lt_code_lines type string_table.
+    DATA lt_code_lines TYPE string_table.
 
-    field-symbols <lt_standard_table> type standard table.
+    FIELD-SYMBOLS <lt_standard_table> TYPE STANDARD TABLE.
 
-    assign is_table_content-table_content->* to <lt_standard_table>.
-    check sy-subrc = 0 and <lt_standard_table> is not initial.
+    ASSIGN is_table_content-table_content->* TO <lt_standard_table>.
+    CHECK sy-subrc = 0 AND <lt_standard_table> IS NOT INITIAL.
 
     lt_css = <lt_standard_table>.
 
-    sort lt_css.
+    SORT lt_css.
 
-    read table lt_css into ls_css index 1.
-    check sy-subrc = 0.
+    READ TABLE lt_css INTO ls_css INDEX 1.
+    CHECK sy-subrc = 0.
 
-    move-corresponding ls_css to ls_lcl_css.
+    MOVE-CORRESPONDING ls_css TO ls_lcl_css.
 
-    loop at lt_css into ls_css.
+    LOOP AT lt_css INTO ls_css.
 
-      append ls_css-text to lt_code_lines.
+      APPEND ls_css-text TO lt_code_lines.
 
-    endloop.
+    ENDLOOP.
 
-    concatenate me->ms_item-obj_name
+    CONCATENATE me->ms_item-obj_name
                 me->ms_item-obj_type
                 is_table_content-tabname
-                'css' into ls_lcl_css-file_name separated by '.'.
+                'css' INTO ls_lcl_css-file_name SEPARATED BY '.'.
 
-    replace all occurrences of '/' in ls_lcl_css-file_name with '#'.
+    REPLACE ALL OCCURRENCES OF '/' IN ls_lcl_css-file_name WITH '#'.
 
-    translate ls_lcl_css-file_name to lower case.
-    append ls_lcl_css to lt_lcl_css.
-    try.
+    TRANSLATE ls_lcl_css-file_name TO LOWER CASE.
+    APPEND ls_lcl_css TO lt_lcl_css.
+    TRY.
 ** Add adjusted table to files
         serialize_table(
           iv_tabname = is_table_content-tabname
@@ -1172,92 +1171,92 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
         lv_code = zcl_neptune_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
 
         ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_code ).
-      catch zcx_abapgit_exception.
-    endtry.
+      CATCH zcx_abapgit_exception.
+    ENDTRY.
     ls_file-filename = ls_lcl_css-file_name.
 
     zif_abapgit_object~mo_files->add( ls_file ).
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method serialize__evtscr.
+  METHOD serialize__evtscr.
 
-    data ls_file type zif_abapgit_git_definitions=>ty_file.
+    DATA ls_file TYPE zif_abapgit_git_definitions=>ty_file.
 
-    data lt_lcl_evtscr type ty_tt_lcl_evtscr.
-    data ls_lcl_evtscr like line of lt_lcl_evtscr.
+    DATA lt_lcl_evtscr TYPE ty_tt_lcl_evtscr.
+    DATA ls_lcl_evtscr LIKE LINE OF lt_lcl_evtscr.
 
-    data lt_evtscr type standard table of /neptune/_evtscr with default key.
-    data ls_evtscr like line of lt_evtscr.
+    DATA lt_evtscr TYPE STANDARD TABLE OF /neptune/_evtscr WITH DEFAULT KEY.
+    DATA ls_evtscr LIKE LINE OF lt_evtscr.
 
-    data: lt_code type ty_tt_code,
-          ls_code like line of lt_code.
+    DATA: lt_code TYPE ty_tt_code,
+          ls_code LIKE LINE OF lt_code.
 
-    data ls_obj like line of it_obj.
+    DATA ls_obj LIKE LINE OF it_obj.
 
-    data lt_code_lines type string_table.
+    DATA lt_code_lines TYPE string_table.
 
-    data lv_ext type char10.
+    DATA lv_ext TYPE char10.
 
-    field-symbols <lt_standard_table> type standard table.
+    FIELD-SYMBOLS <lt_standard_table> TYPE STANDARD TABLE.
 
-    assign is_table_content-table_content->* to <lt_standard_table>.
-    check sy-subrc = 0 and <lt_standard_table> is not initial.
+    ASSIGN is_table_content-table_content->* TO <lt_standard_table>.
+    CHECK sy-subrc = 0 AND <lt_standard_table> IS NOT INITIAL.
 
     lt_evtscr = <lt_standard_table>.
 
-    loop at lt_evtscr into ls_evtscr.
-      at new event.
-        move-corresponding ls_evtscr to ls_lcl_evtscr.
-        clear ls_code.
-      endat.
+    LOOP AT lt_evtscr INTO ls_evtscr.
+      AT NEW event.
+        MOVE-CORRESPONDING ls_evtscr TO ls_lcl_evtscr.
+        CLEAR ls_code.
+      ENDAT.
 
-      append ls_evtscr-text to lt_code_lines.
+      APPEND ls_evtscr-text TO lt_code_lines.
 
-      at end of event.
-        read table it_obj into ls_obj with key applid = ls_evtscr-applid
+      AT END OF event.
+        READ TABLE it_obj INTO ls_obj WITH KEY applid = ls_evtscr-applid
                                                field_id = ls_evtscr-field_id.
-        if sy-subrc = 0.
-          concatenate me->ms_item-obj_name
+        IF sy-subrc = 0.
+          CONCATENATE me->ms_item-obj_name
                       me->ms_item-obj_type
-                      is_table_content-tabname into ls_lcl_evtscr-file_name separated by '.'.
+                      is_table_content-tabname INTO ls_lcl_evtscr-file_name SEPARATED BY '.'.
 
-          replace all occurrences of '/' in ls_lcl_evtscr-file_name with '#'.
+          REPLACE ALL OCCURRENCES OF '/' IN ls_lcl_evtscr-file_name WITH '#'.
 
-          translate ls_lcl_evtscr-file_name to lower case.
+          TRANSLATE ls_lcl_evtscr-file_name TO LOWER CASE.
 
-          case is_table_content-tabname.
-            when '/NEPTUNE/_EVTTSC'.
+          CASE is_table_content-tabname.
+            WHEN '/NEPTUNE/_EVTTSC'.
               lv_ext = 'ts'.
-            when '/NEPTUNE/_EVTSCR'.
+            WHEN '/NEPTUNE/_EVTSCR'.
               lv_ext = 'js'.
-          endcase.
+          ENDCASE.
 
-          concatenate ls_lcl_evtscr-file_name
+          CONCATENATE ls_lcl_evtscr-file_name
                       ls_obj-field_name
                       ls_lcl_evtscr-event
-                      lv_ext into ls_lcl_evtscr-file_name separated by '.'.
+                      lv_ext INTO ls_lcl_evtscr-file_name SEPARATED BY '.'.
 
-          append ls_lcl_evtscr to lt_lcl_evtscr.
+          APPEND ls_lcl_evtscr TO lt_lcl_evtscr.
 
           ls_code-file_name = ls_lcl_evtscr-file_name.
           ls_code-code = zcl_neptune_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
-          clear: lt_code_lines.
-          append ls_code to lt_code.
-        endif.
+          CLEAR: lt_code_lines.
+          APPEND ls_code TO lt_code.
+        ENDIF.
 
-      endat.
-    endloop.
+      ENDAT.
+    ENDLOOP.
 
-    try.
+    TRY.
 ** Add adjusted table to files
         serialize_table(
           iv_tabname = is_table_content-tabname
           it_table   = lt_lcl_evtscr ).
 
 ** loop at code table to add each entry as a file
-        loop at lt_code into ls_code.
+        LOOP AT lt_code INTO ls_code.
 
           ls_file-path = '/'.
 
@@ -1267,92 +1266,92 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
           zif_abapgit_object~mo_files->add( ls_file ).
 
-        endloop.
+        ENDLOOP.
 
-      catch zcx_abapgit_exception.
-    endtry.
+      CATCH zcx_abapgit_exception.
+    ENDTRY.
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method serialize__html.
+  METHOD serialize__html.
 
-    data ls_file type zif_abapgit_git_definitions=>ty_file.
+    DATA ls_file TYPE zif_abapgit_git_definitions=>ty_file.
 
-    data lt_lcl_script type ty_tt_lcl_script.
-    data ls_lcl_script like line of lt_lcl_script.
+    DATA lt_lcl_script TYPE ty_tt_lcl_script.
+    DATA ls_lcl_script LIKE LINE OF lt_lcl_script.
 
-    data lt_html type standard table of /neptune/_html with default key.
-    data ls_html like line of lt_html.
+    DATA lt_html TYPE STANDARD TABLE OF /neptune/_html WITH DEFAULT KEY.
+    DATA ls_html LIKE LINE OF lt_html.
 
-    data: lt_code type ty_tt_code,
-          ls_code like line of lt_code.
+    DATA: lt_code TYPE ty_tt_code,
+          ls_code LIKE LINE OF lt_code.
 
-    data ls_obj like line of it_obj.
+    DATA ls_obj LIKE LINE OF it_obj.
 
-    data lt_code_lines type string_table.
+    DATA lt_code_lines TYPE string_table.
 
-    constants lc_ext(4) type c value 'html'.
+    CONSTANTS lc_ext(4) TYPE c VALUE 'html'.
 
-    field-symbols <lt_standard_table> type standard table.
+    FIELD-SYMBOLS <lt_standard_table> TYPE STANDARD TABLE.
 
-    assign is_table_content-table_content->* to <lt_standard_table>.
-    check sy-subrc = 0 and <lt_standard_table> is not initial.
+    ASSIGN is_table_content-table_content->* TO <lt_standard_table>.
+    CHECK sy-subrc = 0 AND <lt_standard_table> IS NOT INITIAL.
 
     lt_html = <lt_standard_table>.
 
-    loop at lt_html into ls_html.
-      at new field_id.
-        move-corresponding ls_html to ls_lcl_script.
-        clear ls_code.
-      endat.
+    LOOP AT lt_html INTO ls_html.
+      AT NEW field_id.
+        MOVE-CORRESPONDING ls_html TO ls_lcl_script.
+        CLEAR ls_code.
+      ENDAT.
 
-      append ls_html-text to lt_code_lines.
+      APPEND ls_html-text TO lt_code_lines.
 
-      at end of field_id.
-        read table it_obj into ls_obj with key applid = ls_html-applid
+      AT END OF field_id.
+        READ TABLE it_obj INTO ls_obj WITH KEY applid = ls_html-applid
                                                field_id = ls_html-field_id.
-        if sy-subrc = 0 or ( sy-subrc <> 0 and ls_html-field_id is initial ).
+        IF sy-subrc = 0 OR ( sy-subrc <> 0 AND ls_html-field_id IS INITIAL ).
 
-          concatenate me->ms_item-obj_name
+          CONCATENATE me->ms_item-obj_name
                       me->ms_item-obj_type
-                      is_table_content-tabname into ls_lcl_script-file_name separated by '.'.
+                      is_table_content-tabname INTO ls_lcl_script-file_name SEPARATED BY '.'.
 
-          replace all occurrences of '/' in ls_lcl_script-file_name with '#'.
+          REPLACE ALL OCCURRENCES OF '/' IN ls_lcl_script-file_name WITH '#'.
 
-          translate ls_lcl_script-file_name to lower case.
+          TRANSLATE ls_lcl_script-file_name TO LOWER CASE.
 
-          if ls_obj-field_id is initial.
+          IF ls_obj-field_id IS INITIAL.
 * this is the " Header " section of the app
             ls_obj-field_name = 'Header'.
-          endif.
+          ENDIF.
 
-          concatenate ls_lcl_script-file_name
+          CONCATENATE ls_lcl_script-file_name
                       ls_obj-field_name
                       ls_obj-field_id
-                      lc_ext into ls_lcl_script-file_name separated by '.'.
+                      lc_ext INTO ls_lcl_script-file_name SEPARATED BY '.'.
 
-          append ls_lcl_script to lt_lcl_script.
+          APPEND ls_lcl_script TO lt_lcl_script.
 
           ls_code-file_name = ls_lcl_script-file_name.
 
           ls_code-code = zcl_neptune_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
-          clear: lt_code_lines.
+          CLEAR: lt_code_lines.
 
-          append ls_code to lt_code.
-        endif.
+          APPEND ls_code TO lt_code.
+        ENDIF.
 
-      endat.
-    endloop.
+      ENDAT.
+    ENDLOOP.
 
-    try.
+    TRY.
 ** Add adjusted table to files
         serialize_table(
           iv_tabname = is_table_content-tabname
           it_table   = lt_lcl_script ).
 
 ** loop at code table to add each entry as a file
-        loop at lt_code into ls_code.
+        LOOP AT lt_code INTO ls_code.
 
           ls_file-path = '/'.
 
@@ -1362,101 +1361,101 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
           zif_abapgit_object~mo_files->add( ls_file ).
 
-        endloop.
-      catch zcx_abapgit_exception.
-    endtry.
+        ENDLOOP.
+      CATCH zcx_abapgit_exception.
+    ENDTRY.
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method serialize__script.
+  METHOD serialize__script.
 
-    data ls_file type zif_abapgit_git_definitions=>ty_file.
+    DATA ls_file TYPE zif_abapgit_git_definitions=>ty_file.
 
-    data lt_lcl_script type ty_tt_lcl_script.
-    data ls_lcl_script like line of lt_lcl_script.
+    DATA lt_lcl_script TYPE ty_tt_lcl_script.
+    DATA ls_lcl_script LIKE LINE OF lt_lcl_script.
 
-    data lt_script type standard table of /neptune/_script with default key.
-    data ls_script like line of lt_script.
+    DATA lt_script TYPE STANDARD TABLE OF /neptune/_script WITH DEFAULT KEY.
+    DATA ls_script LIKE LINE OF lt_script.
 
-    data: lt_code type ty_tt_code,
-          ls_code like line of lt_code.
+    DATA: lt_code TYPE ty_tt_code,
+          ls_code LIKE LINE OF lt_code.
 
-    data ls_obj like line of it_obj.
+    DATA ls_obj LIKE LINE OF it_obj.
 
-    data lv_ext type char10.
+    DATA lv_ext TYPE char10.
 
-    data lt_code_lines type string_table.
+    DATA lt_code_lines TYPE string_table.
 
-    field-symbols <lt_standard_table> type standard table.
+    FIELD-SYMBOLS <lt_standard_table> TYPE STANDARD TABLE.
 
-    assign is_table_content-table_content->* to <lt_standard_table>.
-    check sy-subrc = 0 and <lt_standard_table> is not initial.
+    ASSIGN is_table_content-table_content->* TO <lt_standard_table>.
+    CHECK sy-subrc = 0 AND <lt_standard_table> IS NOT INITIAL.
 
     lt_script = <lt_standard_table>.
 
-    loop at lt_script into ls_script.
-      at new field_id.
-        move-corresponding ls_script to ls_lcl_script.
-        clear ls_code.
-      endat.
+    LOOP AT lt_script INTO ls_script.
+      AT NEW field_id.
+        MOVE-CORRESPONDING ls_script TO ls_lcl_script.
+        CLEAR ls_code.
+      ENDAT.
 
-      append ls_script-text to lt_code_lines.
+      APPEND ls_script-text TO lt_code_lines.
 
-      at end of field_id.
-        read table it_obj into ls_obj with key applid = ls_script-applid
+      AT END OF field_id.
+        READ TABLE it_obj INTO ls_obj WITH KEY applid = ls_script-applid
                                                field_id = ls_script-field_id.
-        if sy-subrc = 0.
-          case is_table_content-tabname.
-            when '/NEPTUNE/_TSCRIP'.
+        IF sy-subrc = 0.
+          CASE is_table_content-tabname.
+            WHEN '/NEPTUNE/_TSCRIP'.
               lv_ext = 'ts'.
-            when others.
-              case ls_obj-field_type.
-                when 'SCRIPT'.
+            WHEN OTHERS.
+              CASE ls_obj-field_type.
+                WHEN 'SCRIPT'.
                   lv_ext = 'js'.
-                when 'TYPESCRIPT'.
+                WHEN 'TYPESCRIPT'.
                   " this is a different table
                   " so this would be the transpiled verison of the typescript (js)
                   lv_ext = 'js'.
-                when 'HTML'.
+                WHEN 'HTML'.
                   lv_ext = 'html'.
-              endcase.
-          endcase.
+              ENDCASE.
+          ENDCASE.
 
 
 
-          concatenate me->ms_item-obj_name
+          CONCATENATE me->ms_item-obj_name
                       me->ms_item-obj_type
-                      is_table_content-tabname into ls_lcl_script-file_name separated by '.'.
+                      is_table_content-tabname INTO ls_lcl_script-file_name SEPARATED BY '.'.
 
-          replace all occurrences of '/' in ls_lcl_script-file_name with '#'.
+          REPLACE ALL OCCURRENCES OF '/' IN ls_lcl_script-file_name WITH '#'.
 
-          translate ls_lcl_script-file_name to lower case.
+          TRANSLATE ls_lcl_script-file_name TO LOWER CASE.
 
-          concatenate ls_lcl_script-file_name
+          CONCATENATE ls_lcl_script-file_name
                       ls_obj-field_name
-                      lv_ext into ls_lcl_script-file_name separated by '.'.
+                      lv_ext INTO ls_lcl_script-file_name SEPARATED BY '.'.
 
-          append ls_lcl_script to lt_lcl_script.
+          APPEND ls_lcl_script TO lt_lcl_script.
 
           ls_code-file_name = ls_lcl_script-file_name.
           ls_code-code = zcl_neptune_abapgit_utilities=>code_lines_to_string( it_code_lines = lt_code_lines ).
-          clear: lt_code_lines.
+          CLEAR: lt_code_lines.
 
-          append ls_code to lt_code.
-        endif.
+          APPEND ls_code TO lt_code.
+        ENDIF.
 
-      endat.
-    endloop.
+      ENDAT.
+    ENDLOOP.
 
-    try.
+    TRY.
 ** Add adjusted table to files
         serialize_table(
           iv_tabname = is_table_content-tabname
           it_table   = lt_lcl_script ).
 
 ** loop at code table to add each entry as a file
-        loop at lt_code into ls_code.
+        LOOP AT lt_code INTO ls_code.
 
           ls_file-path = '/'.
 
@@ -1466,54 +1465,54 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
           zif_abapgit_object~mo_files->add( ls_file ).
 
-        endloop.
-      catch zcx_abapgit_exception.
-    endtry.
+        ENDLOOP.
+      CATCH zcx_abapgit_exception.
+    ENDTRY.
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method zif_abapgit_object~changed_by.
+  METHOD zif_abapgit_object~changed_by.
 
-    data: lo_artifact type ref to /neptune/if_artifact_type,
-          lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
-          ls_table_content like line of lt_table_content,
-          lv_key           type /neptune/artifact_key.
+    DATA: lo_artifact TYPE REF TO /neptune/if_artifact_type,
+          lt_table_content TYPE /neptune/if_artifact_type=>ty_t_table_content,
+          ls_table_content LIKE LINE OF lt_table_content,
+          lv_key           TYPE /neptune/artifact_key.
 
-    data ls_app type /neptune/app.
+    DATA ls_app TYPE /neptune/app.
 
-    field-symbols <lt_standard_table> type standard table.
+    FIELD-SYMBOLS <lt_standard_table> TYPE STANDARD TABLE.
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
 
     lv_key = me->ms_item-obj_name.
 
     lo_artifact->get_table_content(
-      exporting iv_key1                 = lv_key
+      EXPORTING iv_key1                 = lv_key
                 iv_only_sys_independent = abap_true
-      importing et_table_content        = lt_table_content ).
+      IMPORTING et_table_content        = lt_table_content ).
 
-    read table lt_table_content into ls_table_content with table key tabname = '/NEPTUNE/APP'.
-    if sy-subrc = 0.
-      assign ls_table_content-table_content->* to <lt_standard_table>.
-      check sy-subrc = 0.
-      read table <lt_standard_table> into ls_app index 1.
-      check sy-subrc = 0.
-      if ls_app-updnam is not initial.
+    READ TABLE lt_table_content INTO ls_table_content WITH TABLE KEY tabname = '/NEPTUNE/APP'.
+    IF sy-subrc = 0.
+      ASSIGN ls_table_content-table_content->* TO <lt_standard_table>.
+      CHECK sy-subrc = 0.
+      READ TABLE <lt_standard_table> INTO ls_app INDEX 1.
+      CHECK sy-subrc = 0.
+      IF ls_app-updnam IS NOT INITIAL.
         rv_user = ls_app-updnam.
-      else.
+      ELSE.
         rv_user = ls_app-crenam.
-      endif.
-    endif.
+      ENDIF.
+    ENDIF.
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method zif_abapgit_object~delete.
+  METHOD zif_abapgit_object~delete.
 
-    data: lo_artifact type ref to /neptune/if_artifact_type,
-          ls_settings type /neptune/aty,
-          lv_key1     type /neptune/artifact_key.
+    DATA: lo_artifact TYPE REF TO /neptune/if_artifact_type,
+          ls_settings TYPE /neptune/aty,
+          lv_key1     TYPE /neptune/artifact_key.
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
     ls_settings = lo_artifact->get_settings( ).
@@ -1526,7 +1525,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
     lo_artifact->delete_tadir_entry( iv_key1 = lv_key1 ).
 
-    if ls_settings-transportable is not initial and iv_transport is not initial.
+    IF ls_settings-transportable IS NOT INITIAL AND iv_transport IS NOT INITIAL.
 
       insert_to_transport(
         io_artifact      = lo_artifact
@@ -1535,50 +1534,50 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
         iv_key1          = lv_key1
         iv_artifact_type = ls_settings-artifact_type ).
 
-    endif.
+    ENDIF.
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method zif_abapgit_object~deserialize.
+  METHOD zif_abapgit_object~deserialize.
 ** pick up logic from CLASS ZCL_ABAPGIT_DATA_DESERIALIZER
 
-    data: lt_files type zif_abapgit_git_definitions=>ty_files_tt,
-          ls_files like line of lt_files.
+    DATA: lt_files TYPE zif_abapgit_git_definitions=>ty_files_tt,
+          ls_files LIKE LINE OF lt_files.
 
-    data: lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
-          ls_table_content like line of lt_table_content.
+    DATA: lt_table_content TYPE /neptune/if_artifact_type=>ty_t_table_content,
+          ls_table_content LIKE LINE OF lt_table_content.
 
-    data lr_data    type ref to data.
-    data lv_tabname type tadir-obj_name.
-    data lv_key     type /neptune/artifact_key.
+    DATA lr_data    TYPE REF TO data.
+    DATA lv_tabname TYPE tadir-obj_name.
+    DATA lv_key     TYPE /neptune/artifact_key.
 
-    data lo_artifact type ref to /neptune/if_artifact_type.
-    data ls_settings type /neptune/aty.
+    DATA lo_artifact TYPE REF TO /neptune/if_artifact_type.
+    DATA ls_settings TYPE /neptune/aty.
 
-    try.
+    TRY.
         io_xml->read(
-          exporting
+          EXPORTING
             iv_name = 'key'
-          changing
+          CHANGING
             cg_data = lv_key ).
-      catch zcx_abapgit_exception.
-    endtry.
+      CATCH zcx_abapgit_exception.
+    ENDTRY.
 
     lt_files = zif_abapgit_object~mo_files->get_files( ).
 
-    loop at lt_files into ls_files where filename cs '.json'.
+    LOOP AT lt_files INTO ls_files WHERE filename CS '.json'.
 
       get_values_from_filename(
-        exporting
+        EXPORTING
           is_filename = ls_files-filename
-        importing
+        IMPORTING
           ev_tabname  = lv_tabname ).
 
-      create data lr_data type standard table of (lv_tabname) with non-unique default key.
+      CREATE DATA lr_data TYPE STANDARD TABLE OF (lv_tabname) WITH NON-UNIQUE DEFAULT KEY.
 
-      case lv_tabname.
-        when '/NEPTUNE/EVTSCR'.
+      CASE lv_tabname.
+        WHEN '/NEPTUNE/EVTSCR'.
 
           deserialize_evtscr(
             is_file  = ls_files
@@ -1587,7 +1586,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
             iv_key   = lv_key ).
 
 
-        when '/NEPTUNE/_EVTSCR' or '/NEPTUNE/_EVTTSC'.
+        WHEN '/NEPTUNE/_EVTSCR' OR '/NEPTUNE/_EVTTSC'.
 
           deserialize__evtscr(
             is_file  = ls_files
@@ -1595,7 +1594,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
             ir_data  = lr_data
             iv_key   = lv_key ).
 
-        when '/NEPTUNE/SCRIPT'.
+        WHEN '/NEPTUNE/SCRIPT'.
 
           deserialize_script(
             is_file  = ls_files
@@ -1603,7 +1602,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
             ir_data  = lr_data
             iv_key   = lv_key ).
 
-        when '/NEPTUNE/_SCRIPT' or '/NEPTUNE/_TSCRIP'.
+        WHEN '/NEPTUNE/_SCRIPT' OR '/NEPTUNE/_TSCRIP'.
 
           deserialize__script(
             is_file  = ls_files
@@ -1611,7 +1610,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
             ir_data  = lr_data
             iv_key   = lv_key ).
 
-        when '/NEPTUNE/HTML'.
+        WHEN '/NEPTUNE/HTML'.
 
           deserialize_html(
             is_file  = ls_files
@@ -1619,7 +1618,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
             ir_data  = lr_data
             iv_key   = lv_key ).
 
-        when '/NEPTUNE/_HTML'.
+        WHEN '/NEPTUNE/_HTML'.
 
           deserialize__html(
             is_file  = ls_files
@@ -1627,7 +1626,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
             ir_data  = lr_data
             iv_key   = lv_key ).
 
-        when '/NEPTUNE/CSS'.
+        WHEN '/NEPTUNE/CSS'.
 
           deserialize_css(
             is_file  = ls_files
@@ -1635,8 +1634,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
             ir_data  = lr_data
             iv_key   = lv_key ).
 
-        when '/NEPTUNE/_CSS_D' or
-             '/NEPTUNE/_CSS_P' or
+        WHEN '/NEPTUNE/_CSS_D' OR
+             '/NEPTUNE/_CSS_P' OR
              '/NEPTUNE/_CSS_T'.
 
           deserialize__css(
@@ -1645,7 +1644,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
             ir_data  = lr_data
             iv_key   = lv_key ).
 
-        when others.
+        WHEN OTHERS.
 
           deserialize_table(
             is_file     = ls_files
@@ -1654,16 +1653,16 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
             iv_devclass = iv_package
             ir_data     = lr_data ).
 
-      endcase.
+      ENDCASE.
 
       ls_table_content-tabname = lv_tabname.
       ls_table_content-table_content = lr_data.
-      append ls_table_content to lt_table_content.
-      clear ls_table_content.
+      APPEND ls_table_content TO lt_table_content.
+      CLEAR ls_table_content.
 
-    endloop.
+    ENDLOOP.
 
-    if lt_table_content is not initial.
+    IF lt_table_content IS NOT INITIAL.
 
       lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
       ls_settings = lo_artifact->get_settings( ).
@@ -1680,7 +1679,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
           iv_key1     = lv_key
           iv_devclass = iv_package ).
 
-      if ls_settings-transportable is not initial and iv_transport is not initial.
+      IF ls_settings-transportable IS NOT INITIAL AND iv_transport IS NOT INITIAL.
 
         insert_to_transport(
           io_artifact      = lo_artifact
@@ -1689,167 +1688,167 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
           iv_key1          = lv_key
           iv_artifact_type = ls_settings-artifact_type ).
 
-      endif.
+      ENDIF.
 
-    endif.
+    ENDIF.
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method zif_abapgit_object~exists.
+  METHOD zif_abapgit_object~exists.
     rv_bool = abap_true.
-  endmethod.
+  ENDMETHOD.
 
 
-  method zif_abapgit_object~get_comparator.
-    return.
-  endmethod.
+  METHOD zif_abapgit_object~get_comparator.
+    RETURN.
+  ENDMETHOD.
 
 
-  method zif_abapgit_object~get_deserialize_order.
-    return.
-  endmethod.
+  METHOD zif_abapgit_object~get_deserialize_order.
+    RETURN.
+  ENDMETHOD.
 
 
-  method zif_abapgit_object~get_deserialize_steps.
-    append zif_abapgit_object=>gc_step_id-late to rt_steps.
-  endmethod.
+  METHOD zif_abapgit_object~get_deserialize_steps.
+    APPEND zif_abapgit_object=>gc_step_id-late TO rt_steps.
+  ENDMETHOD.
 
 
-  method zif_abapgit_object~get_metadata.
-    return.
-  endmethod.
+  METHOD zif_abapgit_object~get_metadata.
+    RETURN.
+  ENDMETHOD.
 
 
-  method zif_abapgit_object~is_active.
+  METHOD zif_abapgit_object~is_active.
     rv_active = abap_true.
-  endmethod.
+  ENDMETHOD.
 
 
-  method zif_abapgit_object~is_locked.
+  METHOD zif_abapgit_object~is_locked.
 
-    data lo_artifact type ref to /neptune/if_artifact_type.
+    DATA lo_artifact TYPE REF TO /neptune/if_artifact_type.
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
     rv_is_locked = lo_artifact->check_artifact_is_locked( iv_key = ms_item-obj_name ).
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method zif_abapgit_object~jump.
-    return.
-  endmethod.
+  METHOD zif_abapgit_object~jump.
+    RETURN.
+  ENDMETHOD.
 
 
-  method zif_abapgit_object~map_filename_to_object.
-    return.
-  endmethod.
+  METHOD zif_abapgit_object~map_filename_to_object.
+    RETURN.
+  ENDMETHOD.
 
 
-  method zif_abapgit_object~map_object_to_filename.
-    return.
-  endmethod.
+  METHOD zif_abapgit_object~map_object_to_filename.
+    RETURN.
+  ENDMETHOD.
 
 
-  method zif_abapgit_object~serialize.
+  METHOD zif_abapgit_object~serialize.
 
-    data: lo_artifact      type ref to /neptune/if_artifact_type,
-          lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
-          ls_table_content like line of lt_table_content,
-          lv_key           type /neptune/artifact_key.
+    DATA: lo_artifact      TYPE REF TO /neptune/if_artifact_type,
+          lt_table_content TYPE /neptune/if_artifact_type=>ty_t_table_content,
+          ls_table_content LIKE LINE OF lt_table_content,
+          lv_key           TYPE /neptune/artifact_key.
 
-    data lt_obj type standard table of /neptune/obj with default key.
+    DATA lt_obj TYPE STANDARD TABLE OF /neptune/obj WITH DEFAULT KEY.
 
-    field-symbols <lt_standard_table> type standard table.
+    FIELD-SYMBOLS <lt_standard_table> TYPE STANDARD TABLE.
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
     mv_artifact_type = lo_artifact->artifact_type.
 
-    try.
+    TRY.
         io_xml->add(
           iv_name = 'key'
           ig_data = ms_item-obj_name ).
-      catch zcx_abapgit_exception.
-    endtry.
+      CATCH zcx_abapgit_exception.
+    ENDTRY.
 
     lv_key = ms_item-obj_name.
 
     lo_artifact->get_table_content(
-      exporting iv_key1                 = lv_key
+      EXPORTING iv_key1                 = lv_key
                 iv_only_sys_independent = abap_true
-      importing et_table_content        = lt_table_content ).
+      IMPORTING et_table_content        = lt_table_content ).
 
 * Save OBJ Table so we can read the name of objects with the FIELD_ID
-    read table lt_table_content into ls_table_content with key tabname = '/NEPTUNE/OBJ'.
-    if sy-subrc = 0.
-      assign ls_table_content-table_content->* to <lt_standard_table>.
-      check sy-subrc = 0.
+    READ TABLE lt_table_content INTO ls_table_content WITH KEY tabname = '/NEPTUNE/OBJ'.
+    IF sy-subrc = 0.
+      ASSIGN ls_table_content-table_content->* TO <lt_standard_table>.
+      CHECK sy-subrc = 0.
       lt_obj = <lt_standard_table>.
-    endif.
+    ENDIF.
 
 * serialize
-    loop at lt_table_content into ls_table_content.
+    LOOP AT lt_table_content INTO ls_table_content.
 
-      case ls_table_content-tabname.
-        when '/NEPTUNE/EVTSCR'.
+      CASE ls_table_content-tabname.
+        WHEN '/NEPTUNE/EVTSCR'.
 
           serialize_evtscr(
             it_obj           = lt_obj
             is_table_content = ls_table_content ).
 
-        when '/NEPTUNE/_EVTSCR' or '/NEPTUNE/_EVTTSC'.
+        WHEN '/NEPTUNE/_EVTSCR' OR '/NEPTUNE/_EVTTSC'.
 
           serialize__evtscr(
             it_obj           = lt_obj
             is_table_content = ls_table_content ).
 
-        when '/NEPTUNE/SCRIPT'.
+        WHEN '/NEPTUNE/SCRIPT'.
 
           serialize_script(
             it_obj           = lt_obj
             is_table_content = ls_table_content ).
 
-        when '/NEPTUNE/_SCRIPT' or '/NEPTUNE/_TSCRIP'.
+        WHEN '/NEPTUNE/_SCRIPT' OR '/NEPTUNE/_TSCRIP'.
 
           serialize__script(
             it_obj           = lt_obj
             is_table_content = ls_table_content ).
 
-        when '/NEPTUNE/HTML'.
+        WHEN '/NEPTUNE/HTML'.
 
           serialize_html(
             it_obj           = lt_obj
             is_table_content = ls_table_content ).
 
-        when '/NEPTUNE/_HTML'.
+        WHEN '/NEPTUNE/_HTML'.
 
           serialize__html(
             it_obj           = lt_obj
             is_table_content = ls_table_content ).
 
-        when '/NEPTUNE/CSS'.
+        WHEN '/NEPTUNE/CSS'.
 
           serialize_css( is_table_content = ls_table_content ).
 
-        when '/NEPTUNE/_CSS_D' or
-             '/NEPTUNE/_CSS_P' or
+        WHEN '/NEPTUNE/_CSS_D' OR
+             '/NEPTUNE/_CSS_P' OR
              '/NEPTUNE/_CSS_T'.
 
           serialize__css( is_table_content = ls_table_content ).
 
-        when others.
+        WHEN OTHERS.
 
-          assign ls_table_content-table_content->* to <lt_standard_table>.
+          ASSIGN ls_table_content-table_content->* TO <lt_standard_table>.
 
-          check sy-subrc = 0 and <lt_standard_table> is not initial.
+          CHECK sy-subrc = 0 AND <lt_standard_table> IS NOT INITIAL.
 
           serialize_table(
             iv_tabname = ls_table_content-tabname
             it_table   = <lt_standard_table> ).
 
-      endcase.
+      ENDCASE.
 
-    endloop.
+    ENDLOOP.
 
-  endmethod.
+  ENDMETHOD.
 ENDCLASS.

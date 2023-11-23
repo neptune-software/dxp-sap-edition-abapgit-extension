@@ -8,87 +8,86 @@ CLASS zcl_abapgit_object_zn19 DEFINITION
 
     INTERFACES zif_abapgit_object .
   PROTECTED SECTION.
-private section.
+  PRIVATE SECTION.
 
-  types:
-    BEGIN OF ty_mapping,
+    TYPES:
+      BEGIN OF ty_mapping,
                           key TYPE tadir-obj_name,
                           name TYPE string,
                          END OF ty_mapping .
-  types:
-    ty_mapping_tt TYPE STANDARD TABLE OF ty_mapping WITH KEY key .
-  types:
-    ty_t_mime_t TYPE STANDARD TABLE OF /neptune/mime_t WITH NON-UNIQUE DEFAULT KEY .
-  types:
-    BEGIN OF ty_lcl_mime.
+    TYPES:
+      ty_mapping_tt TYPE STANDARD TABLE OF ty_mapping WITH KEY key .
+    TYPES:
+      ty_t_mime_t TYPE STANDARD TABLE OF /neptune/mime_t WITH NON-UNIQUE DEFAULT KEY .
+    TYPES:
+      BEGIN OF ty_lcl_mime.
             INCLUDE TYPE /neptune/mime.
     TYPES: file_name      TYPE string,
       END OF ty_lcl_mime .
-  types:
-    ty_tt_lcl_mime TYPE STANDARD TABLE OF ty_lcl_mime .
+    TYPES:
+      ty_tt_lcl_mime TYPE STANDARD TABLE OF ty_lcl_mime .
 
-  constants:
-    mc_name_separator(1) TYPE c value '@'. "#EC NOTEXT
-  constants GC_MIME_TABLE type TABNAME value '/NEPTUNE/MIME'. "#EC NOTEXT
-  constants GC_MEDPACK type TABNAME value '/NEPTUNE/MEDPACK'. "#EC NOTEXT
-  constants GC_MIME_T_TABLE type TABNAME value '/NEPTUNE/MIME_T'. "#EC NOTEXT
-  data MT_SKIP_PATHS type STRING_TABLE .
-  class-data GT_MAPPING type TY_MAPPING_TT .
-  data MV_ARTIFACT_TYPE type /NEPTUNE/ARTIFACT_TYPE .
+    CONSTANTS:
+      mc_name_separator(1) TYPE c VALUE '@'. "#EC NOTEXT
+    CONSTANTS gc_mime_table TYPE tabname VALUE '/NEPTUNE/MIME'. "#EC NOTEXT
+    CONSTANTS gc_medpack TYPE tabname VALUE '/NEPTUNE/MEDPACK'. "#EC NOTEXT
+    CONSTANTS gc_mime_t_table TYPE tabname VALUE '/NEPTUNE/MIME_T'. "#EC NOTEXT
+    CLASS-DATA gt_mapping TYPE ty_mapping_tt .
+    DATA mv_artifact_type TYPE /neptune/artifact_type .
 
-  methods SERIALIZE_TABLE
-    importing
-      !IV_TABNAME type TABNAME
-      !IT_TABLE type ANY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  interface ZIF_ABAPGIT_GIT_DEFINITIONS load .
-  methods DESERIALIZE_MIME_TABLE
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IR_DATA type ref to DATA
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods DESERIALIZE_TABLE
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IR_DATA type ref to DATA
-      !IV_TABNAME type TADIR-OBJ_NAME
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods GET_VALUES_FROM_FILENAME
-    importing
-      !IS_FILENAME type STRING
-    exporting
-      !EV_TABNAME type TADIR-OBJ_NAME
-      !EV_NAME type /NEPTUNE/ARTIFACT_NAME .
-  methods GET_FULL_FILE_PATH
-    importing
-      !IV_PARENT type /NEPTUNE/MIME_T-PARENT
-      !IT_MIME_T type TY_T_MIME_T
-    returning
-      value(RV_PATH) type STRING .
-  interface /NEPTUNE/IF_ARTIFACT_TYPE load .
-  methods SERIALIZE_MIME_TABLE
-    importing
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT
-      !IT_MIME_T type TY_T_MIME_T optional
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods INSERT_TO_TRANSPORT
-    importing
-      !IO_ARTIFACT type ref to /NEPTUNE/IF_ARTIFACT_TYPE
-      !IV_TRANSPORT type TRKORR
-      !IV_PACKAGE type DEVCLASS
-      !IV_KEY1 type ANY
-      !IV_ARTIFACT_TYPE type /NEPTUNE/ATY-ARTIFACT_TYPE .
+    METHODS serialize_table
+      IMPORTING
+      !iv_tabname TYPE tabname
+      !it_table TYPE any
+      RAISING
+      zcx_abapgit_exception .
+    INTERFACE zif_abapgit_git_definitions LOAD .
+    METHODS deserialize_mime_table
+      IMPORTING
+      !is_file TYPE zif_abapgit_git_definitions=>ty_file
+      !ir_data TYPE REF TO data
+      !it_files TYPE zif_abapgit_git_definitions=>ty_files_tt
+      RAISING
+      zcx_abapgit_exception .
+    METHODS deserialize_table
+      IMPORTING
+      !is_file TYPE zif_abapgit_git_definitions=>ty_file
+      !ir_data TYPE REF TO data
+      !iv_tabname TYPE tadir-obj_name
+      RAISING
+      zcx_abapgit_exception .
+    METHODS get_values_from_filename
+      IMPORTING
+      !is_filename TYPE string
+      EXPORTING
+      !ev_tabname TYPE tadir-obj_name
+      !ev_name TYPE /neptune/artifact_name .
+    METHODS get_full_file_path
+      IMPORTING
+      !iv_parent TYPE /neptune/mime_t-parent
+      !it_mime_t TYPE ty_t_mime_t
+      RETURNING
+      VALUE(rv_path) TYPE string .
+    INTERFACE /neptune/if_artifact_type LOAD .
+    METHODS serialize_mime_table
+      IMPORTING
+      !iv_key TYPE /neptune/artifact_key
+      !is_table_content TYPE /neptune/if_artifact_type=>ty_table_content
+      !it_mime_t TYPE ty_t_mime_t OPTIONAL
+      RAISING
+      zcx_abapgit_exception .
+    METHODS insert_to_transport
+      IMPORTING
+      !io_artifact TYPE REF TO /neptune/if_artifact_type
+      !iv_transport TYPE trkorr
+      !iv_package TYPE devclass
+      !iv_key1 TYPE any
+      !iv_artifact_type TYPE /neptune/aty-artifact_type .
 ENDCLASS.
 
 
 
-CLASS ZCL_ABAPGIT_OBJECT_ZN19 IMPLEMENTATION.
+CLASS zcl_abapgit_object_zn19 IMPLEMENTATION.
 
 
   METHOD deserialize_mime_table.
@@ -249,47 +248,47 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN19 IMPLEMENTATION.
   ENDMETHOD.
 
 
-  method serialize_mime_table.
+  METHOD serialize_mime_table.
 
-    data lt_lcl_mime type ty_tt_lcl_mime.
-    data ls_lcl_mime like line of lt_lcl_mime.
+    DATA lt_lcl_mime TYPE ty_tt_lcl_mime.
+    DATA ls_lcl_mime LIKE LINE OF lt_lcl_mime.
 
-    data lt_mime type standard table of /neptune/mime with default key.
-    data ls_mime like line of lt_mime.
-    data ls_mime_t like line of it_mime_t.
+    DATA lt_mime TYPE STANDARD TABLE OF /neptune/mime WITH DEFAULT KEY.
+    DATA ls_mime LIKE LINE OF lt_mime.
+    DATA ls_mime_t LIKE LINE OF it_mime_t.
 
-    data: ls_file type zif_abapgit_git_definitions=>ty_file,
-          lv_guid type string.
+    DATA: ls_file TYPE zif_abapgit_git_definitions=>ty_file,
+          lv_guid TYPE string.
 
 
-    field-symbols: <lt_standard_table> type standard table.
+    FIELD-SYMBOLS: <lt_standard_table> TYPE STANDARD TABLE.
 
-    assign is_table_content-table_content->* to <lt_standard_table>.
-    check sy-subrc = 0 and <lt_standard_table> is not initial.
+    ASSIGN is_table_content-table_content->* TO <lt_standard_table>.
+    CHECK sy-subrc = 0 AND <lt_standard_table> IS NOT INITIAL.
 
     lt_mime = <lt_standard_table>.
 
-    read table it_mime_t into ls_mime_t with key guid = iv_key. "#EC CI_SUBRC
+    READ TABLE it_mime_t INTO ls_mime_t WITH KEY guid = iv_key. "#EC CI_SUBRC
 
-    loop at lt_mime into ls_mime.
-      move-corresponding ls_mime to ls_lcl_mime.
+    LOOP AT lt_mime INTO ls_mime.
+      MOVE-CORRESPONDING ls_mime TO ls_lcl_mime.
       " clear the image from this field because the image will be its own file
-      clear ls_lcl_mime-data.
+      CLEAR ls_lcl_mime-data.
 
       lv_guid = ls_mime-guid.
 
-      concatenate iv_key
+      CONCATENATE iv_key
                   ms_item-obj_type
-                  is_table_content-tabname into ls_file-filename separated by '.'.
+                  is_table_content-tabname INTO ls_file-filename SEPARATED BY '.'.
 
-      replace all occurrences of '/' in ls_file-filename with '#'.
+      REPLACE ALL OCCURRENCES OF '/' IN ls_file-filename WITH '#'.
 
-      concatenate ls_file-filename lv_guid  into ls_file-filename separated by mc_name_separator.
-      concatenate ls_file-filename ls_mime-name into ls_file-filename separated by '.'.
+      CONCATENATE ls_file-filename lv_guid  INTO ls_file-filename SEPARATED BY mc_name_separator.
+      CONCATENATE ls_file-filename ls_mime-name INTO ls_file-filename SEPARATED BY '.'.
 
-      concatenate ls_mime_t-name ls_file-filename into ls_file-filename separated by mc_name_separator.
+      CONCATENATE ls_mime_t-name ls_file-filename INTO ls_file-filename SEPARATED BY mc_name_separator.
 
-      translate ls_file-filename to lower case.
+      TRANSLATE ls_file-filename TO LOWER CASE.
 
       ls_file-path = '/'.
       ls_file-data = ls_mime-data.
@@ -298,28 +297,28 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN19 IMPLEMENTATION.
 
       ls_lcl_mime-file_name = ls_file-filename.
 
-      append ls_lcl_mime to lt_lcl_mime.
-    endloop.
+      APPEND ls_lcl_mime TO lt_lcl_mime.
+    ENDLOOP.
 
     serialize_table(
       iv_tabname = is_table_content-tabname
       it_table   = lt_lcl_mime ).
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method serialize_table.
+  METHOD serialize_table.
 
-    data: lo_ajson         type ref to zcl_abapgit_ajson,
-          lx_ajson         type ref to zcx_abapgit_ajson_error,
-          lv_json          type string,
-          ls_file          type zif_abapgit_git_definitions=>ty_file.
+    DATA: lo_ajson         TYPE REF TO zcl_abapgit_ajson,
+          lx_ajson         TYPE REF TO zcx_abapgit_ajson_error,
+          lv_json          TYPE string,
+          ls_file          TYPE zif_abapgit_git_definitions=>ty_file.
 
-    data lx_ex type ref to zcx_abapgit_exception.
+    DATA lx_ex TYPE REF TO zcx_abapgit_exception.
 
-    data lt_skip_paths type string_table.
+    DATA lt_skip_paths TYPE string_table.
 
-    try.
+    TRY.
         lo_ajson = zcl_abapgit_ajson=>create_empty( ).
         lo_ajson->keep_item_order( ).
         lo_ajson->set(
@@ -335,13 +334,13 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN19 IMPLEMENTATION.
         lt_skip_paths = zcl_neptune_abapgit_utilities=>get_skip_fields_for_artifact(
                                                           iv_artifact_type = mv_artifact_type
                                                           iv_serialize     = abap_true ).
-        if lt_skip_paths is not initial.
+        IF lt_skip_paths IS NOT INITIAL.
           lo_ajson = zcl_abapgit_ajson=>create_from(
                         ii_source_json = lo_ajson
                         ii_filter      = zcl_abapgit_ajson_filter_lib=>create_path_filter(
                                             it_skip_paths     = lt_skip_paths
                                             iv_pattern_search = abap_true ) ).
-        endif.
+        ENDIF.
 
         lv_json = lo_ajson->stringify( 2 ).
 
@@ -354,13 +353,13 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN19 IMPLEMENTATION.
 
         zif_abapgit_object~mo_files->add( ls_file ).
 
-      catch zcx_abapgit_ajson_error into lx_ajson.
+      CATCH zcx_abapgit_ajson_error INTO lx_ajson.
         zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
-      catch zcx_abapgit_exception into lx_ex.
+      CATCH zcx_abapgit_exception INTO lx_ex.
         zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
-    endtry.
+    ENDTRY.
 
-  endmethod.
+  ENDMETHOD.
 
 
   METHOD zif_abapgit_object~changed_by.
@@ -379,9 +378,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN19 IMPLEMENTATION.
     lv_key = ms_item-obj_name.
 
     lo_artifact->get_table_content(
-      exporting iv_key1                 = lv_key
+      EXPORTING iv_key1                 = lv_key
                 iv_only_sys_independent = abap_true
-      importing et_table_content        = lt_table_content ).
+      IMPORTING et_table_content        = lt_table_content ).
 
     READ TABLE lt_table_content INTO ls_table_content WITH TABLE KEY tabname = gc_medpack.
     IF sy-subrc = 0.
@@ -660,9 +659,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN19 IMPLEMENTATION.
     lv_key = ms_item-obj_name.
 
     lo_artifact->get_table_content(
-      exporting iv_key1                 = lv_key
+      EXPORTING iv_key1                 = lv_key
                 iv_only_sys_independent = abap_true
-      importing et_table_content        = lt_table_content ).
+      IMPORTING et_table_content        = lt_table_content ).
 
 * get folders table
     READ TABLE lt_table_content INTO ls_table_content WITH KEY tabname = gc_mime_t_table.
