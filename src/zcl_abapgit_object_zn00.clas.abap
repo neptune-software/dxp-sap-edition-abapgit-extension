@@ -1,14 +1,14 @@
-class ZCL_ABAPGIT_OBJECT_ZN00 definition
+class zcl_abapgit_object_zn00 definition
   public
-  inheriting from ZCL_ABAPGIT_OBJECTS_SUPER
+  inheriting from zcl_abapgit_objects_super
   final
   create public .
 
-public section.
+  public section.
 
-  interfaces ZIF_ABAPGIT_OBJECT .
+    interfaces zif_abapgit_object .
 
-  constants MC_EXTENSION_VERSION type STRING value '1.0.1'. "#EC NOTEXT
+    constants mc_extension_version type string value '1.0.1'. "#EC NOTEXT
   protected section.
   private section.
 
