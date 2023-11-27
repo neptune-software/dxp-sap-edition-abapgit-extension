@@ -405,8 +405,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN18 IMPLEMENTATION.
       lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
 
       lo_artifact->delete_artifact(
-        iv_key1                = lv_key
-        iv_devclass            = iv_package ).
+        iv_key1     = lv_key
+        iv_devclass = iv_package ).
 
       lo_artifact->set_table_content(
         iv_key1                 = lv_key
