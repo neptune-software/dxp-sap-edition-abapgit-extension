@@ -1548,6 +1548,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
     data: lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
           ls_table_content like line of lt_table_content.
 
+    data lt_system_field_values type /neptune/if_artifact_type=>ty_t_system_field_values.
+
     data lr_data    type ref to data.
     data lv_tabname type tadir-obj_name.
     data lv_key     type /neptune/artifact_key.
@@ -1668,12 +1670,17 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
       ls_settings = lo_artifact->get_settings( ).
 
       lo_artifact->delete_artifact(
-        iv_key1     = lv_key
-        iv_devclass = iv_package ).
+        exporting
+          iv_key1                = lv_key
+          iv_devclass            = iv_package
+        importing
+          et_system_field_values = lt_system_field_values ).
 
       lo_artifact->set_table_content(
         iv_key1                 = lv_key
-        it_insert_table_content = lt_table_content ).
+        iv_devclass             = iv_package
+        it_insert_table_content = lt_table_content
+        it_system_fields_values = lt_system_field_values ).
 
       lo_artifact->update_tadir_entry(
           iv_key1     = lv_key
