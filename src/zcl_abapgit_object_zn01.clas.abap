@@ -1568,7 +1568,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
     lt_files = zif_abapgit_object~mo_files->get_files( ).
 
-    loop at lt_files into ls_files where filename cs '.json'.
+    loop at lt_files into ls_files where filename cp '*.json'.
 
       get_values_from_filename(
         exporting
