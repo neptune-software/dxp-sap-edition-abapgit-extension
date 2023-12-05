@@ -127,7 +127,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
 
     try.
         lo_ajson = zcl_abapgit_ajson=>parse( zcl_abapgit_convert=>xstring_to_string_utf8( is_file-data ) ).
-        lo_ajson->zif_abapgit_ajson~to_abap( importing ev_container = <lt_tab> ).
+        lo_ajson->zif_abapgit_ajson~to_abap( exporting iv_corresponding = abap_true
+                                             importing ev_container     = <lt_tab> ).
       catch zcx_abapgit_ajson_error into lx_ajson.
         zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
     endtry.
@@ -343,7 +344,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
 
     try.
         lo_ajson = zcl_abapgit_ajson=>parse( zcl_abapgit_convert=>xstring_to_string_utf8( is_file-data ) ).
-        lo_ajson->zif_abapgit_ajson~to_abap( importing ev_container = <lt_tab> ).
+        lo_ajson->zif_abapgit_ajson~to_abap( exporting iv_corresponding = abap_true
+                                             importing ev_container     = <lt_tab> ).
       catch zcx_abapgit_ajson_error into lx_ajson.
         zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
     endtry.
