@@ -3,7 +3,7 @@
  <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
    <VSEOCLASS>
-    <CLSNAME>ZCL_ABAPGIT_MARKET_INTEGRATION</CLSNAME>
+    <CLSNAME>ZCL_NEPTUNE_ABAPGIT_MARKET</CLSNAME>
     <LANGU>E</LANGU>
     <DESCRIPT>Marketplace Integration class</DESCRIPT>
     <STATE>1</STATE>
@@ -23,6 +23,12 @@
      <SCONAME>RT_MESSAGES</SCONAME>
      <LANGU>E</LANGU>
      <DESCRIPT>Return parameter table</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>CHECK_REPO_INSTALLED</CMPNAME>
+     <SCONAME>EV_INSTALLED</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Data element for domain BOOLE: TRUE (=&apos;X&apos;) and FALSE (=&apos; &apos;)</DESCRIPT>
     </SEOSUBCOTX>
     <SEOSUBCOTX>
      <CMPNAME>CHECK_REPO_INSTALLED</CMPNAME>

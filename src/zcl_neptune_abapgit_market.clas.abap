@@ -1,37 +1,39 @@
-class zcl_abapgit_market_integration definition
+class ZCL_NEPTUNE_ABAPGIT_MARKET definition
   public
   final
   create public .
 
-  public section.
+public section.
 
-    class-methods add_abapgit_repo
-      importing
-        !iv_parameters type /neptune/market_abapgit_repo
-      exporting
-        !rt_messages type /neptune/message_tt .
-    class-methods check_repo_installed
-      importing
-        !iv_devclass type devclass
-      exporting
-        !ev_installed type abap_bool
-        !rt_messages type /neptune/message_tt .
-    class-methods delete_abapgit_repo
-      importing
-        !iv_devclass type devclass
-      exporting
-        !rt_messages type /neptune/message_tt .
+  class-methods ADD_ABAPGIT_REPO
+    importing
+      !IV_PARAMETERS type /NEPTUNE/MARKET_ABAPGIT_REPO
+    exporting
+      !RT_MESSAGES type /NEPTUNE/MESSAGE_TT .
+  class-methods CHECK_REPO_INSTALLED
+    importing
+      !IV_DEVCLASS type DEVCLASS
+    exporting
+      !EV_INSTALLED type BOOLE_D
+      !RT_MESSAGES type /NEPTUNE/MESSAGE_TT .
+  class-methods DELETE_ABAPGIT_REPO
+    importing
+      !IV_DEVCLASS type DEVCLASS
+    exporting
+      !RT_MESSAGES type /NEPTUNE/MESSAGE_TT .
   protected section.
   private section.
 ENDCLASS.
 
 
 
-CLASS ZCL_ABAPGIT_MARKET_INTEGRATION IMPLEMENTATION.
+CLASS ZCL_NEPTUNE_ABAPGIT_MARKET IMPLEMENTATION.
 
 
-  method add_abapgit_repo.
-
+  method ADD_ABAPGIT_REPO.
+**********************************************************************
+** CALLED DYNAMICALLY IN /NEPTUNE/CL_NAD_MARKETPLACE -> ADD_ABAPGIT_REPO
+**********************************************************************
     data: ls_logon       type /neptune/market_abapgit_repo,
           lv_user        type string,
           lv_password    type string,
@@ -128,8 +130,10 @@ CLASS ZCL_ABAPGIT_MARKET_INTEGRATION IMPLEMENTATION.
   endmethod.
 
 
-  method check_repo_installed.
-
+  method CHECK_REPO_INSTALLED.
+**********************************************************************
+** CALLED DYNAMICALLY IN /NEPTUNE/CL_NAD_MARKETPLACE -> CHECK_ABAPGIT_REPO
+**********************************************************************
     data ls_message like line of rt_messages.
 
     data: lo_ex           type ref to zcx_abapgit_exception,
@@ -167,8 +171,10 @@ CLASS ZCL_ABAPGIT_MARKET_INTEGRATION IMPLEMENTATION.
   endmethod.
 
 
-  method delete_abapgit_repo.
-
+  method DELETE_ABAPGIT_REPO.
+**********************************************************************
+** CALLED DYNAMICALLY IN /NEPTUNE/CL_NAD_MARKETPLACE -> ADD_ABAPGIT_REPO
+**********************************************************************
     data ls_message like line of rt_messages.
 
     data: lo_ex           type ref to zcx_abapgit_exception,

@@ -30,6 +30,13 @@ public section.
   class-methods FIX_STRING_DESERIALIZE
     changing
       !CV_STRING type STRING .
+  class-methods GET_SKIP_FIELDS_FOR_ARTIFACT
+    importing
+      !IV_ARTIFACT_TYPE type /NEPTUNE/ARTIFACT_TYPE
+      !IV_SERIALIZE type BOOLE_D optional
+      !IV_TABNAME type TABNAME optional
+    returning
+      value(RT_FIELDS) type STRING_TABLE .
 protected section.
 private section.
 ENDCLASS.
@@ -90,6 +97,29 @@ method GET_PACKAGE_PATH.
 
     catch zcx_abapgit_exception.
   endtry.
+endmethod.
+
+
+method get_skip_fields_for_artifact.
+
+  data: lo_artifact_type   type ref to /neptune/if_artifact_type,
+        lt_artifact_fields type /neptune/if_artifact_type=>ty_t_artifact_fields,
+        ls_field           like line of rt_fields.
+
+  field-symbols: <ls_artifact_field> like line of lt_artifact_fields.
+
+  lo_artifact_type = /neptune/cl_artifact_type=>get_instance( iv_artifact_type = iv_artifact_type ).
+  lt_artifact_fields = lo_artifact_type->get_artifact_fields( iv_tabname = iv_tabname ).
+
+  loop at lt_artifact_fields assigning <ls_artifact_field>.
+    if iv_serialize eq abap_true.
+      concatenate '*' <ls_artifact_field>-fieldname into ls_field.
+    else.
+      ls_field = <ls_artifact_field>-fieldname.
+    endif.
+    insert ls_field into table rt_fields.
+  endloop.
+
 endmethod.
 
 
