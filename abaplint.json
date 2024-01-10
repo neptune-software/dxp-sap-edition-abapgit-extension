@@ -119,7 +119,7 @@
     "fully_type_itabs": true,
     "in_statement_indentation": true,
     "line_only_punc": true,
-    "commented_code": true,
+    "commented_code": false,
     "align_parameters": true,
     "method_length": true,
     "unnecessary_chaining": false,
