@@ -450,7 +450,27 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
           ls_file-path = '/'.
           zcl_neptune_abapgit_utilities=>fix_string_serialize( changing cv_string = <lv_code> ).
           ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( <lv_code> ).
-          zif_abapgit_object~mo_files->add( ls_file ).
+
+* BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
+* in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
+*          zif_abapgit_object~mo_files->add( ls_file ).
+          try.
+              " for version 1.125.0
+              call method ('ZIF_ABAPGIT_OBJECT~MO_FILES->ADD')
+                exporting
+                  is_file = ls_file.
+
+            catch cx_sy_dyn_call_illegal_class
+                  cx_sy_dyn_call_illegal_method.
+
+              " for version 1.126.0
+              call method ('MO_FILES->ADD')
+                exporting
+                  is_file = ls_file.
+
+          endtry.
+* END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
+
         catch zcx_abapgit_exception.
       endtry.
 
@@ -525,7 +545,26 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
 
         ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_code ).
         ls_file-filename = ls_lcl_confxml-file_name.
-        zif_abapgit_object~mo_files->add( ls_file ).
+
+* BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
+* in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
+*        zif_abapgit_object~mo_files->add( ls_file ).
+        try.
+            " for version 1.125.0
+            call method ('ZIF_ABAPGIT_OBJECT~MO_FILES->ADD')
+              exporting
+                is_file = ls_file.
+
+          catch cx_sy_dyn_call_illegal_class
+                cx_sy_dyn_call_illegal_method.
+
+            " for version 1.126.0
+            call method ('MO_FILES->ADD')
+              exporting
+                is_file = ls_file.
+
+        endtry.
+* END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
       catch zcx_abapgit_exception.
     endtry.
@@ -588,7 +627,26 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
 
         ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_code ).
         ls_file-filename = ls_lcl_cushead-file_name.
-        zif_abapgit_object~mo_files->add( ls_file ).
+
+* BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
+* in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
+*        zif_abapgit_object~mo_files->add( ls_file ).
+        try.
+            " for version 1.125.0
+            call method ('ZIF_ABAPGIT_OBJECT~MO_FILES->ADD')
+              exporting
+                is_file = ls_file.
+
+          catch cx_sy_dyn_call_illegal_class
+                cx_sy_dyn_call_illegal_method.
+
+            " for version 1.126.0
+            call method ('MO_FILES->ADD')
+              exporting
+                is_file = ls_file.
+
+        endtry.
+* END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
       catch zcx_abapgit_exception.
     endtry.
@@ -650,7 +708,26 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
 
         ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_code ).
         ls_file-filename = ls_lcl_cuslogi-file_name.
-        zif_abapgit_object~mo_files->add( ls_file ).
+
+* BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
+* in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
+*        zif_abapgit_object~mo_files->add( ls_file ).
+        try.
+            " for version 1.125.0
+            call method ('ZIF_ABAPGIT_OBJECT~MO_FILES->ADD')
+              exporting
+                is_file = ls_file.
+
+          catch cx_sy_dyn_call_illegal_class
+                cx_sy_dyn_call_illegal_method.
+
+            " for version 1.126.0
+            call method ('MO_FILES->ADD')
+              exporting
+                is_file = ls_file.
+
+        endtry.
+* END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
       catch zcx_abapgit_exception.
     endtry.
@@ -703,7 +780,26 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
                            iv_extra = iv_tabname
                            iv_ext   = 'json' ).
 
-    zif_abapgit_object~mo_files->add( ls_file ).
+* BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
+* in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
+*    zif_abapgit_object~mo_files->add( ls_file ).
+    try.
+        " for version 1.125.0
+        call method ('ZIF_ABAPGIT_OBJECT~MO_FILES->ADD')
+          exporting
+            is_file = ls_file.
+
+      catch cx_sy_dyn_call_illegal_class
+            cx_sy_dyn_call_illegal_method.
+
+        " for version 1.126.0
+        call method ('MO_FILES->ADD')
+          exporting
+            is_file = ls_file.
+
+    endtry.
+* END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
+
 
   endmethod.
 
@@ -802,7 +898,25 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
       catch zcx_abapgit_exception.
     endtry.
 
-    lt_files = zif_abapgit_object~mo_files->get_files( ).
+* BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
+* in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->GET_FILES does not work anymore
+*    lt_files = zif_abapgit_object~mo_files->get_files( ).
+    try.
+        " for version 1.125.0
+        call method ('ZIF_ABAPGIT_OBJECT~MO_FILES->GET_FILES')
+          receiving
+            rt_files = lt_files.
+
+      catch cx_sy_dyn_call_illegal_class
+            cx_sy_dyn_call_illegal_method.
+
+        " for version 1.126.0
+        call method ('MO_FILES->GET_FILES')
+          receiving
+            rt_files = lt_files.
+
+    endtry.
+* END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
     loop at lt_files into ls_files where filename cp '*.json'.
 
