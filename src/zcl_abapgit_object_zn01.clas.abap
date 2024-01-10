@@ -1190,9 +1190,13 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 * BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
 *    zif_abapgit_object~mo_files->add( ls_file ).
+        FIELD-SYMBOLS <iref> type ref to zcl_abapgit_objects_files.
     try.
         " for version 1.125.0
-        call method ('ZIF_ABAPGIT_OBJECT~MO_FILES->ADD')
+        ASSIGN ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <iref>.
+*        call method ('ZIF_ABAPGIT_OBJECT~MO_FILES->ADD')
+*        call method <iref>->('ADD')
+        call method <iref>->ADD
           exporting
             is_file = ls_file.
 
@@ -1200,7 +1204,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
             cx_sy_dyn_call_illegal_method.
 
         " for version 1.126.0
-        call method ('MO_FILES->ADD')
+        ASSIGN ('MO_FILES') to <iref>.
+*        call method ('MO_FILES->ADD')
+        call method <iref>->('ADD')
           exporting
             is_file = ls_file.
 
