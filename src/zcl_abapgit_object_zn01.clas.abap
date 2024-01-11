@@ -8,165 +8,165 @@ class zcl_abapgit_object_zn01 definition
 
     interfaces zif_abapgit_object .
   protected section.
-  private section.
+private section.
 
-    types:
-      begin of ty_lcl_evtscr,
+  types:
+    begin of ty_lcl_evtscr,
                         applid    type /neptune/applid,
                         field_id  type /neptune/field_id,
                         event     type /neptune/event_id,
                         file_name type string,
                        end of ty_lcl_evtscr .
-    types:
-      ty_tt_lcl_evtscr type standard table of ty_lcl_evtscr .
-    types:
-      begin of ty_lcl_css,
+  types:
+    ty_tt_lcl_evtscr type standard table of ty_lcl_evtscr .
+  types:
+    begin of ty_lcl_css,
                         applid    type /neptune/applid,
                         file_name type string,
                        end of ty_lcl_css .
-    types:
-      ty_tt_lcl_css type standard table of ty_lcl_css .
-    types:
-      begin of ty_code,
+  types:
+    ty_tt_lcl_css type standard table of ty_lcl_css .
+  types:
+    begin of ty_code,
                         file_name type string,
                         code      type string,
                        end of ty_code .
-    types:
-      ty_tt_code type standard table of ty_code with non-unique key file_name .
-    types:
-      begin of ty_lcl_script,
+  types:
+    ty_tt_code type standard table of ty_code with non-unique key file_name .
+  types:
+    begin of ty_lcl_script,
                         applid    type /neptune/applid,
                         field_id  type /neptune/field_id,
                         file_name type string,
                        end of ty_lcl_script .
-    types:
-      ty_tt_lcl_script type standard table of ty_lcl_script .
+  types:
+    ty_tt_lcl_script type standard table of ty_lcl_script .
 
-    data mv_artifact_type type /neptune/artifact_type .
+  data MV_ARTIFACT_TYPE type /NEPTUNE/ARTIFACT_TYPE .
 
-    interface /neptune/if_artifact_type load .
-    methods serialize_html
-      importing
-      !it_obj type /neptune/obj_tt
-      !is_table_content type /neptune/if_artifact_type=>ty_table_content .
-    methods serialize_evtscr
-      importing
-      !it_obj type /neptune/obj_tt
-      !is_table_content type /neptune/if_artifact_type=>ty_table_content .
-    methods serialize_script
-      importing
-      !it_obj type /neptune/obj_tt
-      !is_table_content type /neptune/if_artifact_type=>ty_table_content .
-    methods serialize__script
-      importing
-      !it_obj type /neptune/obj_tt
-      !is_table_content type /neptune/if_artifact_type=>ty_table_content .
-    methods serialize__html
-      importing
-      !it_obj type /neptune/obj_tt
-      !is_table_content type /neptune/if_artifact_type=>ty_table_content .
-    methods serialize__evtscr
-      importing
-      !it_obj type /neptune/obj_tt
-      !is_table_content type /neptune/if_artifact_type=>ty_table_content .
-    methods serialize_table
-      importing
-      !iv_tabname type tabname
-      !it_table type any
-      raising
-      zcx_abapgit_exception .
-    methods serialize_css
-      importing
-      !is_table_content type /neptune/if_artifact_type=>ty_table_content .
-    methods serialize__css
-      importing
-      !is_table_content type /neptune/if_artifact_type=>ty_table_content .
-    interface zif_abapgit_git_definitions load .
-    methods deserialize_table
-      importing
-      !is_file type zif_abapgit_git_definitions=>ty_file
-      !ir_data type ref to data
-      !iv_tabname type tadir-obj_name
-      !iv_key type /neptune/artifact_key
-      !iv_devclass type devclass
-      raising
-      zcx_abapgit_exception .
-    methods get_values_from_filename
-      importing
-      !is_filename type string
-      exporting
-      !ev_tabname type tadir-obj_name .
-    methods deserialize_script
-      importing
-      !is_file type zif_abapgit_git_definitions=>ty_file
-      !it_files type zif_abapgit_git_definitions=>ty_files_tt
-      !ir_data type ref to data
-      !iv_key type /neptune/artifact_key
-      raising
-      zcx_abapgit_exception .
-    methods deserialize_html
-      importing
-      !is_file type zif_abapgit_git_definitions=>ty_file
-      !it_files type zif_abapgit_git_definitions=>ty_files_tt
-      !ir_data type ref to data
-      !iv_key type /neptune/artifact_key
-      raising
-      zcx_abapgit_exception .
-    methods deserialize_evtscr
-      importing
-      !is_file type zif_abapgit_git_definitions=>ty_file
-      !it_files type zif_abapgit_git_definitions=>ty_files_tt
-      !ir_data type ref to data
-      !iv_key type /neptune/artifact_key
-      raising
-      zcx_abapgit_exception .
-    methods deserialize__script
-      importing
-      !is_file type zif_abapgit_git_definitions=>ty_file
-      !it_files type zif_abapgit_git_definitions=>ty_files_tt
-      !ir_data type ref to data
-      !iv_key type /neptune/artifact_key
-      raising
-      zcx_abapgit_exception .
-    methods deserialize__html
-      importing
-      !is_file type zif_abapgit_git_definitions=>ty_file
-      !it_files type zif_abapgit_git_definitions=>ty_files_tt
-      !ir_data type ref to data
-      !iv_key type /neptune/artifact_key
-      raising
-      zcx_abapgit_exception .
-    methods deserialize__evtscr
-      importing
-      !is_file type zif_abapgit_git_definitions=>ty_file
-      !it_files type zif_abapgit_git_definitions=>ty_files_tt
-      !ir_data type ref to data
-      !iv_key type /neptune/artifact_key
-      raising
-      zcx_abapgit_exception .
-    methods deserialize_css
-      importing
-      !is_file type zif_abapgit_git_definitions=>ty_file
-      !it_files type zif_abapgit_git_definitions=>ty_files_tt
-      !ir_data type ref to data
-      !iv_key type /neptune/artifact_key
-      raising
-      zcx_abapgit_exception .
-    methods deserialize__css
-      importing
-      !is_file type zif_abapgit_git_definitions=>ty_file
-      !it_files type zif_abapgit_git_definitions=>ty_files_tt
-      !ir_data type ref to data
-      !iv_key type /neptune/artifact_key
-      raising
-      zcx_abapgit_exception .
-    methods insert_to_transport
-      importing
-      !io_artifact type ref to /neptune/if_artifact_type
-      !iv_transport type trkorr
-      !iv_package type devclass
-      !iv_key1 type any
-      !iv_artifact_type type /neptune/aty-artifact_type .
+  interface /NEPTUNE/IF_ARTIFACT_TYPE load .
+  methods SERIALIZE_HTML
+    importing
+      !IT_OBJ type /NEPTUNE/_OBJ_TT
+      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
+  methods SERIALIZE_EVTSCR
+    importing
+      !IT_OBJ type /NEPTUNE/_OBJ_TT
+      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
+  methods SERIALIZE_SCRIPT
+    importing
+      !IT_OBJ type /NEPTUNE/_OBJ_TT
+      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
+  methods SERIALIZE__SCRIPT
+    importing
+      !IT_OBJ type /NEPTUNE/_OBJ_TT
+      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
+  methods SERIALIZE__HTML
+    importing
+      !IT_OBJ type /NEPTUNE/_OBJ_TT
+      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
+  methods SERIALIZE__EVTSCR
+    importing
+      !IT_OBJ type /NEPTUNE/_OBJ_TT
+      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
+  methods SERIALIZE_TABLE
+    importing
+      !IV_TABNAME type TABNAME
+      !IT_TABLE type ANY
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods SERIALIZE_CSS
+    importing
+      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
+  methods SERIALIZE__CSS
+    importing
+      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT .
+  interface ZIF_ABAPGIT_GIT_DEFINITIONS load .
+  methods DESERIALIZE_TABLE
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IR_DATA type ref to DATA
+      !IV_TABNAME type TADIR-OBJ_NAME
+      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
+      !IV_DEVCLASS type DEVCLASS
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods GET_VALUES_FROM_FILENAME
+    importing
+      !IS_FILENAME type STRING
+    exporting
+      !EV_TABNAME type TADIR-OBJ_NAME .
+  methods DESERIALIZE_SCRIPT
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
+      !IR_DATA type ref to DATA
+      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods DESERIALIZE_HTML
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
+      !IR_DATA type ref to DATA
+      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods DESERIALIZE_EVTSCR
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
+      !IR_DATA type ref to DATA
+      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods DESERIALIZE__SCRIPT
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
+      !IR_DATA type ref to DATA
+      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods DESERIALIZE__HTML
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
+      !IR_DATA type ref to DATA
+      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods DESERIALIZE__EVTSCR
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
+      !IR_DATA type ref to DATA
+      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods DESERIALIZE_CSS
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
+      !IR_DATA type ref to DATA
+      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods DESERIALIZE__CSS
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
+      !IR_DATA type ref to DATA
+      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods INSERT_TO_TRANSPORT
+    importing
+      !IO_ARTIFACT type ref to /NEPTUNE/IF_ARTIFACT_TYPE
+      !IV_TRANSPORT type TRKORR
+      !IV_PACKAGE type DEVCLASS
+      !IV_KEY1 type ANY
+      !IV_ARTIFACT_TYPE type /NEPTUNE/ATY-ARTIFACT_TYPE .
 ENDCLASS.
 
 
@@ -786,22 +786,25 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
 * BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
-*    zif_abapgit_object~mo_files->add( ls_file ).
-    try.
-        " for version 1.125.0
-        call method ('ZIF_ABAPGIT_OBJECT~MO_FILES->ADD')
-          exporting
-            is_file = ls_file.
-
-      catch cx_sy_dyn_call_illegal_class
-            cx_sy_dyn_call_illegal_method.
-
-        " for version 1.126.0
-        call method ('MO_FILES->ADD')
-          exporting
-            is_file = ls_file.
-
-    endtry.
+    zif_abapgit_object~mo_files->add( ls_file ).
+*    field-symbols <file_ref> type ref to zcl_abapgit_objects_files.
+*    try.
+*        " for version 1.125.0
+*        assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <file_ref>.
+*        call method <file_ref>->add
+*          exporting
+*            is_file = ls_file.
+*
+*      catch cx_sy_dyn_call_illegal_class
+*            cx_sy_dyn_call_illegal_method.
+*
+*        " for version 1.126.0
+*        assign ('MO_FILES') to <file_ref>.
+*        call method <file_ref>->add
+*          exporting
+*            is_file = ls_file.
+*
+*    endtry.
 * END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
   endmethod.
@@ -884,22 +887,22 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
 * BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
-*          zif_abapgit_object~mo_files->add( ls_file ).
-          try.
-              " for version 1.125.0
-              call method ('ZIF_ABAPGIT_OBJECT~MO_FILES->ADD')
-                exporting
-                  is_file = ls_file.
-
-            catch cx_sy_dyn_call_illegal_class
-                  cx_sy_dyn_call_illegal_method.
-
-              " for version 1.126.0
-              call method ('MO_FILES->ADD')
-                exporting
-                  is_file = ls_file.
-
-          endtry.
+          zif_abapgit_object~mo_files->add( ls_file ).
+*          try.
+*              " for version 1.125.0
+*              call method ('ZIF_ABAPGIT_OBJECT~MO_FILES->ADD')
+*                exporting
+*                  is_file = ls_file.
+*
+*            catch cx_sy_dyn_call_illegal_class
+*                  cx_sy_dyn_call_illegal_method.
+*
+*              " for version 1.126.0
+*              call method ('MO_FILES->ADD')
+*                exporting
+*                  is_file = ls_file.
+*
+*          endtry.
 * END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
         endloop.
@@ -996,22 +999,22 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
 * BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
-*          zif_abapgit_object~mo_files->add( ls_file ).
-          try.
-              " for version 1.125.0
-              call method ('ZIF_ABAPGIT_OBJECT~MO_FILES->ADD')
-                exporting
-                  is_file = ls_file.
-
-            catch cx_sy_dyn_call_illegal_class
-                  cx_sy_dyn_call_illegal_method.
-
-              " for version 1.126.0
-              call method ('MO_FILES->ADD')
-                exporting
-                  is_file = ls_file.
-
-          endtry.
+          zif_abapgit_object~mo_files->add( ls_file ).
+*          try.
+*              " for version 1.125.0
+*              call method ('ZIF_ABAPGIT_OBJECT~MO_FILES->ADD')
+*                exporting
+*                  is_file = ls_file.
+*
+*            catch cx_sy_dyn_call_illegal_class
+*                  cx_sy_dyn_call_illegal_method.
+*
+*              " for version 1.126.0
+*              call method ('MO_FILES->ADD')
+*                exporting
+*                  is_file = ls_file.
+*
+*          endtry.
 * END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
 
@@ -1111,22 +1114,22 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
 * BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
-*          zif_abapgit_object~mo_files->add( ls_file ).
-          try.
-              " for version 1.125.0
-              call method ('ZIF_ABAPGIT_OBJECT~MO_FILES->ADD')
-                exporting
-                  is_file = ls_file.
-
-            catch cx_sy_dyn_call_illegal_class
-                  cx_sy_dyn_call_illegal_method.
-
-              " for version 1.126.0
-              call method ('MO_FILES->ADD')
-                exporting
-                  is_file = ls_file.
-
-          endtry.
+          zif_abapgit_object~mo_files->add( ls_file ).
+*          try.
+*              " for version 1.125.0
+*              call method ('ZIF_ABAPGIT_OBJECT~MO_FILES->ADD')
+*                exporting
+*                  is_file = ls_file.
+*
+*            catch cx_sy_dyn_call_illegal_class
+*                  cx_sy_dyn_call_illegal_method.
+*
+*              " for version 1.126.0
+*              call method ('MO_FILES->ADD')
+*                exporting
+*                  is_file = ls_file.
+*
+*          endtry.
 * END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
 
@@ -1190,29 +1193,34 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 * BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
 *    zif_abapgit_object~mo_files->add( ls_file ).
-        FIELD-SYMBOLS <iref> type ref to zcl_abapgit_objects_files.
-    try.
-        " for version 1.125.0
-        ASSIGN ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <iref>.
-*        call method ('ZIF_ABAPGIT_OBJECT~MO_FILES->ADD')
-*        call method <iref>->('ADD')
-        call method <iref>->ADD
-          exporting
-            is_file = ls_file.
+    data lv_class_name type abap_abstypename.
+    data lv_message type string.
+    field-symbols <file_ref> type ref to zcl_abapgit_objects_files.
+    assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <file_ref>.
+    if <file_ref> is not assigned.
+      assign ('MO_FILES') to <file_ref>.
+    endif.
 
-      catch cx_sy_dyn_call_illegal_class
-            cx_sy_dyn_call_illegal_method.
+    if <file_ref> is assigned.
+      call method <file_ref>->add
+        exporting
+          is_file = ls_file.
+    else.
+*      lv_class_name = cl_abap_classdescr=>get_class_name( me ).
+*
+*      data lt_callstack type abap_callstack.
+*
+*      call function 'SYSTEM_CALLSTACK'
+*        exporting
+*          max_level = 1
+*        importing
+*          callstack = lt_callstack.
 
-        " for version 1.126.0
-        ASSIGN ('MO_FILES') to <iref>.
-*        call method ('MO_FILES->ADD')
-        call method <iref>->('ADD')
-          exporting
-            is_file = ls_file.
-
-    endtry.
+*      zcx_abapgit_exception=>raise( lv_message ).
+*      zcx_abapgit_exception=>raise( 'this was a freaking error' ).
+*      message 'this was a freaking error' type 'E'.
+    endif.
 * END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
-
 
   endmethod.
 
@@ -1277,22 +1285,22 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
 * BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
-*    zif_abapgit_object~mo_files->add( ls_file ).
-    try.
-        " for version 1.125.0
-        call method ('ZIF_ABAPGIT_OBJECT~MO_FILES->ADD')
-          exporting
-            is_file = ls_file.
-
-      catch cx_sy_dyn_call_illegal_class
-            cx_sy_dyn_call_illegal_method.
-
-        " for version 1.126.0
-        call method ('MO_FILES->ADD')
-          exporting
-            is_file = ls_file.
-
-    endtry.
+    zif_abapgit_object~mo_files->add( ls_file ).
+*    try.
+*        " for version 1.125.0
+*        call method ('ZIF_ABAPGIT_OBJECT~MO_FILES->ADD')
+*          exporting
+*            is_file = ls_file.
+*
+*      catch cx_sy_dyn_call_illegal_class
+*            cx_sy_dyn_call_illegal_method.
+*
+*        " for version 1.126.0
+*        call method ('MO_FILES->ADD')
+*          exporting
+*            is_file = ls_file.
+*
+*    endtry.
 * END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
 
@@ -1385,22 +1393,22 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
 * BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
-*          zif_abapgit_object~mo_files->add( ls_file ).
-          try.
-              " for version 1.125.0
-              call method ('ZIF_ABAPGIT_OBJECT~MO_FILES->ADD')
-                exporting
-                  is_file = ls_file.
-
-            catch cx_sy_dyn_call_illegal_class
-                  cx_sy_dyn_call_illegal_method.
-
-              " for version 1.126.0
-              call method ('MO_FILES->ADD')
-                exporting
-                  is_file = ls_file.
-
-          endtry.
+          zif_abapgit_object~mo_files->add( ls_file ).
+*          try.
+*              " for version 1.125.0
+*              call method ('ZIF_ABAPGIT_OBJECT~MO_FILES->ADD')
+*                exporting
+*                  is_file = ls_file.
+*
+*            catch cx_sy_dyn_call_illegal_class
+*                  cx_sy_dyn_call_illegal_method.
+*
+*              " for version 1.126.0
+*              call method ('MO_FILES->ADD')
+*                exporting
+*                  is_file = ls_file.
+*
+*          endtry.
 * END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
         endloop.
@@ -1498,22 +1506,22 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
 * BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
-*          zif_abapgit_object~mo_files->add( ls_file ).
-          try.
-              " for version 1.125.0
-              call method ('ZIF_ABAPGIT_OBJECT~MO_FILES->ADD')
-                exporting
-                  is_file = ls_file.
-
-            catch cx_sy_dyn_call_illegal_class
-                  cx_sy_dyn_call_illegal_method.
-
-              " for version 1.126.0
-              call method ('MO_FILES->ADD')
-                exporting
-                  is_file = ls_file.
-
-          endtry.
+          zif_abapgit_object~mo_files->add( ls_file ).
+*          try.
+*              " for version 1.125.0
+*              call method ('ZIF_ABAPGIT_OBJECT~MO_FILES->ADD')
+*                exporting
+*                  is_file = ls_file.
+*
+*            catch cx_sy_dyn_call_illegal_class
+*                  cx_sy_dyn_call_illegal_method.
+*
+*              " for version 1.126.0
+*              call method ('MO_FILES->ADD')
+*                exporting
+*                  is_file = ls_file.
+*
+*          endtry.
 * END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
         endloop.
@@ -1620,22 +1628,22 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
 * BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
-*          zif_abapgit_object~mo_files->add( ls_file ).
-          try.
-              " for version 1.125.0
-              call method ('ZIF_ABAPGIT_OBJECT~MO_FILES->ADD')
-                exporting
-                  is_file = ls_file.
-
-            catch cx_sy_dyn_call_illegal_class
-                  cx_sy_dyn_call_illegal_method.
-
-              " for version 1.126.0
-              call method ('MO_FILES->ADD')
-                exporting
-                  is_file = ls_file.
-
-          endtry.
+          zif_abapgit_object~mo_files->add( ls_file ).
+*          try.
+*              " for version 1.125.0
+*              call method ('ZIF_ABAPGIT_OBJECT~MO_FILES->ADD')
+*                exporting
+*                  is_file = ls_file.
+*
+*            catch cx_sy_dyn_call_illegal_class
+*                  cx_sy_dyn_call_illegal_method.
+*
+*              " for version 1.126.0
+*              call method ('MO_FILES->ADD')
+*                exporting
+*                  is_file = ls_file.
+*
+*          endtry.
 * END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
 
@@ -1742,22 +1750,25 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
 * BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->GET_FILES does not work anymore
-*    lt_files = zif_abapgit_object~mo_files->get_files( ).
-    try.
-        " for version 1.125.0
-        call method ('ZIF_ABAPGIT_OBJECT~MO_FILES->GET_FILES')
-          receiving
-            rt_files = lt_files.
-
-      catch cx_sy_dyn_call_illegal_class
-            cx_sy_dyn_call_illegal_method.
-
-        " for version 1.126.0
-        call method ('MO_FILES->GET_FILES')
-          receiving
-            rt_files = lt_files.
-
-    endtry.
+    lt_files = zif_abapgit_object~mo_files->get_files( ).
+*    field-symbols <file_ref> type ref to zcl_abapgit_objects_files.
+*    try.
+*        " for version 1.125.0
+*        assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <file_ref>.
+*        call method <file_ref>->get_files
+*          receiving
+*            rt_files = lt_files.
+*
+*      catch cx_sy_dyn_call_illegal_class
+*            cx_sy_dyn_call_illegal_method.
+*
+*        " for version 1.126.0
+*        assign ('MO_FILES') to <file_ref>.
+*        call method <file_ref>->get_files
+*          receiving
+*            rt_files = lt_files.
+*
+*    endtry.
 * END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
     loop at lt_files into ls_files where filename cp '*.json'.
@@ -1956,7 +1967,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
           ls_table_content like line of lt_table_content,
           lv_key           type /neptune/artifact_key.
 
-    data lt_obj type standard table of /neptune/obj with default key.
+*    data lt_obj type standard table of /neptune/_obj with default key. "#20687 - Disabled objects
+    data lt_obj type /neptune/_obj_tt. "#20687 - Disabled objects
 
     field-symbols <lt_standard_table> type standard table.
 
@@ -1978,7 +1990,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
       importing et_table_content        = lt_table_content ).
 
 * Save OBJ Table so we can read the name of objects with the FIELD_ID
-    read table lt_table_content into ls_table_content with key tabname = '/NEPTUNE/OBJ'.
+*    read table lt_table_content into ls_table_content with key tabname = '/NEPTUNE/OBJ'. "#20687 - Disabled objects
+    read table lt_table_content into ls_table_content with key tabname = '/NEPTUNE/_OBJ'. "#20687 - Disabled objects
     if sy-subrc = 0.
       assign ls_table_content-table_content->* to <lt_standard_table>.
       check sy-subrc = 0.
