@@ -737,6 +737,12 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
     data lt_code_lines type string_table.
 
+* BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
+    data lv_message type string.
+
+    field-symbols <file_ref> type ref to zcl_abapgit_objects_files.
+* END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
+
     field-symbols <lt_standard_table> type standard table.
 
     assign is_table_content-table_content->* to <lt_standard_table>.
@@ -780,32 +786,32 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
         ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_code ).
       catch zcx_abapgit_exception.
+        concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name is_table_content-tabname into lv_message separated by space.
+        zcx_abapgit_exception=>raise( lv_message ).
     endtry.
 
     ls_file-filename = ls_lcl_css-file_name.
 
 * BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
-    zif_abapgit_object~mo_files->add( ls_file ).
-*    field-symbols <file_ref> type ref to zcl_abapgit_objects_files.
-*    try.
-*        " for version 1.125.0
-*        assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <file_ref>.
-*        call method <file_ref>->add
-*          exporting
-*            is_file = ls_file.
-*
-*      catch cx_sy_dyn_call_illegal_class
-*            cx_sy_dyn_call_illegal_method.
-*
-*        " for version 1.126.0
-*        assign ('MO_FILES') to <file_ref>.
-*        call method <file_ref>->add
-*          exporting
-*            is_file = ls_file.
-*
-*    endtry.
+*    zif_abapgit_object~mo_files->add( ls_file ).
+    " for version 1.125.0
+    assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <file_ref>.
+    if <file_ref> is not assigned.
+      " for version 1.126.0
+      assign ('MO_FILES') to <file_ref>.
+    endif.
+
+    if <file_ref> is assigned.
+      call method <file_ref>->add
+        exporting
+          is_file = ls_file.
+    else.
+      concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name is_table_content-tabname into lv_message separated by space.
+      zcx_abapgit_exception=>raise( lv_message ).
+    endif.
 * END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
+
 
   endmethod.
 
@@ -826,6 +832,12 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
     data ls_obj like line of it_obj.
 
     data lt_code_lines type string_table.
+
+* BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
+    data lv_message type string.
+
+    field-symbols <file_ref> type ref to zcl_abapgit_objects_files.
+* END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
     field-symbols <lt_standard_table> type standard table.
 
@@ -887,26 +899,28 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
 * BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
-          zif_abapgit_object~mo_files->add( ls_file ).
-*          try.
-*              " for version 1.125.0
-*              call method ('ZIF_ABAPGIT_OBJECT~MO_FILES->ADD')
-*                exporting
-*                  is_file = ls_file.
-*
-*            catch cx_sy_dyn_call_illegal_class
-*                  cx_sy_dyn_call_illegal_method.
-*
-*              " for version 1.126.0
-*              call method ('MO_FILES->ADD')
-*                exporting
-*                  is_file = ls_file.
-*
-*          endtry.
+*    zif_abapgit_object~mo_files->add( ls_file ).
+          " for version 1.125.0
+          assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <file_ref>.
+          if <file_ref> is not assigned.
+            " for version 1.126.0
+            assign ('MO_FILES') to <file_ref>.
+          endif.
+
+          if <file_ref> is assigned.
+            call method <file_ref>->add
+              exporting
+                is_file = ls_file.
+          else.
+            concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name is_table_content-tabname into lv_message separated by space.
+            zcx_abapgit_exception=>raise( lv_message ).
+          endif.
 * END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
         endloop.
       catch zcx_abapgit_exception.
+        concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name is_table_content-tabname into lv_message separated by space.
+        zcx_abapgit_exception=>raise( lv_message ).
     endtry.
 
   endmethod.
@@ -928,6 +942,12 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
     data ls_obj like line of it_obj.
 
     data lt_code_lines type string_table.
+
+* BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
+    data lv_message type string.
+
+    field-symbols <file_ref> type ref to zcl_abapgit_objects_files.
+* END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
     constants lc_ext(4) type c value 'html'.
 
@@ -999,27 +1019,28 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
 * BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
-          zif_abapgit_object~mo_files->add( ls_file ).
-*          try.
-*              " for version 1.125.0
-*              call method ('ZIF_ABAPGIT_OBJECT~MO_FILES->ADD')
-*                exporting
-*                  is_file = ls_file.
-*
-*            catch cx_sy_dyn_call_illegal_class
-*                  cx_sy_dyn_call_illegal_method.
-*
-*              " for version 1.126.0
-*              call method ('MO_FILES->ADD')
-*                exporting
-*                  is_file = ls_file.
-*
-*          endtry.
-* END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
+*    zif_abapgit_object~mo_files->add( ls_file ).
+          " for version 1.125.0
+          assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <file_ref>.
+          if <file_ref> is not assigned.
+            " for version 1.126.0
+            assign ('MO_FILES') to <file_ref>.
+          endif.
 
+          if <file_ref> is assigned.
+            call method <file_ref>->add
+              exporting
+                is_file = ls_file.
+          else.
+            concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name is_table_content-tabname into lv_message separated by space.
+            zcx_abapgit_exception=>raise( lv_message ).
+          endif.
+* END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
         endloop.
       catch zcx_abapgit_exception.
+        concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name is_table_content-tabname into lv_message separated by space.
+        zcx_abapgit_exception=>raise( lv_message ).
     endtry.
 
   endmethod.
@@ -1043,6 +1064,12 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
     data lv_ext type char10.
 
     data lt_code_lines type string_table.
+
+* BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
+    data lv_message type string.
+
+    field-symbols <file_ref> type ref to zcl_abapgit_objects_files.
+* END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
     field-symbols <lt_standard_table> type standard table.
 
@@ -1114,27 +1141,28 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
 * BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
-          zif_abapgit_object~mo_files->add( ls_file ).
-*          try.
-*              " for version 1.125.0
-*              call method ('ZIF_ABAPGIT_OBJECT~MO_FILES->ADD')
-*                exporting
-*                  is_file = ls_file.
-*
-*            catch cx_sy_dyn_call_illegal_class
-*                  cx_sy_dyn_call_illegal_method.
-*
-*              " for version 1.126.0
-*              call method ('MO_FILES->ADD')
-*                exporting
-*                  is_file = ls_file.
-*
-*          endtry.
-* END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
+*    zif_abapgit_object~mo_files->add( ls_file ).
+          " for version 1.125.0
+          assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <file_ref>.
+          if <file_ref> is not assigned.
+            " for version 1.126.0
+            assign ('MO_FILES') to <file_ref>.
+          endif.
 
+          if <file_ref> is assigned.
+            call method <file_ref>->add
+              exporting
+                is_file = ls_file.
+          else.
+            concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name is_table_content-tabname into lv_message separated by space.
+            zcx_abapgit_exception=>raise( lv_message ).
+          endif.
+* END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
         endloop.
       catch zcx_abapgit_exception.
+        concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name is_table_content-tabname into lv_message separated by space.
+        zcx_abapgit_exception=>raise( lv_message ).
     endtry.
 
   endmethod.
@@ -1148,6 +1176,12 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
           ls_file          type zif_abapgit_git_definitions=>ty_file.
 
     data lt_skip_paths type string_table.
+
+* BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
+    data lv_message type string.
+
+    field-symbols <file_ref> type ref to zcl_abapgit_objects_files.
+* END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
     check it_table is not initial.
 
@@ -1184,6 +1218,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
     try.
         ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_json ).
       catch zcx_abapgit_exception.
+        concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name iv_tabname into lv_message separated by space.
+        zcx_abapgit_exception=>raise( lv_message ).
     endtry.
     ls_file-filename = zcl_abapgit_filename_logic=>object_to_file(
                            is_item  = ms_item
@@ -1193,11 +1229,10 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 * BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
 *    zif_abapgit_object~mo_files->add( ls_file ).
-    data lv_class_name type abap_abstypename.
-    data lv_message type string.
-    field-symbols <file_ref> type ref to zcl_abapgit_objects_files.
+    " for version 1.125.0
     assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <file_ref>.
     if <file_ref> is not assigned.
+      " for version 1.126.0
       assign ('MO_FILES') to <file_ref>.
     endif.
 
@@ -1206,19 +1241,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
         exporting
           is_file = ls_file.
     else.
-*      lv_class_name = cl_abap_classdescr=>get_class_name( me ).
-*
-*      data lt_callstack type abap_callstack.
-*
-*      call function 'SYSTEM_CALLSTACK'
-*        exporting
-*          max_level = 1
-*        importing
-*          callstack = lt_callstack.
-
-*      zcx_abapgit_exception=>raise( lv_message ).
-*      zcx_abapgit_exception=>raise( 'this was a freaking error' ).
-*      message 'this was a freaking error' type 'E'.
+      concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name iv_tabname into lv_message separated by space.
+      zcx_abapgit_exception=>raise( lv_message ).
     endif.
 * END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
@@ -1237,6 +1261,12 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
     data ls_css like line of lt_css.
 
     data lt_code_lines type string_table.
+
+* BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
+    data lv_message type string.
+
+    field-symbols <file_ref> type ref to zcl_abapgit_objects_files.
+* END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
     field-symbols <lt_standard_table> type standard table.
 
@@ -1280,29 +1310,30 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
         ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_code ).
       catch zcx_abapgit_exception.
+        concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name is_table_content-tabname into lv_message separated by space.
+        zcx_abapgit_exception=>raise( lv_message ).
     endtry.
     ls_file-filename = ls_lcl_css-file_name.
 
 * BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
-    zif_abapgit_object~mo_files->add( ls_file ).
-*    try.
-*        " for version 1.125.0
-*        call method ('ZIF_ABAPGIT_OBJECT~MO_FILES->ADD')
-*          exporting
-*            is_file = ls_file.
-*
-*      catch cx_sy_dyn_call_illegal_class
-*            cx_sy_dyn_call_illegal_method.
-*
-*        " for version 1.126.0
-*        call method ('MO_FILES->ADD')
-*          exporting
-*            is_file = ls_file.
-*
-*    endtry.
-* END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
+*    zif_abapgit_object~mo_files->add( ls_file ).
+    " for version 1.125.0
+    assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <file_ref>.
+    if <file_ref> is not assigned.
+      " for version 1.126.0
+      assign ('MO_FILES') to <file_ref>.
+    endif.
 
+    if <file_ref> is assigned.
+      call method <file_ref>->add
+        exporting
+          is_file = ls_file.
+    else.
+      concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name is_table_content-tabname into lv_message separated by space.
+      zcx_abapgit_exception=>raise( lv_message ).
+    endif.
+* END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
   endmethod.
 
@@ -1325,6 +1356,12 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
     data lt_code_lines type string_table.
 
     data lv_ext type char10.
+
+* BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
+    data lv_message type string.
+
+    field-symbols <file_ref> type ref to zcl_abapgit_objects_files.
+* END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
     field-symbols <lt_standard_table> type standard table.
 
@@ -1393,27 +1430,29 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
 * BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
-          zif_abapgit_object~mo_files->add( ls_file ).
-*          try.
-*              " for version 1.125.0
-*              call method ('ZIF_ABAPGIT_OBJECT~MO_FILES->ADD')
-*                exporting
-*                  is_file = ls_file.
-*
-*            catch cx_sy_dyn_call_illegal_class
-*                  cx_sy_dyn_call_illegal_method.
-*
-*              " for version 1.126.0
-*              call method ('MO_FILES->ADD')
-*                exporting
-*                  is_file = ls_file.
-*
-*          endtry.
+*    zif_abapgit_object~mo_files->add( ls_file ).
+          " for version 1.125.0
+          assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <file_ref>.
+          if <file_ref> is not assigned.
+            " for version 1.126.0
+            assign ('MO_FILES') to <file_ref>.
+          endif.
+
+          if <file_ref> is assigned.
+            call method <file_ref>->add
+              exporting
+                is_file = ls_file.
+          else.
+            concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name is_table_content-tabname into lv_message separated by space.
+            zcx_abapgit_exception=>raise( lv_message ).
+          endif.
 * END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
         endloop.
 
       catch zcx_abapgit_exception.
+        concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name is_table_content-tabname into lv_message separated by space.
+        zcx_abapgit_exception=>raise( lv_message ).
     endtry.
 
   endmethod.
@@ -1435,6 +1474,12 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
     data ls_obj like line of it_obj.
 
     data lt_code_lines type string_table.
+
+* BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
+    data lv_message type string.
+
+    field-symbols <file_ref> type ref to zcl_abapgit_objects_files.
+* END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
     constants lc_ext(4) type c value 'html'.
 
@@ -1506,26 +1551,28 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
 * BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
-          zif_abapgit_object~mo_files->add( ls_file ).
-*          try.
-*              " for version 1.125.0
-*              call method ('ZIF_ABAPGIT_OBJECT~MO_FILES->ADD')
-*                exporting
-*                  is_file = ls_file.
-*
-*            catch cx_sy_dyn_call_illegal_class
-*                  cx_sy_dyn_call_illegal_method.
-*
-*              " for version 1.126.0
-*              call method ('MO_FILES->ADD')
-*                exporting
-*                  is_file = ls_file.
-*
-*          endtry.
+*    zif_abapgit_object~mo_files->add( ls_file ).
+          " for version 1.125.0
+          assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <file_ref>.
+          if <file_ref> is not assigned.
+            " for version 1.126.0
+            assign ('MO_FILES') to <file_ref>.
+          endif.
+
+          if <file_ref> is assigned.
+            call method <file_ref>->add
+              exporting
+                is_file = ls_file.
+          else.
+            concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name is_table_content-tabname into lv_message separated by space.
+            zcx_abapgit_exception=>raise( lv_message ).
+          endif.
 * END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
         endloop.
       catch zcx_abapgit_exception.
+        concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name is_table_content-tabname into lv_message separated by space.
+        zcx_abapgit_exception=>raise( lv_message ).
     endtry.
 
   endmethod.
@@ -1549,6 +1596,12 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
     data lv_ext type char10.
 
     data lt_code_lines type string_table.
+
+* BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
+    data lv_message type string.
+
+    field-symbols <file_ref> type ref to zcl_abapgit_objects_files.
+* END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
     field-symbols <lt_standard_table> type standard table.
 
@@ -1628,27 +1681,28 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
 * BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
-          zif_abapgit_object~mo_files->add( ls_file ).
-*          try.
-*              " for version 1.125.0
-*              call method ('ZIF_ABAPGIT_OBJECT~MO_FILES->ADD')
-*                exporting
-*                  is_file = ls_file.
-*
-*            catch cx_sy_dyn_call_illegal_class
-*                  cx_sy_dyn_call_illegal_method.
-*
-*              " for version 1.126.0
-*              call method ('MO_FILES->ADD')
-*                exporting
-*                  is_file = ls_file.
-*
-*          endtry.
-* END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
+*    zif_abapgit_object~mo_files->add( ls_file ).
+          " for version 1.125.0
+          assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <file_ref>.
+          if <file_ref> is not assigned.
+            " for version 1.126.0
+            assign ('MO_FILES') to <file_ref>.
+          endif.
 
+          if <file_ref> is assigned.
+            call method <file_ref>->add
+              exporting
+                is_file = ls_file.
+          else.
+            concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name is_table_content-tabname into lv_message separated by space.
+            zcx_abapgit_exception=>raise( lv_message ).
+          endif.
+* END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
         endloop.
       catch zcx_abapgit_exception.
+        concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name is_table_content-tabname into lv_message separated by space.
+        zcx_abapgit_exception=>raise( lv_message ).
     endtry.
 
   endmethod.
@@ -1739,6 +1793,13 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
     data lo_artifact type ref to /neptune/if_artifact_type.
     data ls_settings type /neptune/aty.
 
+* BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
+    data lv_message type string.
+
+    field-symbols <file_ref> type ref to zcl_abapgit_objects_files.
+* END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
+
+
     try.
         io_xml->read(
           exporting
@@ -1750,25 +1811,22 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
 * BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->GET_FILES does not work anymore
-    lt_files = zif_abapgit_object~mo_files->get_files( ).
-*    field-symbols <file_ref> type ref to zcl_abapgit_objects_files.
-*    try.
-*        " for version 1.125.0
-*        assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <file_ref>.
-*        call method <file_ref>->get_files
-*          receiving
-*            rt_files = lt_files.
-*
-*      catch cx_sy_dyn_call_illegal_class
-*            cx_sy_dyn_call_illegal_method.
-*
-*        " for version 1.126.0
-*        assign ('MO_FILES') to <file_ref>.
-*        call method <file_ref>->get_files
-*          receiving
-*            rt_files = lt_files.
-*
-*    endtry.
+*    lt_files = zif_abapgit_object~mo_files->get_files( ).
+    " for version 1.125.0
+    assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <file_ref>.
+    if <file_ref> is not assigned.
+      " for version 1.126.0
+      assign ('MO_FILES') to <file_ref>.
+    endif.
+
+    if <file_ref> is assigned.
+      call method <file_ref>->get_files
+        receiving
+          rt_files = lt_files.
+    else.
+      concatenate 'Error deserializing' ms_item-obj_type  ms_item-obj_name lv_key into lv_message separated by space.
+      zcx_abapgit_exception=>raise( lv_message ).
+    endif.
 * END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
     loop at lt_files into ls_files where filename cp '*.json'.
