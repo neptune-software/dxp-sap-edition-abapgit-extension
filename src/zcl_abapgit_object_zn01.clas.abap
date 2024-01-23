@@ -1724,58 +1724,53 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
           lv_upddat	type /neptune/update_date,
           lv_updtim	type /neptune/update_time.
 
-    data lv_error type c.
-
     field-symbols <lt_standard_table> type standard table.
-    field-symbols <artifact_ref> type ref to /neptune/if_artifact_type.
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
 
     lv_key = ms_item-obj_name.
 
-    assign ('LO_ARTIFACT') to <artifact_ref>.
-    if <artifact_ref> is assigned.
-      try.
-          call method <artifact_ref>->get_metadata
-            exporting
-              iv_key1   = lv_key
-            importing
-              ev_crenam = lv_crenam
-              ev_credat = lv_credat
-              ev_cretim = lv_cretim
-              ev_updnam = lv_updnam
-              ev_upddat = lv_upddat
-              ev_updtim = lv_updtim.
+    try.
+        call method lo_artifact->('GET_METADATA')
+          exporting
+            iv_key1   = lv_key
+          importing
+            ev_crenam = lv_crenam
+            ev_credat = lv_credat
+            ev_cretim = lv_cretim
+            ev_updnam = lv_updnam
+            ev_upddat = lv_upddat
+            ev_updtim = lv_updtim.
 
-        catch cx_sy_dyn_call_illegal_class
-              cx_sy_dyn_call_illegal_method.
-
-          lv_error = abap_true.
-
-      endtry.
-    endif.
-
-    if <artifact_ref> is not assigned or lv_error is not initial.
-
-      lo_artifact->get_table_content(
-        exporting iv_key1                 = lv_key
-                  iv_only_sys_independent = abap_true
-        importing et_table_content        = lt_table_content ).
-
-      read table lt_table_content into ls_table_content with table key tabname = '/NEPTUNE/APP'.
-      if sy-subrc = 0.
-        assign ls_table_content-table_content->* to <lt_standard_table>.
-        check sy-subrc = 0.
-        read table <lt_standard_table> into ls_app index 1.
-        check sy-subrc = 0.
-        if ls_app-updnam is not initial.
-          rv_user = ls_app-updnam.
+        if lv_upddat is not initial.
+          rv_user = lv_upddat.
         else.
-          rv_user = ls_app-crenam.
+          rv_user = lv_crenam.
         endif.
-      endif.
 
-    endif.
+      catch cx_sy_dyn_call_illegal_class
+            cx_sy_dyn_call_illegal_method.
+
+        lo_artifact->get_table_content(
+          exporting iv_key1                 = lv_key
+                    iv_only_sys_independent = abap_true
+          importing et_table_content        = lt_table_content ).
+
+        read table lt_table_content into ls_table_content with table key tabname = '/NEPTUNE/APP'.
+        if sy-subrc = 0.
+          assign ls_table_content-table_content->* to <lt_standard_table>.
+          check sy-subrc = 0.
+          read table <lt_standard_table> into ls_app index 1.
+          check sy-subrc = 0.
+          if ls_app-updnam is not initial.
+            rv_user = ls_app-updnam.
+          else.
+            rv_user = ls_app-crenam.
+          endif.
+        endif.
+
+    endtry.
+
 
   endmethod.
 
