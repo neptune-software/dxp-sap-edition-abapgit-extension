@@ -260,6 +260,12 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
 
     data lt_code_lines type string_table.
 
+* BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
+    data lv_message type string.
+
+    field-symbols <file_ref> type ref to zcl_abapgit_objects_files.
+* END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
+
     field-symbols <lt_standard_table> type standard table.
 
     assign is_table_content-table_content->* to <lt_standard_table>.
@@ -301,7 +307,25 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
 
     ls_file-filename = ls_lcl_jshlptx-file_name.
 
-    zif_abapgit_object~mo_files->add( ls_file ).
+* BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
+* in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
+*    zif_abapgit_object~mo_files->add( ls_file ).
+    " for version 1.125.0
+    assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <file_ref>.
+    if <file_ref> is not assigned.
+      " for version 1.126.0
+      assign ('MO_FILES') to <file_ref>.
+    endif.
+
+    if <file_ref> is assigned.
+      call method <file_ref>->add
+        exporting
+          is_file = ls_file.
+    else.
+      concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name is_table_content-tabname into lv_message separated by space.
+      zcx_abapgit_exception=>raise( lv_message ).
+    endif.
+* END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
     if lt_lcl_jshlptx is not initial.
       try.
@@ -324,6 +348,12 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
           ls_file          type zif_abapgit_git_definitions=>ty_file.
 
     data lt_skip_paths type string_table.
+
+* BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
+    data lv_message type string.
+
+    field-symbols <file_ref> type ref to zcl_abapgit_objects_files.
+* END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
     try.
         lo_ajson = zcl_abapgit_ajson=>create_empty( ).
@@ -361,7 +391,26 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
                            iv_extra = iv_tabname
                            iv_ext   = 'json' ).
 
-    zif_abapgit_object~mo_files->add( ls_file ).
+* BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
+* in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
+*    zif_abapgit_object~mo_files->add( ls_file ).
+    " for version 1.125.0
+    assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <file_ref>.
+    if <file_ref> is not assigned.
+      " for version 1.126.0
+      assign ('MO_FILES') to <file_ref>.
+    endif.
+
+    if <file_ref> is assigned.
+      call method <file_ref>->add
+        exporting
+          is_file = ls_file.
+    else.
+      concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name iv_tabname into lv_message separated by space.
+      zcx_abapgit_exception=>raise( lv_message ).
+    endif.
+* END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
+
 
   endmethod.
 
@@ -458,6 +507,12 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
           lt_jshlpgr_db type standard table of /neptune/jshlpgr with non-unique default key,
           ls_jshlpgr like line of lt_jshlpgr.
 
+* BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
+    data lv_message type string.
+
+    field-symbols <file_ref> type ref to zcl_abapgit_objects_files.
+* END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
+
     field-symbols: <lt_standard_table> type standard table,
                    <ls_jshlpsc> type /neptune/jshlpsc.
 
@@ -470,7 +525,25 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
       catch zcx_abapgit_exception.
     endtry.
 
-    lt_files = zif_abapgit_object~mo_files->get_files( ).
+* BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
+* in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->GET_FILES does not work anymore
+*    lt_files = zif_abapgit_object~mo_files->get_files( ).
+    " for version 1.125.0
+    assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <file_ref>.
+    if <file_ref> is not assigned.
+      " for version 1.126.0
+      assign ('MO_FILES') to <file_ref>.
+    endif.
+
+    if <file_ref> is assigned.
+      call method <file_ref>->get_files
+        receiving
+          rt_files = lt_files.
+    else.
+      concatenate 'Error deserializing' ms_item-obj_type  ms_item-obj_name lv_key into lv_message separated by space.
+      zcx_abapgit_exception=>raise( lv_message ).
+    endif.
+* END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
     loop at lt_files into ls_files where filename cp '*.json'.
 
