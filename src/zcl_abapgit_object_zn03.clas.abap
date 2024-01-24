@@ -878,7 +878,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN03 IMPLEMENTATION.
             ev_updtim = lv_updtim.
 
         if lv_upddat is not initial.
-          rv_user = lv_upddat.
+          rv_user = lv_updnam.
         else.
           rv_user = lv_crenam.
         endif.
