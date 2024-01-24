@@ -740,7 +740,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 * BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
     data lv_message type string.
 
-    field-symbols <file_ref> type ref to zcl_abapgit_objects_files.
+    field-symbols <lr_object_files> type ref to zcl_abapgit_objects_files.
 * END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
     field-symbols <lt_standard_table> type standard table.
@@ -796,14 +796,14 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
 *    zif_abapgit_object~mo_files->add( ls_file ).
     " for version 1.125.0
-    assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <file_ref>.
-    if <file_ref> is not assigned.
+    assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <lr_object_files>.
+    if <lr_object_files> is not assigned.
       " for version 1.126.0
-      assign ('MO_FILES') to <file_ref>.
+      assign ('MO_FILES') to <lr_object_files>.
     endif.
 
-    if <file_ref> is assigned.
-      call method <file_ref>->add
+    if <lr_object_files> is assigned.
+      call method <lr_object_files>->add
         exporting
           is_file = ls_file.
     else.
@@ -836,7 +836,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 * BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
     data lv_message type string.
 
-    field-symbols <file_ref> type ref to zcl_abapgit_objects_files.
+    field-symbols <lr_object_files> type ref to zcl_abapgit_objects_files.
 * END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
     field-symbols <lt_standard_table> type standard table.
@@ -901,14 +901,14 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
 *    zif_abapgit_object~mo_files->add( ls_file ).
           " for version 1.125.0
-          assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <file_ref>.
-          if <file_ref> is not assigned.
+          assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <lr_object_files>.
+          if <lr_object_files> is not assigned.
             " for version 1.126.0
-            assign ('MO_FILES') to <file_ref>.
+            assign ('MO_FILES') to <lr_object_files>.
           endif.
 
-          if <file_ref> is assigned.
-            call method <file_ref>->add
+          if <lr_object_files> is assigned.
+            call method <lr_object_files>->add
               exporting
                 is_file = ls_file.
           else.
@@ -946,7 +946,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 * BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
     data lv_message type string.
 
-    field-symbols <file_ref> type ref to zcl_abapgit_objects_files.
+    field-symbols <lr_object_files> type ref to zcl_abapgit_objects_files.
 * END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
     constants lc_ext(4) type c value 'html'.
@@ -1021,14 +1021,14 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
 *    zif_abapgit_object~mo_files->add( ls_file ).
           " for version 1.125.0
-          assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <file_ref>.
-          if <file_ref> is not assigned.
+          assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <lr_object_files>.
+          if <lr_object_files> is not assigned.
             " for version 1.126.0
-            assign ('MO_FILES') to <file_ref>.
+            assign ('MO_FILES') to <lr_object_files>.
           endif.
 
-          if <file_ref> is assigned.
-            call method <file_ref>->add
+          if <lr_object_files> is assigned.
+            call method <lr_object_files>->add
               exporting
                 is_file = ls_file.
           else.
@@ -1068,7 +1068,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 * BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
     data lv_message type string.
 
-    field-symbols <file_ref> type ref to zcl_abapgit_objects_files.
+    field-symbols <lr_object_files> type ref to zcl_abapgit_objects_files.
 * END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
     field-symbols <lt_standard_table> type standard table.
@@ -1143,14 +1143,14 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
 *    zif_abapgit_object~mo_files->add( ls_file ).
           " for version 1.125.0
-          assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <file_ref>.
-          if <file_ref> is not assigned.
+          assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <lr_object_files>.
+          if <lr_object_files> is not assigned.
             " for version 1.126.0
-            assign ('MO_FILES') to <file_ref>.
+            assign ('MO_FILES') to <lr_object_files>.
           endif.
 
-          if <file_ref> is assigned.
-            call method <file_ref>->add
+          if <lr_object_files> is assigned.
+            call method <lr_object_files>->add
               exporting
                 is_file = ls_file.
           else.
@@ -1180,7 +1180,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 * BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
     data lv_message type string.
 
-    field-symbols <file_ref> type ref to zcl_abapgit_objects_files.
+    field-symbols <lr_object_files> type ref to zcl_abapgit_objects_files.
 * END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
     check it_table is not initial.
@@ -1230,14 +1230,14 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
 *    zif_abapgit_object~mo_files->add( ls_file ).
     " for version 1.125.0
-    assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <file_ref>.
-    if <file_ref> is not assigned.
+    assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <lr_object_files>.
+    if <lr_object_files> is not assigned.
       " for version 1.126.0
-      assign ('MO_FILES') to <file_ref>.
+      assign ('MO_FILES') to <lr_object_files>.
     endif.
 
-    if <file_ref> is assigned.
-      call method <file_ref>->add
+    if <lr_object_files> is assigned.
+      call method <lr_object_files>->add
         exporting
           is_file = ls_file.
     else.
@@ -1265,7 +1265,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 * BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
     data lv_message type string.
 
-    field-symbols <file_ref> type ref to zcl_abapgit_objects_files.
+    field-symbols <lr_object_files> type ref to zcl_abapgit_objects_files.
 * END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
     field-symbols <lt_standard_table> type standard table.
@@ -1319,14 +1319,14 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
 *    zif_abapgit_object~mo_files->add( ls_file ).
     " for version 1.125.0
-    assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <file_ref>.
-    if <file_ref> is not assigned.
+    assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <lr_object_files>.
+    if <lr_object_files> is not assigned.
       " for version 1.126.0
-      assign ('MO_FILES') to <file_ref>.
+      assign ('MO_FILES') to <lr_object_files>.
     endif.
 
-    if <file_ref> is assigned.
-      call method <file_ref>->add
+    if <lr_object_files> is assigned.
+      call method <lr_object_files>->add
         exporting
           is_file = ls_file.
     else.
@@ -1360,7 +1360,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 * BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
     data lv_message type string.
 
-    field-symbols <file_ref> type ref to zcl_abapgit_objects_files.
+    field-symbols <lr_object_files> type ref to zcl_abapgit_objects_files.
 * END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
     field-symbols <lt_standard_table> type standard table.
@@ -1432,14 +1432,14 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
 *    zif_abapgit_object~mo_files->add( ls_file ).
           " for version 1.125.0
-          assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <file_ref>.
-          if <file_ref> is not assigned.
+          assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <lr_object_files>.
+          if <lr_object_files> is not assigned.
             " for version 1.126.0
-            assign ('MO_FILES') to <file_ref>.
+            assign ('MO_FILES') to <lr_object_files>.
           endif.
 
-          if <file_ref> is assigned.
-            call method <file_ref>->add
+          if <lr_object_files> is assigned.
+            call method <lr_object_files>->add
               exporting
                 is_file = ls_file.
           else.
@@ -1478,7 +1478,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 * BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
     data lv_message type string.
 
-    field-symbols <file_ref> type ref to zcl_abapgit_objects_files.
+    field-symbols <lr_object_files> type ref to zcl_abapgit_objects_files.
 * END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
     constants lc_ext(4) type c value 'html'.
@@ -1553,14 +1553,14 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
 *    zif_abapgit_object~mo_files->add( ls_file ).
           " for version 1.125.0
-          assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <file_ref>.
-          if <file_ref> is not assigned.
+          assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <lr_object_files>.
+          if <lr_object_files> is not assigned.
             " for version 1.126.0
-            assign ('MO_FILES') to <file_ref>.
+            assign ('MO_FILES') to <lr_object_files>.
           endif.
 
-          if <file_ref> is assigned.
-            call method <file_ref>->add
+          if <lr_object_files> is assigned.
+            call method <lr_object_files>->add
               exporting
                 is_file = ls_file.
           else.
@@ -1600,7 +1600,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 * BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
     data lv_message type string.
 
-    field-symbols <file_ref> type ref to zcl_abapgit_objects_files.
+    field-symbols <lr_object_files> type ref to zcl_abapgit_objects_files.
 * END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
     field-symbols <lt_standard_table> type standard table.
@@ -1683,14 +1683,14 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
 *    zif_abapgit_object~mo_files->add( ls_file ).
           " for version 1.125.0
-          assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <file_ref>.
-          if <file_ref> is not assigned.
+          assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <lr_object_files>.
+          if <lr_object_files> is not assigned.
             " for version 1.126.0
-            assign ('MO_FILES') to <file_ref>.
+            assign ('MO_FILES') to <lr_object_files>.
           endif.
 
-          if <file_ref> is assigned.
-            call method <file_ref>->add
+          if <lr_object_files> is assigned.
+            call method <lr_object_files>->add
               exporting
                 is_file = ls_file.
           else.
@@ -1717,12 +1717,12 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
     data ls_app type /neptune/app.
 
-    data: lv_crenam	type /neptune/create_user,
-          lv_credat	type /neptune/create_date,
-          lv_cretim	type /neptune/create_time,
-          lv_updnam	type /neptune/update_user,
-          lv_upddat	type /neptune/update_date,
-          lv_updtim	type /neptune/update_time.
+    data: lv_crenam type /neptune/create_user,
+          lv_credat type /neptune/create_date,
+          lv_cretim type /neptune/create_time,
+          lv_updnam type /neptune/update_user,
+          lv_upddat type /neptune/update_date,
+          lv_updtim type /neptune/update_time.
 
     field-symbols <lt_standard_table> type standard table.
 
@@ -1827,7 +1827,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 * BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
     data lv_message type string.
 
-    field-symbols <file_ref> type ref to zcl_abapgit_objects_files.
+    field-symbols <lr_object_files> type ref to zcl_abapgit_objects_files.
 * END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
 
@@ -1844,14 +1844,14 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->GET_FILES does not work anymore
 *    lt_files = zif_abapgit_object~mo_files->get_files( ).
     " for version 1.125.0
-    assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <file_ref>.
-    if <file_ref> is not assigned.
+    assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <lr_object_files>.
+    if <lr_object_files> is not assigned.
       " for version 1.126.0
-      assign ('MO_FILES') to <file_ref>.
+      assign ('MO_FILES') to <lr_object_files>.
     endif.
 
-    if <file_ref> is assigned.
-      call method <file_ref>->get_files
+    if <lr_object_files> is assigned.
+      call method <lr_object_files>->get_files
         receiving
           rt_files = lt_files.
     else.
@@ -2056,8 +2056,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
           ls_table_content like line of lt_table_content,
           lv_key           type /neptune/artifact_key.
 
-*    data lt_obj type standard table of /neptune/_obj with default key. "#20687 - Disabled objects
-    data lt_obj type /neptune/_obj_tt. "#20687 - Disabled objects
+    data lt_obj type /neptune/_obj_tt.
 
     field-symbols <lt_standard_table> type standard table.
 
@@ -2079,8 +2078,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
       importing et_table_content        = lt_table_content ).
 
 * Save OBJ Table so we can read the name of objects with the FIELD_ID
-*    read table lt_table_content into ls_table_content with key tabname = '/NEPTUNE/OBJ'. "#20687 - Disabled objects
-    read table lt_table_content into ls_table_content with key tabname = '/NEPTUNE/_OBJ'. "#20687 - Disabled objects
+    read table lt_table_content into ls_table_content with key tabname = '/NEPTUNE/_OBJ'.
     if sy-subrc = 0.
       assign ls_table_content-table_content->* to <lt_standard_table>.
       check sy-subrc = 0.

@@ -160,7 +160,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN06 IMPLEMENTATION.
 * BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
     data lv_message type string.
 
-    field-symbols <file_ref> type ref to zcl_abapgit_objects_files.
+    field-symbols <lr_object_files> type ref to zcl_abapgit_objects_files.
 * END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
     try.
@@ -203,14 +203,14 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN06 IMPLEMENTATION.
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
 *    zif_abapgit_object~mo_files->add( ls_file ).
     " for version 1.125.0
-    assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <file_ref>.
-    if <file_ref> is not assigned.
+    assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <lr_object_files>.
+    if <lr_object_files> is not assigned.
       " for version 1.126.0
-      assign ('MO_FILES') to <file_ref>.
+      assign ('MO_FILES') to <lr_object_files>.
     endif.
 
-    if <file_ref> is assigned.
-      call method <file_ref>->add
+    if <lr_object_files> is assigned.
+      call method <lr_object_files>->add
         exporting
           is_file = ls_file.
     else.
@@ -311,7 +311,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN06 IMPLEMENTATION.
 * BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
     data lv_message type string.
 
-    field-symbols <file_ref> type ref to zcl_abapgit_objects_files.
+    field-symbols <lr_object_files> type ref to zcl_abapgit_objects_files.
 * END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
     try.
@@ -327,14 +327,14 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN06 IMPLEMENTATION.
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->GET_FILES does not work anymore
 *    lt_files = zif_abapgit_object~mo_files->get_files( ).
     " for version 1.125.0
-    assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <file_ref>.
-    if <file_ref> is not assigned.
+    assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <lr_object_files>.
+    if <lr_object_files> is not assigned.
       " for version 1.126.0
-      assign ('MO_FILES') to <file_ref>.
+      assign ('MO_FILES') to <lr_object_files>.
     endif.
 
-    if <file_ref> is assigned.
-      call method <file_ref>->get_files
+    if <lr_object_files> is assigned.
+      call method <lr_object_files>->get_files
         receiving
           rt_files = lt_files.
     else.
