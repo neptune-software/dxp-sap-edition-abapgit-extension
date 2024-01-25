@@ -242,6 +242,10 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
 
 **********************************************************************
 
+    lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
+
+    lv_key = ms_item-obj_name.
+
     try.
         call method lo_artifact->('GET_METADATA')
           exporting
@@ -262,10 +266,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
 
       catch cx_sy_dyn_call_illegal_class
             cx_sy_dyn_call_illegal_method.
-
-        lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
-
-        lv_key = ms_item-obj_name.
 
         lo_artifact->get_table_content(
           exporting iv_key1                 = lv_key
