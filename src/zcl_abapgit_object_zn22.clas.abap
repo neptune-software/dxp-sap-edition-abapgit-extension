@@ -8,101 +8,109 @@ class zcl_abapgit_object_zn22 definition
 
     interfaces zif_abapgit_object .
   protected section.
-  private section.
+private section.
 
-    types:
-      begin of ty_lcl_cushead,
+  types:
+    begin of ty_lcl_cushead,
                     configuration type /neptune/cushead-configuration,
                     file_name     type string,
                    end of ty_lcl_cushead .
-    types:
-      ty_tt_lcl_cushead type standard table of ty_lcl_cushead .
-    types:
-      begin of ty_lcl_cuslogi,
+  types:
+    ty_tt_lcl_cushead type standard table of ty_lcl_cushead .
+  types:
+    begin of ty_lcl_cuslogi,
                     configuration type /neptune/cuslogi-configuration,
                     file_name     type string,
                    end of ty_lcl_cuslogi .
-    types:
-      ty_tt_lcl_cuslogi type standard table of ty_lcl_cuslogi .
-    types:
-      begin of ty_lcl_confxml,
+  types:
+    ty_tt_lcl_cuslogi type standard table of ty_lcl_cuslogi .
+  types:
+    begin of ty_lcl_confxml,
                     configuration type /neptune/confxml-configuration,
                     file_name     type string,
                    end of ty_lcl_confxml .
-    types:
-      ty_tt_lcl_confxml type standard table of ty_lcl_confxml .
+  types:
+    ty_tt_lcl_confxml type standard table of ty_lcl_confxml .
 
-    data mv_artifact_type type /neptune/artifact_type .
+  data MV_ARTIFACT_TYPE type /NEPTUNE/ARTIFACT_TYPE .
 
-    methods serialize_cushead
-      importing
-      !is_table_content type /neptune/if_artifact_type=>ty_table_content .
-    methods serialize_confxml
-      importing
-      !is_table_content type /neptune/if_artifact_type=>ty_table_content .
-    methods serialize_appcach
-      importing
-      !is_table_content type /neptune/if_artifact_type=>ty_table_content .
-    methods serialize_cuslogi
-      importing
-      !is_table_content type /neptune/if_artifact_type=>ty_table_content .
-    methods serialize_table
-      importing
-      !iv_tabname type tabname
-      !it_table type any
-      raising
-      zcx_abapgit_exception .
-    methods deserialize_table
-      importing
-      !is_file type zif_abapgit_git_definitions=>ty_file
-      !ir_data type ref to data
-      !iv_key type /neptune/artifact_key
-      raising
-      zcx_abapgit_exception .
-    methods get_values_from_filename
-      importing
-      !is_filename type string
-      exporting
-      !ev_tabname type tadir-obj_name .
-    methods deserialize_cushead
-      importing
-      !is_file type zif_abapgit_git_definitions=>ty_file
-      !it_files type zif_abapgit_git_definitions=>ty_files_tt
-      !ir_data type ref to data
-      !iv_key type /neptune/artifact_key
-      raising
-      zcx_abapgit_exception .
-    methods deserialize_confxml
-      importing
-      !is_file type zif_abapgit_git_definitions=>ty_file
-      !it_files type zif_abapgit_git_definitions=>ty_files_tt
-      !ir_data type ref to data
-      !iv_key type /neptune/artifact_key
-      raising
-      zcx_abapgit_exception .
-    methods deserialize_appcach
-      importing
-      !is_file type zif_abapgit_git_definitions=>ty_file
-      !it_files type zif_abapgit_git_definitions=>ty_files_tt
-      !ir_data type ref to data
-      !iv_key type /neptune/artifact_key
-      raising
-      zcx_abapgit_exception .
-    methods deserialize_cuslogi
-      importing
-      !is_file type zif_abapgit_git_definitions=>ty_file
-      !it_files type zif_abapgit_git_definitions=>ty_files_tt
-      !ir_data type ref to data
-      !iv_key type /neptune/artifact_key
-      raising
-      zcx_abapgit_exception .
-    methods insert_to_transport
-      importing
-      !io_artifact type ref to /neptune/if_artifact_type
-      !iv_transport type trkorr
-      !iv_package type devclass
-      !iv_key1 type any
-      !iv_artifact_type type /neptune/aty-artifact_type .
+  methods SERIALIZE_CUSHEAD
+    importing
+      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods SERIALIZE_CONFXML
+    importing
+      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods SERIALIZE_APPCACH
+    importing
+      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods SERIALIZE_CUSLOGI
+    importing
+      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods SERIALIZE_TABLE
+    importing
+      !IV_TABNAME type TABNAME
+      !IT_TABLE type ANY
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods DESERIALIZE_TABLE
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IR_DATA type ref to DATA
+      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods GET_VALUES_FROM_FILENAME
+    importing
+      !IS_FILENAME type STRING
+    exporting
+      !EV_TABNAME type TADIR-OBJ_NAME .
+  methods DESERIALIZE_CUSHEAD
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
+      !IR_DATA type ref to DATA
+      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods DESERIALIZE_CONFXML
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
+      !IR_DATA type ref to DATA
+      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods DESERIALIZE_APPCACH
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
+      !IR_DATA type ref to DATA
+      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods DESERIALIZE_CUSLOGI
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
+      !IR_DATA type ref to DATA
+      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods INSERT_TO_TRANSPORT
+    importing
+      !IO_ARTIFACT type ref to /NEPTUNE/IF_ARTIFACT_TYPE
+      !IV_TRANSPORT type TRKORR
+      !IV_PACKAGE type DEVCLASS
+      !IV_KEY1 type ANY
+      !IV_ARTIFACT_TYPE type /NEPTUNE/ATY-ARTIFACT_TYPE .
 ENDCLASS.
 
 

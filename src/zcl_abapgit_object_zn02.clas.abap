@@ -170,11 +170,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
 
     data lt_skip_paths type string_table.
 
-* BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
     data lv_message type string.
 
     field-symbols <lr_object_files> type ref to zcl_abapgit_objects_files.
-* END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
     try.
         lo_ajson = zcl_abapgit_ajson=>create_empty( ).
@@ -212,7 +210,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
                            iv_extra = iv_tabname
                            iv_ext   = 'json' ).
 
-* BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
 *    zif_abapgit_object~mo_files->add( ls_file ).
     " for version 1.125.0
@@ -230,7 +227,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
       concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name iv_tabname into lv_message separated by space.
       zcx_abapgit_exception=>raise( lv_message ).
     endif.
-* END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
   endmethod.
 
@@ -350,12 +346,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
     data lv_key     type /neptune/artifact_key.
     data lv_name    type /neptune/artifact_name.
     data ls_settings type /neptune/aty.
-
-* BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
     data lv_message type string.
 
     field-symbols <lr_object_files> type ref to zcl_abapgit_objects_files.
-* END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
     try.
         io_xml->read(
@@ -366,7 +359,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
       catch zcx_abapgit_exception.
     endtry.
 
-* BEG #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->GET_FILES does not work anymore
 *    lt_files = zif_abapgit_object~mo_files->get_files( ).
     " for version 1.125.0
@@ -384,7 +376,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
       concatenate 'Error deserializing' ms_item-obj_type  ms_item-obj_name lv_key into lv_message separated by space.
       zcx_abapgit_exception=>raise( lv_message ).
     endif.
-* END #20675 - 1.0.2 - Refactoring of abapGit 1.126.0
 
     loop at lt_files into ls_files where filename cp '*.json'.
 
