@@ -8,7 +8,7 @@ class zcl_abapgit_object_zn00 definition
 
     interfaces zif_abapgit_object .
 
-    constants mc_extension_version type string value '1.0.1'. "#EC NOTEXT
+    constants mc_extension_version type string value '1.0.2'. "#EC NOTEXT
   protected section.
   private section.
 

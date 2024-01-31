@@ -36,16 +36,24 @@ class zcl_abapgit_object_zn22 definition
 
     methods serialize_cushead
       importing
-      !is_table_content type /neptune/if_artifact_type=>ty_table_content .
+      !is_table_content type /neptune/if_artifact_type=>ty_table_content
+      raising
+      zcx_abapgit_exception .
     methods serialize_confxml
       importing
-      !is_table_content type /neptune/if_artifact_type=>ty_table_content .
+      !is_table_content type /neptune/if_artifact_type=>ty_table_content
+      raising
+      zcx_abapgit_exception .
     methods serialize_appcach
       importing
-      !is_table_content type /neptune/if_artifact_type=>ty_table_content .
+      !is_table_content type /neptune/if_artifact_type=>ty_table_content
+      raising
+      zcx_abapgit_exception .
     methods serialize_cuslogi
       importing
-      !is_table_content type /neptune/if_artifact_type=>ty_table_content .
+      !is_table_content type /neptune/if_artifact_type=>ty_table_content
+      raising
+      zcx_abapgit_exception .
     methods serialize_table
       importing
       !iv_tabname type tabname
@@ -425,6 +433,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
 
     data lt_appcach type standard table of /neptune/appcach with default key.
 
+    data lv_message type string.
+
+    field-symbols <lr_object_files> type ref to zcl_abapgit_objects_files.
     field-symbols <lt_standard_table> type standard table.
     field-symbols <ls_line> type any.
     field-symbols <lv_code> type any.
@@ -455,7 +466,25 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
 
             zcl_neptune_abapgit_utilities=>fix_string_serialize( changing cv_string = <lv_code> ).
             ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( <lv_code> ).
-            zif_abapgit_object~mo_files->add( ls_file ).
+
+* in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
+*            zif_abapgit_object~mo_files->add( ls_file ).
+            " for version 1.125.0
+            assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <lr_object_files>.
+            if <lr_object_files> is not assigned.
+              " for version 1.126.0
+              assign ('MO_FILES') to <lr_object_files>.
+            endif.
+
+            if <lr_object_files> is assigned.
+              call method <lr_object_files>->add
+                exporting
+                  is_file = ls_file.
+            else.
+              concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name is_table_content-tabname into lv_message separated by space.
+              zcx_abapgit_exception=>raise( lv_message ).
+            endif.
+
           catch zcx_abapgit_exception.
         endtry.
 
@@ -489,6 +518,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
 
     data lt_code_lines type string_table.
 
+    data lv_message type string.
+
+    field-symbols <lr_object_files> type ref to zcl_abapgit_objects_files.
     field-symbols <lt_standard_table> type standard table.
 
     assign is_table_content-table_content->* to <lt_standard_table>.
@@ -530,7 +562,24 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
         clear: lt_code_lines.
         ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_code ).
         ls_file-filename = ls_lcl_confxml-file_name.
-        zif_abapgit_object~mo_files->add( ls_file ).
+
+* in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
+*        zif_abapgit_object~mo_files->add( ls_file ).
+        " for version 1.125.0
+        assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <lr_object_files>.
+        if <lr_object_files> is not assigned.
+          " for version 1.126.0
+          assign ('MO_FILES') to <lr_object_files>.
+        endif.
+
+        if <lr_object_files> is assigned.
+          call method <lr_object_files>->add
+            exporting
+              is_file = ls_file.
+        else.
+          concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name is_table_content-tabname into lv_message separated by space.
+          zcx_abapgit_exception=>raise( lv_message ).
+        endif.
 
       catch zcx_abapgit_exception.
     endtry.
@@ -552,6 +601,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
 
     data lt_code_lines type string_table.
 
+    data lv_message type string.
+
+    field-symbols <lr_object_files> type ref to zcl_abapgit_objects_files.
     field-symbols <lt_standard_table> type standard table.
 
     assign is_table_content-table_content->* to <lt_standard_table>.
@@ -592,7 +644,24 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
         clear: lt_code_lines.
         ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_code ).
         ls_file-filename = ls_lcl_cushead-file_name.
-        zif_abapgit_object~mo_files->add( ls_file ).
+
+* in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
+*        zif_abapgit_object~mo_files->add( ls_file ).
+        " for version 1.125.0
+        assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <lr_object_files>.
+        if <lr_object_files> is not assigned.
+          " for version 1.126.0
+          assign ('MO_FILES') to <lr_object_files>.
+        endif.
+
+        if <lr_object_files> is assigned.
+          call method <lr_object_files>->add
+            exporting
+              is_file = ls_file.
+        else.
+          concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name is_table_content-tabname into lv_message separated by space.
+          zcx_abapgit_exception=>raise( lv_message ).
+        endif.
 
       catch zcx_abapgit_exception.
     endtry.
@@ -613,6 +682,10 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
     data lv_code type string.
 
     data lt_code_lines type string_table.
+
+    data lv_message type string.
+
+    field-symbols <lr_object_files> type ref to zcl_abapgit_objects_files.
 
     field-symbols <lt_standard_table> type standard table.
 
@@ -656,7 +729,24 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
 
         ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_code ).
         ls_file-filename = ls_lcl_cuslogi-file_name.
-        zif_abapgit_object~mo_files->add( ls_file ).
+
+* in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
+*        zif_abapgit_object~mo_files->add( ls_file ).
+        " for version 1.125.0
+        assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <lr_object_files>.
+        if <lr_object_files> is not assigned.
+          " for version 1.126.0
+          assign ('MO_FILES') to <lr_object_files>.
+        endif.
+
+        if <lr_object_files> is assigned.
+          call method <lr_object_files>->add
+            exporting
+              is_file = ls_file.
+        else.
+          concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name is_table_content-tabname into lv_message separated by space.
+          zcx_abapgit_exception=>raise( lv_message ).
+        endif.
 
       catch zcx_abapgit_exception.
     endtry.
@@ -672,6 +762,10 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
           ls_file          type zif_abapgit_git_definitions=>ty_file.
 
     data lt_skip_paths type string_table.
+
+    data lv_message type string.
+
+    field-symbols <lr_object_files> type ref to zcl_abapgit_objects_files.
 
     try.
         lo_ajson = zcl_abapgit_ajson=>create_empty( ).
@@ -709,7 +803,23 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
                            iv_extra = iv_tabname
                            iv_ext   = 'json' ).
 
-    zif_abapgit_object~mo_files->add( ls_file ).
+* in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
+*    zif_abapgit_object~mo_files->add( ls_file ).
+    " for version 1.125.0
+    assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <lr_object_files>.
+    if <lr_object_files> is not assigned.
+      " for version 1.126.0
+      assign ('MO_FILES') to <lr_object_files>.
+    endif.
+
+    if <lr_object_files> is assigned.
+      call method <lr_object_files>->add
+        exporting
+          is_file = ls_file.
+    else.
+      concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name iv_tabname into lv_message separated by space.
+      zcx_abapgit_exception=>raise( lv_message ).
+    endif.
 
   endmethod.
 
@@ -723,28 +833,58 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
 
     data ls_appcach type /neptune/appcach.
 
+    data: lv_crenam type /neptune/create_user,
+          lv_credat type /neptune/create_date,
+          lv_cretim type /neptune/create_time,
+          lv_updnam type /neptune/update_user,
+          lv_upddat type /neptune/update_date,
+          lv_updtim type /neptune/update_time.
+
     field-symbols <lt_standard_table> type standard table.
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
 
     lv_key = ms_item-obj_name.
 
-    lo_artifact->get_table_content(
-      exporting iv_key1                 = lv_key
-                iv_only_sys_independent = abap_true
-      importing et_table_content        = lt_table_content ).
+    try.
+        call method lo_artifact->('GET_METADATA')
+          exporting
+            iv_key1   = lv_key
+          importing
+            ev_crenam = lv_crenam
+            ev_credat = lv_credat
+            ev_cretim = lv_cretim
+            ev_updnam = lv_updnam
+            ev_upddat = lv_upddat
+            ev_updtim = lv_updtim.
 
-    read table lt_table_content into ls_table_content with table key tabname = '/NEPTUNE/APPCACH'.
-    if sy-subrc = 0.
-      assign ls_table_content-table_content->* to <lt_standard_table>.
-      check sy-subrc = 0.
-      read table <lt_standard_table> into ls_appcach index 1.
-      if sy-subrc = 0 and ls_appcach-updnam is not initial.
-        rv_user = ls_appcach-updnam.
-      else.
-        rv_user = ls_appcach-crenam.
-      endif.
-    endif.
+        if lv_upddat is not initial.
+          rv_user = lv_updnam.
+        else.
+          rv_user = lv_crenam.
+        endif.
+
+      catch cx_sy_dyn_call_illegal_class
+            cx_sy_dyn_call_illegal_method.
+
+        lo_artifact->get_table_content(
+          exporting iv_key1                 = lv_key
+                    iv_only_sys_independent = abap_true
+          importing et_table_content        = lt_table_content ).
+
+        read table lt_table_content into ls_table_content with table key tabname = '/NEPTUNE/APPCACH'.
+        if sy-subrc = 0.
+          assign ls_table_content-table_content->* to <lt_standard_table>.
+          check sy-subrc = 0.
+          read table <lt_standard_table> into ls_appcach index 1.
+          if sy-subrc = 0 and ls_appcach-updnam is not initial.
+            rv_user = ls_appcach-updnam.
+          else.
+            rv_user = ls_appcach-crenam.
+          endif.
+        endif.
+
+    endtry.
 
   endmethod.
 
@@ -796,6 +936,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
     data lr_data    type ref to data.
     data lv_tabname type tadir-obj_name.
     data lv_key     type /neptune/artifact_key.
+    data lv_message type string.
+
+    field-symbols <lr_object_files> type ref to zcl_abapgit_objects_files.
 
     try.
         io_xml->read(
@@ -806,7 +949,23 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN22 IMPLEMENTATION.
       catch zcx_abapgit_exception.
     endtry.
 
-    lt_files = zif_abapgit_object~mo_files->get_files( ).
+* in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->GET_FILES does not work anymore
+*    lt_files = zif_abapgit_object~mo_files->get_files( ).
+    " for version 1.125.0
+    assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <lr_object_files>.
+    if <lr_object_files> is not assigned.
+      " for version 1.126.0
+      assign ('MO_FILES') to <lr_object_files>.
+    endif.
+
+    if <lr_object_files> is assigned.
+      call method <lr_object_files>->get_files
+        receiving
+          rt_files = lt_files.
+    else.
+      concatenate 'Error deserializing' ms_item-obj_type  ms_item-obj_name lv_key into lv_message separated by space.
+      zcx_abapgit_exception=>raise( lv_message ).
+    endif.
 
     loop at lt_files into ls_files where filename cp '*.json'.
 

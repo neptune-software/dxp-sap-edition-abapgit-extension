@@ -56,7 +56,9 @@ class zcl_abapgit_object_zn15 definition
     methods serialize_jshlptx
       importing
       !iv_name type /neptune/jshlpsc-descr
-      !is_table_content type /neptune/if_artifact_type=>ty_table_content .
+      !is_table_content type /neptune/if_artifact_type=>ty_table_content
+      raising
+      zcx_abapgit_exception .
     methods deserialize_jshlptx
       importing
       !is_file type zif_abapgit_git_definitions=>ty_file
@@ -260,6 +262,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
 
     data lt_code_lines type string_table.
 
+    data lv_message type string.
+
+    field-symbols <lr_object_files> type ref to zcl_abapgit_objects_files.
     field-symbols <lt_standard_table> type standard table.
 
     assign is_table_content-table_content->* to <lt_standard_table>.
@@ -301,7 +306,23 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
 
     ls_file-filename = ls_lcl_jshlptx-file_name.
 
-    zif_abapgit_object~mo_files->add( ls_file ).
+* in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
+*    zif_abapgit_object~mo_files->add( ls_file ).
+    " for version 1.125.0
+    assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <lr_object_files>.
+    if <lr_object_files> is not assigned.
+      " for version 1.126.0
+      assign ('MO_FILES') to <lr_object_files>.
+    endif.
+
+    if <lr_object_files> is assigned.
+      call method <lr_object_files>->add
+        exporting
+          is_file = ls_file.
+    else.
+      concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name is_table_content-tabname into lv_message separated by space.
+      zcx_abapgit_exception=>raise( lv_message ).
+    endif.
 
     if lt_lcl_jshlptx is not initial.
       try.
@@ -324,6 +345,10 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
           ls_file          type zif_abapgit_git_definitions=>ty_file.
 
     data lt_skip_paths type string_table.
+
+    data lv_message type string.
+
+    field-symbols <lr_object_files> type ref to zcl_abapgit_objects_files.
 
     try.
         lo_ajson = zcl_abapgit_ajson=>create_empty( ).
@@ -361,7 +386,23 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
                            iv_extra = iv_tabname
                            iv_ext   = 'json' ).
 
-    zif_abapgit_object~mo_files->add( ls_file ).
+* in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
+*    zif_abapgit_object~mo_files->add( ls_file ).
+    " for version 1.125.0
+    assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <lr_object_files>.
+    if <lr_object_files> is not assigned.
+      " for version 1.126.0
+      assign ('MO_FILES') to <lr_object_files>.
+    endif.
+
+    if <lr_object_files> is assigned.
+      call method <lr_object_files>->add
+        exporting
+          is_file = ls_file.
+    else.
+      concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name iv_tabname into lv_message separated by space.
+      zcx_abapgit_exception=>raise( lv_message ).
+    endif.
 
   endmethod.
 
@@ -375,6 +416,13 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
 
     data ls_jshlpsc type /neptune/jshlpsc.
 
+    data: lv_crenam type /neptune/create_user,
+          lv_credat type /neptune/create_date,
+          lv_cretim type /neptune/create_time,
+          lv_updnam type /neptune/update_user,
+          lv_upddat type /neptune/update_date,
+          lv_updtim type /neptune/update_time.
+
     field-symbols <lt_standard_table> type standard table.
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
@@ -382,22 +430,45 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
     lv_key = ms_item-obj_name.
     translate lv_key to lower case.
 
-    lo_artifact->get_table_content(
-      exporting iv_key1                 = lv_key
-                iv_only_sys_independent = abap_true
-      importing et_table_content        = lt_table_content ).
+    try.
+        call method lo_artifact->('GET_METADATA')
+          exporting
+            iv_key1   = lv_key
+          importing
+            ev_crenam = lv_crenam
+            ev_credat = lv_credat
+            ev_cretim = lv_cretim
+            ev_updnam = lv_updnam
+            ev_upddat = lv_upddat
+            ev_updtim = lv_updtim.
 
-    read table lt_table_content into ls_table_content with table key tabname = '/NEPTUNE/JSHLPSC'.
-    if sy-subrc = 0.
-      assign ls_table_content-table_content->* to <lt_standard_table>.
-      check sy-subrc = 0.
-      read table <lt_standard_table> into ls_jshlpsc index 1.
-      if sy-subrc = 0 and ls_jshlpsc-updnam is not initial.
-        rv_user = ls_jshlpsc-updnam.
-      else.
-        rv_user = ls_jshlpsc-crenam.
-      endif.
-    endif.
+        if lv_upddat is not initial.
+          rv_user = lv_updnam.
+        else.
+          rv_user = lv_crenam.
+        endif.
+
+      catch cx_sy_dyn_call_illegal_class
+            cx_sy_dyn_call_illegal_method.
+
+        lo_artifact->get_table_content(
+          exporting iv_key1                 = lv_key
+                    iv_only_sys_independent = abap_true
+          importing et_table_content        = lt_table_content ).
+
+        read table lt_table_content into ls_table_content with table key tabname = '/NEPTUNE/JSHLPSC'.
+        if sy-subrc = 0.
+          assign ls_table_content-table_content->* to <lt_standard_table>.
+          check sy-subrc = 0.
+          read table <lt_standard_table> into ls_jshlpsc index 1.
+          if sy-subrc = 0 and ls_jshlpsc-updnam is not initial.
+            rv_user = ls_jshlpsc-updnam.
+          else.
+            rv_user = ls_jshlpsc-crenam.
+          endif.
+        endif.
+
+    endtry.
 
   endmethod.
 
@@ -458,6 +529,10 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
           lt_jshlpgr_db type standard table of /neptune/jshlpgr with non-unique default key,
           ls_jshlpgr like line of lt_jshlpgr.
 
+    data lv_message type string.
+
+    field-symbols <lr_object_files> type ref to zcl_abapgit_objects_files.
+
     field-symbols: <lt_standard_table> type standard table,
                    <ls_jshlpsc> type /neptune/jshlpsc.
 
@@ -470,7 +545,23 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN15 IMPLEMENTATION.
       catch zcx_abapgit_exception.
     endtry.
 
-    lt_files = zif_abapgit_object~mo_files->get_files( ).
+* in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->GET_FILES does not work anymore
+*    lt_files = zif_abapgit_object~mo_files->get_files( ).
+    " for version 1.125.0
+    assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <lr_object_files>.
+    if <lr_object_files> is not assigned.
+      " for version 1.126.0
+      assign ('MO_FILES') to <lr_object_files>.
+    endif.
+
+    if <lr_object_files> is assigned.
+      call method <lr_object_files>->get_files
+        receiving
+          rt_files = lt_files.
+    else.
+      concatenate 'Error deserializing' ms_item-obj_type  ms_item-obj_name lv_key into lv_message separated by space.
+      zcx_abapgit_exception=>raise( lv_message ).
+    endif.
 
     loop at lt_files into ls_files where filename cp '*.json'.
 
