@@ -121,7 +121,14 @@
     "line_only_punc": true,
     "commented_code": false,
     "align_parameters": true,
-    "method_length": true,
+    "method_length": {
+      "exclude": [],
+      "severity": "Error",
+      "statements": 100,
+      "errorWhenEmpty": false,
+      "ignoreTestClasses": false,
+      "checkForms": true
+    },
     "unnecessary_chaining": false,
     "remove_descriptions": false,
     "exporting": true,
