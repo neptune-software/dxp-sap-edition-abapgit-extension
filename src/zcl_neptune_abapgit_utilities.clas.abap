@@ -26,10 +26,10 @@ public section.
       value(RT_CODE_LINES) type STRING_TABLE .
   class-methods FIX_STRING_SERIALIZE
     changing
-      !CV_STRING type STRING .
+      !CV_STRING type STRING ##NEEDED. 
   class-methods FIX_STRING_DESERIALIZE
     changing
-      !CV_STRING type STRING .
+      !CV_STRING type STRING ##NEEDED. 
   class-methods GET_SKIP_FIELDS_FOR_ARTIFACT
     importing
       !IV_ARTIFACT_TYPE type /NEPTUNE/ARTIFACT_TYPE
