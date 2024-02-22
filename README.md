@@ -48,7 +48,7 @@ If you already have the abapGit user exit class implemented, please add and adju
     data ls_tadir like line of ct_tadir.
 
     lt_neptune_tadir = /neptune/cl_abapgit_user_exit=>change_tadir( 
-                                                        iv_package 		      = iv_package 
+                                                        iv_package            = iv_package 
                                                         iv_ignore_subpackages = iv_ignore_subpackages ).
 
     loop at lt_neptune_tadir into ls_neptune_tadir.
