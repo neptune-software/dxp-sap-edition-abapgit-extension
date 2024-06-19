@@ -1,0 +1,43 @@
+name: 'Setup and Install Dependencies'
+description: 'Setup environment and install dependencies'
+inputs:
+  packages_auth_token:
+    description: 'Authentication token for npm'
+    required: true
+outputs:
+  sapnwrfc_home:
+    description: 'SAPNWRFC Home Directory'
+    value: ${{ steps.export-env-vars.outputs.export-sapnwrfc_home }}
+  sapnwrfc_path:
+    description: 'SAPNWRFC Path'
+    value: ${{ steps.export-env-vars.outputs.export-sapnwrfc_path }}
+    
+runs:
+  using: 'composite'
+  steps:
+
+    - run: npm install @neptune-software/sapnwrfc
+      shell: bash
+      env:
+        npm_config_PACKAGES_AUTH_TOKEN: ${{ inputs.packages_auth_token }}
+    
+    - run: |
+        chmod +x node_modules/@neptune-software/sapnwrfc/scripts/unix/setup_sapnwrfc.sh
+        node_modules/@neptune-software/sapnwrfc/scripts/unix/setup_sapnwrfc.sh
+        echo "SAPNWRFC_HOME=/usr/local/sap/nwrfcsdk" >> $GITHUB_ENV
+        echo "/usr/local/sap/nwrfcsdk/lib" >> $GITHUB_PATH
+      shell: bash
+
+    - run: ldconfig -p | grep sap
+      shell: bash
+
+    - run: npm install @neptune-software/dxp-sap-edition-release-client
+      shell: bash
+      env:
+        npm_config_PACKAGES_AUTH_TOKEN: ${{ inputs.packages_auth_token }}
+
+    - id: export-env-vars
+      run: |
+        echo "sapnwrfc_home=/usr/local/sap/nwrfcsdk" >> $GITHUB_OUTPUT
+        echo "sapnwrfc_path=/usr/local/sap/nwrfcsdk/lib" >> $GITHUB_OUTPUT
+      shell: bash

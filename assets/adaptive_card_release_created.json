@@ -1,0 +1,35 @@
+{
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "type": "AdaptiveCard",
+    "version": "1.6",
+    "body": [
+        {
+            "type": "TextBlock",
+            "text": "Abapgit Extension Transport created",
+            "weight": "Bolder",
+            "size": "Medium",
+            "color": "Default",
+            "style": "heading"
+        },
+        {
+            "type": "FactSet", 
+            "facts": [
+                {
+                    "title": "Abapgit Extension Version",
+                    "value": "${fullAbapgitVersion}"
+                },
+                {
+                    "title": "SAP TR Request",
+                    "value": "${sapRequest}"
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "type": "Action.OpenUrl",
+            "title": "Open Github Workflow",
+            "url": "${githubRunUrl}"
+        }
+    ]
+}

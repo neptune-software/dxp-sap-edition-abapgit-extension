@@ -1,0 +1,348 @@
+name: Create Abapgit Extension Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      fullAbapgitVersion:
+        type: string
+        default: "1.0.3"
+        description: "Full Abapgit Extension Version"
+        required: true
+
+      sapTransportRequest:
+        type: string
+        description: "sapTransportRequest"
+        required: false
+      
+      testMode:
+        type: boolean
+        default: true
+        description: "testMode"
+      
+      createUninstallationTransport:
+        type: boolean
+        default: true
+        description: "Should we create an uninstallation transport?"
+      
+      signaturePrivateKeyBase64:
+        type: string
+        required: true
+        description: "Your personal Private Key (BASE64!)"
+
+      signaturePassphrase:
+        type: string
+        required: false
+        description: "Your Passphrase for the Private Key"
+  
+jobs:
+  create-abapgit-extension-release-transport:
+    runs-on: ubuntu-latest
+    outputs:
+      transportName: ${{ steps.set_output.outputs.transportName }}
+
+    steps:
+      - name: Mask Input Secrets
+        run: |
+          SIGNATURE_PRIVATE_KEY_BASE64=$(cat $GITHUB_EVENT_PATH | jq -r '.inputs.signaturePrivateKeyBase64' )
+          echo ::add-mask::$SIGNATURE_PRIVATE_KEY_BASE64
+          echo SIGNATURE_PRIVATE_KEY_BASE64=$SIGNATURE_PRIVATE_KEY_BASE64 >> $GITHUB_ENV
+          
+          SIGNATURE_PASSPHRASE=$(cat $GITHUB_EVENT_PATH | jq -r '.inputs.signaturePassphrase' )
+          echo ::add-mask::$SIGNATURE_PASSPHRASE
+          echo SIGNATURE_PASSPHRASE=$SIGNATURE_PASSPHRASE >> $GITHUB_ENV
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .npmrc
+            .github 
+            assets
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Setup and Install Dependencies
+        id: setup
+        uses: ./.github/actions/setup-action
+        with:
+          packages_auth_token: ${{ secrets.PACKAGES_AUTH_TOKEN }}
+
+      - name: Set Env Variables
+        run: |
+          MAIN_VERSION="${{github.event.inputs.fullAbapgitVersion}}"
+          MAJOR_VERSION=$(echo $MAIN_VERSION | cut -d '.' -f 1)
+          MINOR_VERSION=$(echo $MAIN_VERSION | cut -d '.' -f 2)
+          PATCH_VERSION=$(echo $MAIN_VERSION | cut -d '.' -f 3)
+
+          echo "MAJOR_VERSION=$MAJOR_VERSION" >> $GITHUB_ENV
+          echo "MINOR_VERSION=$MINOR_VERSION" >> $GITHUB_ENV
+          echo "PATCH_VERSION=$PATCH_VERSION" >> $GITHUB_ENV
+
+          echo "SAPNWRFC_HOME=${{ steps.setup.outputs.sapnwrfc_home }}" >> $GITHUB_ENV
+          echo "${{ steps.setup.outputs.sapnwrfc_path }}" >> $GITHUB_PATH
+
+          
+          echo "RELEASE_SAP_USER=${{ secrets.SAP_USER_NAD }}" >> $GITHUB_ENV
+          echo "RELEASE_SAP_PASSWORD=${{ secrets.SAP_PASSWORD_NAD }}" >> $GITHUB_ENV
+
+      - name: echo stuff
+        run: |
+            echo "SAPNWRFC_HOME=${{ steps.setup.outputs.sapnwrfc_home }}" >> $GITHUB_ENV
+            echo "${{ steps.setup.outputs.sapnwrfc_path }}" >> $GITHUB_PATH 
+
+      - name: Create Abapgit Extension Release Transport
+        run: |
+          mkdir -p ./download
+          
+          # TEST_MODE_FLAG=""
+          # if ${{ github.event.inputs.testMode == 'true' }}; then
+          #   TEST_MODE_FLAG="--testMode"
+          # fi
+
+          TRANSPORT_PARAM=""
+          if [[ -n "${{ github.event.inputs.sapTransportRequest }}" ]]; then
+            TRANSPORT_PARAM="--sapTransportRequest=${{ github.event.inputs.sapTransportRequest }}"
+          fi
+
+          # For test purpose the below line will call it and bring an error from the cli if there is a parameter issue:
+          # ./node_modules/@neptune-software/dxp-sap-edition-release-client/bin/run create-abapgit-transport --sapSystemID="nad" --sapUsername="${{ env.RELEASE_SAP_USER }}" --sapPassword="${{ env.RELEASE_SAP_PASSWORD }}" $TRANSPORT_PARAM --usePlainICF --plainICFPath="/neptune/zz_download_tr" --downloadFolder="./download"
+          
+          # Run the command and capture its JSON output
+          CREATE_RELEASE_TR_JSON_OUTPUT=$(./node_modules/@neptune-software/dxp-sap-edition-release-client/bin/run create-abapgit-transport --fullAbapgitVersion="${{ github.event.inputs.fullAbapgitVersion }}" --sapSystemID="nad" --sapUsername="${{ env.RELEASE_SAP_USER }}" --sapPassword="${{ env.RELEASE_SAP_PASSWORD }}" $TRANSPORT_PARAM --usePlainICF --plainICFPath="/neptune/zz_download_tr" --downloadFolder="./download" --json)
+
+          # Echo the output for debugging
+          echo "JSON Output: $CREATE_RELEASE_TR_JSON_OUTPUT"
+           
+          SAP_REQUEST=""
+          # Check if the JSON output contains the 'request' property
+          if echo "$CREATE_RELEASE_TR_JSON_OUTPUT" | jq -e '.result.GS_TRANSP_BUILD_ABAPGIT.REQUEST' > /dev/null; then
+              echo "JSON contains 'request' property."
+              # Extracting the 'request' value
+              SAP_REQUEST=$(echo "$CREATE_RELEASE_TR_JSON_OUTPUT" | jq -r '.result.GS_TRANSP_BUILD_ABAPGIT.REQUEST')
+              echo "Request Value: $SAP_REQUEST"
+          else
+              echo "Error: JSON does not contain 'request' property."
+              # Handle the error case
+          fi
+          
+          echo "SAP_REQUEST=$SAP_REQUEST" >> $GITHUB_ENV
+
+          # Find the downloaded ZIP file and extract its name
+          ZIP_FILE=$(ls ./download/*.zip)
+          echo "ZIP_FILE=$ZIP_FILE" >> $GITHUB_ENV
+          ZIP_NAME=$(basename "$ZIP_FILE" .zip)
+          echo "Downloaded Transport: $ZIP_NAME"
+
+      - name: Set Output
+        id: set_output
+        run: |
+          ZIP_FILE=$(ls ./download/*.zip)
+          ZIP_NAME=$(basename "$ZIP_FILE" .zip)
+          echo "transportName=$ZIP_NAME" >> $GITHUB_ENV
+          echo "transportName=$ZIP_NAME" >> $GITHUB_OUTPUT
+          echo "ZIP_FILE=$ZIP_FILE" >> $GITHUB_ENV
+          
+      - name: Upload Transport as Workflow Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: abapgit-extension-transport-zip
+          path: ${{ env.ZIP_FILE }}
+          retention-days: 5
+
+
+      - name: Fetch Trkorr Object list for Abapgit uninstallation transport 
+        run: |
+          mkdir -p ./uninstall
+ 
+          admin_variant="ABAPGIT_EXT"
+          
+          # Run the command 
+          ./node_modules/@neptune-software/dxp-sap-edition-release-client/bin/run fetch-trkorr-object-list --sapSystemID="nad" --sapUsername="${{ env.RELEASE_SAP_USER }}" --sapPassword="${{ env.RELEASE_SAP_PASSWORD }}" --adminVariant="$admin_variant" --fileNameWithoutExt="trkorr_obj_list" --createJsonFile --createCsvFile --createXlsxFile --downloadFolder="./uninstall"
+
+          # Echo the output for debugging
+          # echo "JSON Output: $UNINSTALL_TRKORR_LIST"
+
+          
+      - name: Upload TRKORR Object list as Workflow Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: trkorr-object-list
+          path: ./uninstall
+          retention-days: 5
+
+      - name: Bundle Abpagit Extension Zip
+        run: |
+
+          mkdir -p ./dist
+        
+          # Concatenate the admin_variant variable
+          path_to_assets="./assets/release"
+          
+          ./node_modules/@neptune-software/dxp-sap-edition-release-client/bin/run bundle-release-zip --targetPath="./dist" --filePathTransportZip="${{ env.ZIP_FILE }}" --pathToAdditionalAssets="$path_to_assets" --releaseVersion="${{ github.event.inputs.fullAbapgitVersion }}" --transportType="ABG" --skipDefaultAssets 
+
+          RELEASE_ZIP_FILE=$(ls ./dist/*.zip)
+          
+          echo "RELEASE_ZIP_FILE=$RELEASE_ZIP_FILE" >> $GITHUB_ENV 
+
+      - name: Upload Bundled Release Zip as Workflow Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: abapgit-extension-release-zip
+          path: ./dist
+          retention-days: 5
+
+      - name: Create signing files
+        run: |
+
+          mkdir -p ./dist/signatures
+          
+          ./node_modules/@neptune-software/dxp-sap-edition-release-client/bin/run sha256 --sourceFilePath="${{ env.RELEASE_ZIP_FILE }}" --targetFilePath="./dist/signatures/hash.sha256"
+
+          # decode the privatekey base64 and put it into variable SIGNATURE_PRIVATE_KEY
+          SIGNATURE_PRIVATE_KEY=$(echo "$SIGNATURE_PRIVATE_KEY_BASE64" | base64 -d)
+          # also mask this variable
+          echo ::add-mask::$SIGNATURE_PRIVATE_KEY 
+
+          ./node_modules/@neptune-software/dxp-sap-edition-release-client/bin/run sign-file --sourceFile="${{ env.RELEASE_ZIP_FILE }}" --targetFilePath="./dist/signatures/signature.asc" --privateKey="$SIGNATURE_PRIVATE_KEY" --passphrase="$SIGNATURE_PASSPHRASE"
+    
+          PUBLIC_KEY_CONTENT=""
+
+          echo "Verifying Signature against André..."
+          ANDRE_PUBLIC_KEY="${{ secrets.RELEASE_SIGNATURE_PUBLIC_KEY_CARRILHO }}"
+          VERIFY_FILE_JSON_OUTPUT=$(./node_modules/@neptune-software/dxp-sap-edition-release-client/bin/run verify-file --sourceFile="${{ env.RELEASE_ZIP_FILE }}" --signaturePath="./dist/signatures/signature.asc" --publicKey="$ANDRE_PUBLIC_KEY" --json)
+          echo "JSON Output for André: $VERIFY_FILE_JSON_OUTPUT"
+          if echo "$VERIFY_FILE_JSON_OUTPUT" | jq -e '.success' > /dev/null; then
+              VERIFY_SUCCESS=$(echo "$VERIFY_FILE_JSON_OUTPUT" | jq -r '.success')
+              echo "Verify Success: $VERIFY_SUCCESS"
+              if [ "$VERIFY_SUCCESS" = true ]; then
+                PUBLIC_KEY_CONTENT="$ANDRE_PUBLIC_KEY"
+              fi
+          fi
+      
+          echo "Verifying Signature against Thomas..."
+          THOMAS_PUBLIC_KEY="${{ secrets.RELEASE_SIGNATURE_PUBLIC_KEY_NOR }}"
+          VERIFY_FILE_JSON_OUTPUT=$(./node_modules/@neptune-software/dxp-sap-edition-release-client/bin/run verify-file --sourceFile="${{ env.RELEASE_ZIP_FILE }}" --signaturePath="./dist/signatures/signature.asc" --publicKey="$THOMAS_PUBLIC_KEY" --json)
+          echo "JSON Output for Thomas: $VERIFY_FILE_JSON_OUTPUT"
+          if echo "$VERIFY_FILE_JSON_OUTPUT" | jq -e '.success' > /dev/null; then
+              VERIFY_SUCCESS=$(echo "$VERIFY_FILE_JSON_OUTPUT" | jq -r '.success')
+              echo "Verify Success: $VERIFY_SUCCESS"
+              if [ "$VERIFY_SUCCESS" = true ]; then
+                PUBLIC_KEY_CONTENT="$THOMAS_PUBLIC_KEY"
+              fi
+          fi
+      
+          echo "Verifying Signature against Morten..."
+          MORTEN_PUBLIC_KEY="${{ secrets.RELEASE_SIGNATURE_PUBLIC_KEY_PROM }}"
+          VERIFY_FILE_JSON_OUTPUT=$(./node_modules/@neptune-software/dxp-sap-edition-release-client/bin/run verify-file --sourceFile="${{ env.RELEASE_ZIP_FILE }}" --signaturePath="./dist/signatures/signature.asc" --publicKey="$MORTEN_PUBLIC_KEY" --json)
+          echo "JSON Output for Morten: $VERIFY_FILE_JSON_OUTPUT"
+          if echo "$VERIFY_FILE_JSON_OUTPUT" | jq -e '.success' > /dev/null; then
+              VERIFY_SUCCESS=$(echo "$VERIFY_FILE_JSON_OUTPUT" | jq -r '.success')
+              echo "Verify Success: $VERIFY_SUCCESS"
+              if [ "$VERIFY_SUCCESS" = true ]; then
+                PUBLIC_KEY_CONTENT="$MORTEN_PUBLIC_KEY"
+              fi
+          fi
+      
+          echo "Verifying Signature against Thorsten..."
+          THORSTEN_PUBLIC_KEY="${{ secrets.RELEASE_SIGNATURE_PUBLIC_KEY_WOLF }}"
+          VERIFY_FILE_JSON_OUTPUT=$(./node_modules/@neptune-software/dxp-sap-edition-release-client/bin/run verify-file --sourceFile="${{ env.RELEASE_ZIP_FILE }}" --signaturePath="./dist/signatures/signature.asc" --publicKey="$THORSTEN_PUBLIC_KEY" --json)
+          echo "JSON Output for Thorsten: $VERIFY_FILE_JSON_OUTPUT"
+          if echo "$VERIFY_FILE_JSON_OUTPUT" | jq -e '.success' > /dev/null; then
+              VERIFY_SUCCESS=$(echo "$VERIFY_FILE_JSON_OUTPUT" | jq -r '.success')
+              echo "Verify Success: $VERIFY_SUCCESS"
+              if [ "$VERIFY_SUCCESS" = true ]; then
+                PUBLIC_KEY_CONTENT="$THORSTEN_PUBLIC_KEY"
+              fi
+          fi
+
+          echo "PUBLIC_KEY_CONTENT<<EOF" >> $GITHUB_ENV
+          echo "$PUBLIC_KEY_CONTENT" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Upload Signatures as Workflow Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: signatures
+          path: ./dist/signatures
+          retention-days: 5
+
+      - name: Upload To Azure
+        run: |
+
+          # Construct the path string based on the major version
+          RELEASE_ZIP_NAME_BASE=$(basename "${{ env.RELEASE_ZIP_FILE }}" .zip)
+          AZURE_PATH_STRING="Neptune DX Platform - SAP Edition/Xtra Add-Ons/Neptune abapGit Integration/${RELEASE_ZIP_NAME_BASE}.zip"
+          echo "Constructed Path: $AZURE_PATH_STRING"
+
+          # Set the path as an environment variable for subsequent steps
+          echo "AZURE_PATH_STRING=$AZURE_PATH_STRING" >> $GITHUB_ENV
+
+          if ${{ github.event.inputs.testMode == 'true'}}; then
+            ./node_modules/@neptune-software/dxp-sap-edition-release-client/bin/run upload-to-azure --accountName="${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}" --accountKey="${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}" --containerName="test" --blobName="$AZURE_PATH_STRING" --filePath="${{ env.RELEASE_ZIP_FILE }}" --forceOverride
+          else
+            ./node_modules/@neptune-software/dxp-sap-edition-release-client/bin/run upload-to-azure --accountName="${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}" --accountKey="${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}" --containerName="downloads" --blobName="$AZURE_PATH_STRING" --filePath="${{ env.RELEASE_ZIP_FILE }}" --forceOverride
+          fi
+
+      - name: Upload Signature Files To Mime Repository
+        run: |
+          SIGNATURE_FILENAME="Neptune Software - abapGIt Extension classes v${{ github.event.inputs.fullAbapgitVersion }}.asc"
+
+          PUBLIC_KEY_FILENAME="Neptune Software - abapGIt Extension classes v${{ github.event.inputs.fullAbapgitVersion }}.gpg"
+
+          HASH_FILENAME="Neptune Software - abapGIt Extension classes v${{ github.event.inputs.fullAbapgitVersion }}.sha256"
+
+          # Create the ./tmp directory
+          mkdir -p ./tmp
+
+          # Write the content of the RELEASE_SIGNATURE_PUBLIC_KEY variable to a file
+          echo "${{ env.PUBLIC_KEY_CONTENT }}" > ./tmp/public_key.txt
+
+          if ${{ github.event.inputs.testMode == 'true'}}; then
+            ./node_modules/@neptune-software/dxp-sap-edition-release-client/bin/run upload-to-mime  --sapSystemID="template" --sapUsername="${{ secrets.SAP_USER_NAI }}" --sapPassword="${{ secrets.SAP_PASSWORD_NAI }}" --fileName="$SIGNATURE_FILENAME" --filePath="./dist/signatures/signature.asc" --mimePath="/neptune/public/signatures-test"
+            ./node_modules/@neptune-software/dxp-sap-edition-release-client/bin/run upload-to-mime  --sapSystemID="template" --sapUsername="${{ secrets.SAP_USER_NAI }}" --sapPassword="${{ secrets.SAP_PASSWORD_NAI }}" --fileName="$PUBLIC_KEY_FILENAME" --filePath="./tmp/public_key.txt" --mimePath="/neptune/public/signatures-test"
+            ./node_modules/@neptune-software/dxp-sap-edition-release-client/bin/run upload-to-mime  --sapSystemID="template" --sapUsername="${{ secrets.SAP_USER_NAI }}" --sapPassword="${{ secrets.SAP_PASSWORD_NAI }}" --fileName="$HASH_FILENAME" --filePath="./dist/signatures/hash.sha256" --mimePath="/neptune/public/signatures-test"
+          else
+            ./node_modules/@neptune-software/dxp-sap-edition-release-client/bin/run upload-to-mime  --sapSystemID="template" --sapUsername="${{ secrets.SAP_USER_NAI }}" --sapPassword="${{ secrets.SAP_PASSWORD_NAI }}" --fileName="$SIGNATURE_FILENAME" --filePath="./dist/signatures/signature.asc" --mimePath="/neptune/public/signatures"
+            ./node_modules/@neptune-software/dxp-sap-edition-release-client/bin/run upload-to-mime  --sapSystemID="template" --sapUsername="${{ secrets.SAP_USER_NAI }}" --sapPassword="${{ secrets.SAP_PASSWORD_NAI }}" --fileName="$PUBLIC_KEY_FILENAME" --filePath="./tmp/public_key.txt" --mimePath="/neptune/public/signatures"
+            ./node_modules/@neptune-software/dxp-sap-edition-release-client/bin/run upload-to-mime  --sapSystemID="template" --sapUsername="${{ secrets.SAP_USER_NAI }}" --sapPassword="${{ secrets.SAP_PASSWORD_NAI }}" --fileName="$HASH_FILENAME" --filePath="./dist/signatures/hash.sha256" --mimePath="/neptune/public/signatures"
+          fi
+
+      - name: Trigger Create Uninstallation Transport 
+        if: ${{ github.event.inputs.createUninstallationTransport == 'true' }}
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: "create_uninstallation_transport.yml"
+          repo: "neptune-software/dxp-sap-edition-abap"
+          ref: "refs/heads/main"
+          token: ${{ secrets.PACKAGES_AUTH_TOKEN }}
+          inputs: '{"runId": "${{ github.run_id }}", "abapgitVersion": "${{ github.event.inputs.fullAbapgitVersion }}", "testMode": "${{ github.event.inputs.testMode }}", "keepInstanceRunning": "${{ github.event.inputs.testMode }}", "signaturePrivateKeyBase64": "${{ env.SIGNATURE_PRIVATE_KEY_BASE64 }}", "signaturePassphrase": "${{ env.SIGNATURE_PASSPHRASE }}" }'
+
+      - name: Notify Teams with Adaptive Card
+        env:
+          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL_RELEASE }} 
+          GITHUB_RUN_URL: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          ABAPGIT_VERSION: ${{ github.event.inputs.fullAbapgitVersion }}
+          SAP_REQUEST: ${{ env.SAP_REQUEST }} 
+        run: |
+          # Read the Adaptive Card JSON template
+          ADAPTIVE_CARD_TEMPLATE=$(cat ./assets/adaptive_card_release_created.json)
+
+          # Replace placeholders in the Adaptive Card JSON
+          MODIFIED_ADAPTIVE_CARD=$(echo "$ADAPTIVE_CARD_TEMPLATE" \
+            | sed "s|\${fullAbapgitVersion}|$ABAPGIT_VERSION|g" \
+            | sed "s|\${sapRequest}|$SAP_REQUEST|g" \
+            | sed "s|\${githubRunUrl}|$GITHUB_RUN_URL|g")
+
+          # Read the Teams Webhook JSON template
+          TEAMS_WEBHOOK_TEMPLATE=$(cat ./assets/ms_teams_template.json)
+
+          # Insert the Adaptive Card JSON into the Teams Webhook JSON using jq
+          MODIFIED_TEAMS_WEBHOOK=$(echo "$TEAMS_WEBHOOK_TEMPLATE" \
+            | jq --argjson card "$MODIFIED_ADAPTIVE_CARD" '.attachments[0].content = $card')
+
+          echo "$MODIFIED_TEAMS_WEBHOOK"
+
+          # Send the Adaptive Card to Teams
+          curl -H "Content-Type: application/json" -d "$MODIFIED_TEAMS_WEBHOOK" "$TEAMS_WEBHOOK_URL"
