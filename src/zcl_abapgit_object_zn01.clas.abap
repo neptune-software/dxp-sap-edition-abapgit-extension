@@ -8,186 +8,217 @@ class zcl_abapgit_object_zn01 definition
 
     interfaces zif_abapgit_object .
   protected section.
-private section.
+  private section.
 
-  types:
-    begin of ty_lcl_evtscr,
-                          applid    type /neptune/applid,
-                          field_id  type /neptune/field_id,
-                          event     type /neptune/event_id,
-                          file_name type string,
-                         end of ty_lcl_evtscr .
-  types:
-    ty_tt_lcl_evtscr type standard table of ty_lcl_evtscr .
-  types:
-    begin of ty_lcl_css,
-                          applid    type /neptune/applid,
-                          file_name type string,
-                         end of ty_lcl_css .
-  types:
-    ty_tt_lcl_css type standard table of ty_lcl_css .
-  types:
-    begin of ty_code,
-                          file_name type string,
-                          code      type string,
-                         end of ty_code .
-  types:
-    ty_tt_code type standard table of ty_code with non-unique key file_name .
-  types:
-    begin of ty_lcl_script,
-                          applid    type /neptune/applid,
-                          field_id  type /neptune/field_id,
-                          file_name type string,
-                         end of ty_lcl_script .
-  types:
-    ty_tt_lcl_script type standard table of ty_lcl_script .
+    types:
+      begin of ty_lcl_evtscr,
+                            applid    type /neptune/applid,
+                            field_id  type /neptune/field_id,
+                            event     type /neptune/event_id,
+                            file_name type string,
+                           end of ty_lcl_evtscr .
+    types:
+      ty_tt_lcl_evtscr type standard table of ty_lcl_evtscr .
+    types:
+      begin of ty_lcl_css,
+                            applid    type /neptune/applid,
+                            file_name type string,
+                           end of ty_lcl_css .
+    types:
+      ty_tt_lcl_css type standard table of ty_lcl_css .
+    types:
+      begin of ty_code,
+                            file_name type string,
+                            code      type string,
+                           end of ty_code .
+    types:
+      ty_tt_code type standard table of ty_code with non-unique key file_name .
+    types:
+      begin of ty_lcl_script,
+                            applid    type /neptune/applid,
+                            field_id  type /neptune/field_id,
+                            file_name type string,
+                           end of ty_lcl_script .
+    types:
+      ty_tt_lcl_script type standard table of ty_lcl_script .
 
-  data MV_ARTIFACT_TYPE type /NEPTUNE/ARTIFACT_TYPE .
+    data mv_artifact_type type /neptune/artifact_type .
 
-  interface /NEPTUNE/IF_ARTIFACT_TYPE load .
-  methods SERIALIZE_HTML
-    importing
-      !IT_OBJ type /NEPTUNE/_OBJ_TT
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods SERIALIZE_EVTSCR
-    importing
-      !IT_OBJ type /NEPTUNE/_OBJ_TT
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods SERIALIZE_SCRIPT
-    importing
-      !IT_OBJ type /NEPTUNE/_OBJ_TT
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods SERIALIZE__SCRIPT
-    importing
-      !IT_OBJ type /NEPTUNE/_OBJ_TT
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods SERIALIZE__HTML
-    importing
-      !IT_OBJ type /NEPTUNE/_OBJ_TT
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods SERIALIZE__EVTSCR
-    importing
-      !IT_OBJ type /NEPTUNE/_OBJ_TT
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods SERIALIZE_TABLE
-    importing
-      !IV_TABNAME type TABNAME
-      !IT_TABLE type ANY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods SERIALIZE_CSS
-    importing
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods SERIALIZE__CSS
-    importing
-      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  interface ZIF_ABAPGIT_GIT_DEFINITIONS load .
-  methods DESERIALIZE_TABLE
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IR_DATA type ref to DATA
-      !IV_TABNAME type TADIR-OBJ_NAME
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-      !IV_DEVCLASS type DEVCLASS
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods GET_VALUES_FROM_FILENAME
-    importing
-      !IS_FILENAME type STRING
-    exporting
-      !EV_TABNAME type TADIR-OBJ_NAME .
-  methods DESERIALIZE_SCRIPT
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
-      !IR_DATA type ref to DATA
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods DESERIALIZE_HTML
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
-      !IR_DATA type ref to DATA
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods DESERIALIZE_EVTSCR
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
-      !IR_DATA type ref to DATA
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods DESERIALIZE__SCRIPT
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
-      !IR_DATA type ref to DATA
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods DESERIALIZE__HTML
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
-      !IR_DATA type ref to DATA
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods DESERIALIZE__EVTSCR
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
-      !IR_DATA type ref to DATA
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods DESERIALIZE_CSS
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
-      !IR_DATA type ref to DATA
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods DESERIALIZE__CSS
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
-      !IR_DATA type ref to DATA
-      !IV_KEY type /NEPTUNE/ARTIFACT_KEY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods INSERT_TO_TRANSPORT
-    importing
-      !IO_ARTIFACT type ref to /NEPTUNE/IF_ARTIFACT_TYPE
-      !IV_TRANSPORT type TRKORR
-      !IV_PACKAGE type DEVCLASS
-      !IV_KEY1 type ANY
-      !IV_ARTIFACT_TYPE type /NEPTUNE/ATY-ARTIFACT_TYPE .
-ENDCLASS.
+    interface /neptune/if_artifact_type load .
+    methods serialize_html
+      importing
+        !it_obj type /neptune/_obj_tt
+        !is_table_content type /neptune/if_artifact_type=>ty_table_content
+      raising
+        zcx_abapgit_exception .
+    methods serialize_evtscr
+      importing
+        !it_obj type /neptune/_obj_tt
+        !is_table_content type /neptune/if_artifact_type=>ty_table_content
+      raising
+        zcx_abapgit_exception .
+    methods serialize_script
+      importing
+        !it_obj type /neptune/_obj_tt
+        !is_table_content type /neptune/if_artifact_type=>ty_table_content
+      raising
+        zcx_abapgit_exception .
+    methods serialize__script
+      importing
+        !it_obj type /neptune/_obj_tt
+        !is_table_content type /neptune/if_artifact_type=>ty_table_content
+      raising
+        zcx_abapgit_exception .
+    methods serialize__html
+      importing
+        !it_obj type /neptune/_obj_tt
+        !is_table_content type /neptune/if_artifact_type=>ty_table_content
+      raising
+        zcx_abapgit_exception .
+    methods serialize__evtscr
+      importing
+        !it_obj type /neptune/_obj_tt
+        !is_table_content type /neptune/if_artifact_type=>ty_table_content
+      raising
+        zcx_abapgit_exception .
+    methods serialize_table
+      importing
+        !iv_tabname type tabname
+        !it_table type any
+      raising
+        zcx_abapgit_exception .
+    methods serialize_css
+      importing
+        !is_table_content type /neptune/if_artifact_type=>ty_table_content
+      raising
+        zcx_abapgit_exception .
+    methods serialize__css
+      importing
+        !is_table_content type /neptune/if_artifact_type=>ty_table_content
+      raising
+        zcx_abapgit_exception .
+    interface zif_abapgit_git_definitions load .
+    methods deserialize_table
+      importing
+        !is_file type zif_abapgit_git_definitions=>ty_file
+        !ir_data type ref to data
+        !iv_tabname type tadir-obj_name
+        !iv_key type /neptune/artifact_key
+        !iv_devclass type devclass
+      raising
+        zcx_abapgit_exception .
+    methods get_values_from_filename
+      importing
+        !is_filename type string
+      exporting
+        !ev_tabname type tadir-obj_name .
+    methods deserialize_script
+      importing
+        !is_file type zif_abapgit_git_definitions=>ty_file
+        !it_files type zif_abapgit_git_definitions=>ty_files_tt
+        !ir_data type ref to data
+        !iv_key type /neptune/artifact_key
+      raising
+        zcx_abapgit_exception .
+    methods deserialize_html
+      importing
+        !is_file type zif_abapgit_git_definitions=>ty_file
+        !it_files type zif_abapgit_git_definitions=>ty_files_tt
+        !ir_data type ref to data
+        !iv_key type /neptune/artifact_key
+      raising
+        zcx_abapgit_exception .
+    methods deserialize_evtscr
+      importing
+        !is_file type zif_abapgit_git_definitions=>ty_file
+        !it_files type zif_abapgit_git_definitions=>ty_files_tt
+        !ir_data type ref to data
+        !iv_key type /neptune/artifact_key
+      raising
+        zcx_abapgit_exception .
+    methods deserialize__script
+      importing
+        !is_file type zif_abapgit_git_definitions=>ty_file
+        !it_files type zif_abapgit_git_definitions=>ty_files_tt
+        !ir_data type ref to data
+        !iv_key type /neptune/artifact_key
+      raising
+        zcx_abapgit_exception .
+    methods deserialize__html
+      importing
+        !is_file type zif_abapgit_git_definitions=>ty_file
+        !it_files type zif_abapgit_git_definitions=>ty_files_tt
+        !ir_data type ref to data
+        !iv_key type /neptune/artifact_key
+      raising
+        zcx_abapgit_exception .
+    methods deserialize__evtscr
+      importing
+        !is_file type zif_abapgit_git_definitions=>ty_file
+        !it_files type zif_abapgit_git_definitions=>ty_files_tt
+        !ir_data type ref to data
+        !iv_key type /neptune/artifact_key
+      raising
+        zcx_abapgit_exception .
+    methods deserialize_css
+      importing
+        !is_file type zif_abapgit_git_definitions=>ty_file
+        !it_files type zif_abapgit_git_definitions=>ty_files_tt
+        !ir_data type ref to data
+        !iv_key type /neptune/artifact_key
+      raising
+        zcx_abapgit_exception .
+    methods deserialize__css
+      importing
+        !is_file type zif_abapgit_git_definitions=>ty_file
+        !it_files type zif_abapgit_git_definitions=>ty_files_tt
+        !ir_data type ref to data
+        !iv_key type /neptune/artifact_key
+      raising
+        zcx_abapgit_exception .
+    methods insert_to_transport
+      importing
+        !io_artifact type ref to /neptune/if_artifact_type
+        !iv_transport type trkorr
+        !iv_package type devclass
+        !iv_key1 type any
+        !iv_artifact_type type /neptune/aty-artifact_type .
+    methods serialize_i18n
+      importing
+        it_table_content type /neptune/if_artifact_type=>ty_t_table_content
+      raising
+        zcx_abapgit_exception.
+    methods serialize__i18n
+      importing
+        it_table_content type /neptune/if_artifact_type=>ty_t_table_content
+      raising
+        zcx_abapgit_exception.
+    methods deserialize_i18n
+      importing
+        iv_key           type /neptune/artifact_key
+        it_files         type zif_abapgit_git_definitions=>ty_files_tt
+        it_table_content type /neptune/if_artifact_type=>ty_t_table_content
+        ir_attributes    type ref to data
+        ir_contents      type ref to data
+        ir_locales       type ref to data
+      raising
+        zcx_abapgit_exception.
+    methods deserialize__i18n
+      importing
+        iv_key           type /neptune/artifact_key
+        it_files         type zif_abapgit_git_definitions=>ty_files_tt
+        it_table_content type /neptune/if_artifact_type=>ty_t_table_content
+        ir_attributes    type ref to data
+        ir_contents      type ref to data
+        ir_locales       type ref to data
+      raising
+        zcx_abapgit_exception.
+
+endclass.
 
 
 
-CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
+class zcl_abapgit_object_zn01 implementation.
 
 
   method deserialize_css.
@@ -1926,6 +1957,69 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
     endloop.
 
+    " I18n
+    data lr_i18n_attributes type ref to data.
+    data lr_i18n_contents   type ref to data.
+    data lr_i18n_locales    type ref to data.
+
+    " zn01.i18n*.properties files
+    create data lr_i18n_attributes type ('/NEPTUNE/I18N_A_TT').
+    create data lr_i18n_contents   type ('/NEPTUNE/I18N_C_TT').
+    create data lr_i18n_locales    type ('/NEPTUNE/I18N_L_TT').
+
+    deserialize_i18n(
+      exporting
+        iv_key           = lv_key
+        it_files         = lt_files
+        it_table_content = lt_table_content
+        ir_attributes    = lr_i18n_attributes
+        ir_contents      = lr_i18n_contents
+        ir_locales       = lr_i18n_locales  ).
+
+    ls_table_content-tabname = '/NEPTUNE/I18N_A'.
+    ls_table_content-table_content = lr_i18n_attributes.
+    append ls_table_content to lt_table_content.
+    clear ls_table_content.
+
+    ls_table_content-tabname = '/NEPTUNE/I18N_C'.
+    ls_table_content-table_content = lr_i18n_contents.
+    append ls_table_content to lt_table_content.
+    clear ls_table_content.
+
+    ls_table_content-tabname = '/NEPTUNE/I18N_L'.
+    ls_table_content-table_content = lr_i18n_locales.
+    append ls_table_content to lt_table_content.
+    clear ls_table_content.
+
+    " I18n zn01._i18n*.properties files
+    create data lr_i18n_attributes type ('/NEPTUNE/_I18N_A_TT').
+    create data lr_i18n_contents   type ('/NEPTUNE/_I18N_C_TT').
+    create data lr_i18n_locales    type ('/NEPTUNE/_I18N_L_TT').
+
+    deserialize__i18n(
+      exporting
+        iv_key           = lv_key
+        it_files         = lt_files
+        it_table_content = lt_table_content
+        ir_attributes    = lr_i18n_attributes
+        ir_contents      = lr_i18n_contents
+        ir_locales       = lr_i18n_locales  ).
+
+    ls_table_content-tabname = '/NEPTUNE/_I18N_A'.
+    ls_table_content-table_content = lr_i18n_attributes.
+    append ls_table_content to lt_table_content.
+    clear ls_table_content.
+
+    ls_table_content-tabname = '/NEPTUNE/_I18N_C'.
+    ls_table_content-table_content = lr_i18n_contents.
+    append ls_table_content to lt_table_content.
+    clear ls_table_content.
+
+    ls_table_content-tabname = '/NEPTUNE/_I18N_L'.
+    ls_table_content-table_content = lr_i18n_locales.
+    append ls_table_content to lt_table_content.
+    clear ls_table_content.
+
     if lt_table_content is not initial.
 
       lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
@@ -2021,10 +2115,12 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
   method zif_abapgit_object~serialize.
 
-    data: lo_artifact      type ref to /neptune/if_artifact_type,
-          lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
-          ls_table_content like line of lt_table_content,
-          lv_key           type /neptune/artifact_key.
+    data: lo_artifact        type ref to /neptune/if_artifact_type,
+          lt_table_content   type /neptune/if_artifact_type=>ty_t_table_content,
+          ls_table_content   like line of lt_table_content,
+          lv_key             type /neptune/artifact_key,
+          lv_serialize_i18n  type abap_bool,
+          lv_serialize__i18n type abap_bool.
 
     data lt_obj type /neptune/_obj_tt.
 
@@ -2105,6 +2201,18 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
           serialize__css( is_table_content = ls_table_content ).
 
+        when '/NEPTUNE/I18N_A' or
+             '/NEPTUNE/I18N_C' or
+             '/NEPTUNE/I18N_L'.
+
+          lv_serialize_i18n = abap_true.
+
+        when '/NEPTUNE/_I18N_A' or
+             '/NEPTUNE/_I18N_C' or
+             '/NEPTUNE/_I18N_L'.
+
+          lv_serialize__i18n = abap_true.
+
         when others.
 
           assign ls_table_content-table_content->* to <lt_standard_table>.
@@ -2119,5 +2227,420 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
     endloop.
 
+    if lv_serialize_i18n = abap_true.
+      serialize_i18n( it_table_content = lt_table_content ).
+    endif.
+    if lv_serialize__i18n = abap_true.
+      serialize__i18n( it_table_content = lt_table_content ).
+    endif.
+
   endmethod.
-ENDCLASS.
+
+  method serialize_i18n.
+
+    data ls_table_content like line of it_table_content.
+    data lo_i18n          type ref to /neptune/cl_i18n.
+    data lt_attributes    type lo_i18n->ty_t_i18n_attributes.
+    data lt_contents      type lo_i18n->ty_t_i18n_contents.
+    data lt_locales       type lo_i18n->ty_t_i18n_locales.
+    data lt_i18n_bundle   type lo_i18n->ty_t_i18n_bundle.
+
+    field-symbols <ls_attribute>     like line of lt_attributes.
+    field-symbols <ls_content>       like line of lt_contents.
+    field-symbols <ls_locale>        like line of lt_locales.
+    field-symbols <lt_db_attributes> type /neptune/i18n_a_tt.
+    field-symbols <ls_db_attribute>  like line of <lt_db_attributes>.
+    field-symbols <lt_db_contents>   type /neptune/i18n_c_tt.
+    field-symbols <ls_db_content>    like line of <lt_db_contents>.
+    field-symbols <lt_db_locales>    type /neptune/i18n_l_tt.
+    field-symbols <ls_db_locale>     like line of <lt_db_locales>.
+    field-symbols <ls_i18n_bundle>   like line of lt_i18n_bundle.
+
+    read table it_table_content with key tabname = '/NEPTUNE/I18N_A' into ls_table_content.
+    if sy-subrc = 0.
+      assign ls_table_content-table_content->* to <lt_db_attributes>.
+      check sy-subrc = 0 and <lt_db_attributes> is not initial.
+      loop at <lt_db_attributes> assigning <ls_db_attribute>.
+        append initial line to lt_attributes assigning <ls_attribute>.
+        move-corresponding <ls_db_attribute> to <ls_attribute>.
+      endloop.
+    endif.
+
+    read table it_table_content with key tabname = '/NEPTUNE/I18N_C' into ls_table_content.
+    if sy-subrc = 0.
+      assign ls_table_content-table_content->* to <lt_db_contents>.
+      check sy-subrc = 0 and <lt_db_contents> is not initial.
+      loop at <lt_db_contents> assigning <ls_db_content>.
+        append initial line to lt_contents assigning <ls_content>.
+        move-corresponding <ls_db_content> to <ls_content>.
+      endloop.
+    endif.
+
+    read table it_table_content with key tabname = '/NEPTUNE/I18N_L' into ls_table_content.
+    if sy-subrc = 0.
+      assign ls_table_content-table_content->* to <lt_db_locales>.
+      check sy-subrc = 0 and <lt_db_locales> is not initial.
+      loop at <lt_db_locales> assigning <ls_db_locale>.
+        append initial line to lt_locales assigning <ls_locale>.
+        move-corresponding <ls_db_locale> to <ls_locale>.
+      endloop.
+    endif.
+
+    create object lo_i18n.
+    lt_i18n_bundle = lo_i18n->serialize_i18n_bundle(
+        attributes = lt_attributes
+        contents   = lt_contents
+        locales    = lt_locales
+        annotated  = abap_true ).
+
+    data ls_file type zif_abapgit_git_definitions=>ty_file.
+    data lv_message type string.
+    data lv_stripped_filename type string.
+    field-symbols <lr_object_files> type ref to zcl_abapgit_objects_files.
+
+    loop at lt_i18n_bundle assigning <ls_i18n_bundle>.
+
+      " Change newline sequence for git
+      replace all occurrences of cl_abap_char_utilities=>cr_lf in <ls_i18n_bundle>-contents with cl_abap_char_utilities=>newline.
+
+      ls_file-path = '/'.
+      ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( <ls_i18n_bundle>-contents ).
+      lv_stripped_filename = <ls_i18n_bundle>-filename.
+      replace first occurrence of regex '\.properties$' in lv_stripped_filename with ''.
+      ls_file-filename = zcl_abapgit_filename_logic=>object_to_file(
+                             is_item  = ms_item
+                             iv_extra = lv_stripped_filename
+                             iv_ext   = 'properties' ).
+
+* in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
+*    zif_abapgit_object~mo_files->add( ls_file ).
+      " for version 1.125.0
+      assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <lr_object_files>.
+      if <lr_object_files> is not assigned.
+        " for version 1.126.0
+        assign ('MO_FILES') to <lr_object_files>.
+      endif.
+
+      if <lr_object_files> is assigned.
+        call method <lr_object_files>->add
+          exporting
+            is_file = ls_file.
+      else.
+        concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name into lv_message separated by space.
+        zcx_abapgit_exception=>raise( lv_message ).
+      endif.
+
+    endloop.
+
+  endmethod.
+
+  method serialize__i18n.
+
+    data ls_table_content like line of it_table_content.
+    data lo_i18n          type ref to /neptune/cl_i18n.
+    data lt_attributes    type lo_i18n->ty_t_i18n_attributes.
+    data lt_contents      type lo_i18n->ty_t_i18n_contents.
+    data lt_locales       type lo_i18n->ty_t_i18n_locales.
+    data lt_i18n_bundle   type lo_i18n->ty_t_i18n_bundle.
+
+    field-symbols <ls_attribute>     like line of lt_attributes.
+    field-symbols <ls_content>       like line of lt_contents.
+    field-symbols <ls_locale>        like line of lt_locales.
+    field-symbols <lt_db_attributes> type /neptune/_i18n_a_tt.
+    field-symbols <ls_db_attribute>  like line of <lt_db_attributes>.
+    field-symbols <lt_db_contents>   type /neptune/_i18n_c_tt.
+    field-symbols <ls_db_content>    like line of <lt_db_contents>.
+    field-symbols <lt_db_locales>    type /neptune/_i18n_l_tt.
+    field-symbols <ls_db_locale>     like line of <lt_db_locales>.
+    field-symbols <ls_i18n_bundle>   like line of lt_i18n_bundle.
+
+    read table it_table_content with key tabname = '/NEPTUNE/_I18N_A' into ls_table_content.
+    if sy-subrc = 0.
+      assign ls_table_content-table_content->* to <lt_db_attributes>.
+      check sy-subrc = 0 and <lt_db_attributes> is not initial.
+      loop at <lt_db_attributes> assigning <ls_db_attribute>.
+        append initial line to lt_attributes assigning <ls_attribute>.
+        move-corresponding <ls_db_attribute> to <ls_attribute>.
+      endloop.
+    endif.
+
+    read table it_table_content with key tabname = '/NEPTUNE/_I18N_C' into ls_table_content.
+    if sy-subrc = 0.
+      assign ls_table_content-table_content->* to <lt_db_contents>.
+      check sy-subrc = 0 and <lt_db_contents> is not initial.
+      loop at <lt_db_contents> assigning <ls_db_content>.
+        append initial line to lt_contents assigning <ls_content>.
+        move-corresponding <ls_db_content> to <ls_content>.
+      endloop.
+    endif.
+
+    read table it_table_content with key tabname = '/NEPTUNE/_I18N_L' into ls_table_content.
+    if sy-subrc = 0.
+      assign ls_table_content-table_content->* to <lt_db_locales>.
+      check sy-subrc = 0 and <lt_db_locales> is not initial.
+      loop at <lt_db_locales> assigning <ls_db_locale>.
+        append initial line to lt_locales assigning <ls_locale>.
+        move-corresponding <ls_db_locale> to <ls_locale>.
+      endloop.
+    endif.
+
+    create object lo_i18n.
+    lt_i18n_bundle = lo_i18n->serialize_i18n_bundle(
+        attributes = lt_attributes
+        contents   = lt_contents
+        locales    = lt_locales
+        annotated  = abap_true ).
+
+    data ls_file type zif_abapgit_git_definitions=>ty_file.
+    data lv_message type string.
+    data lv_stripped_filename type string.
+    field-symbols <lr_object_files> type ref to zcl_abapgit_objects_files.
+
+    loop at lt_i18n_bundle assigning <ls_i18n_bundle>.
+
+      " Change newline sequence for git
+      replace all occurrences of cl_abap_char_utilities=>cr_lf in <ls_i18n_bundle>-contents with cl_abap_char_utilities=>newline.
+
+      ls_file-path = '/'.
+      ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( <ls_i18n_bundle>-contents ).
+      lv_stripped_filename = '_' && <ls_i18n_bundle>-filename.
+      replace first occurrence of regex '\.properties$' in lv_stripped_filename with ''.
+      ls_file-filename = zcl_abapgit_filename_logic=>object_to_file(
+                             is_item  = ms_item
+                             iv_extra = lv_stripped_filename
+                             iv_ext   = 'properties' ).
+
+* in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
+*    zif_abapgit_object~mo_files->add( ls_file ).
+      " for version 1.125.0
+      assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <lr_object_files>.
+      if <lr_object_files> is not assigned.
+        " for version 1.126.0
+        assign ('MO_FILES') to <lr_object_files>.
+      endif.
+
+      if <lr_object_files> is assigned.
+        call method <lr_object_files>->add
+          exporting
+            is_file = ls_file.
+      else.
+        concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name into lv_message separated by space.
+        zcx_abapgit_exception=>raise( lv_message ).
+      endif.
+
+    endloop.
+
+  endmethod.
+
+  method deserialize_i18n.
+
+    data ls_files           like line of it_files.
+    data ls_table_content   like line of it_table_content.
+    data lv_fallback_locale type string.
+
+    data lo_i18n        type ref to /neptune/cl_i18n.
+    data lt_i18n_bundle type lo_i18n->ty_t_i18n_bundle.
+
+    field-symbols <ls_i18n_bundle> like line of lt_i18n_bundle.
+    field-symbols <lt_app_header>  type /neptune/app_tt.
+    field-symbols <ls_app_header>  type /neptune/app.
+
+    " Properties
+    loop at it_files into ls_files where filename cp '*.zn01.i18n*.properties'.
+
+      append initial line to lt_i18n_bundle assigning <ls_i18n_bundle>.
+      find first occurrence of regex '.zn01.(i18n.*\.properties)$' in ls_files-filename submatches <ls_i18n_bundle>-filename.
+      <ls_i18n_bundle>-contents = zcl_abapgit_convert=>xstring_to_string_utf8( iv_data = ls_files-data ).
+
+      " Change newline sequence from git
+      replace all occurrences of cl_abap_char_utilities=>newline in <ls_i18n_bundle>-contents with cl_abap_char_utilities=>cr_lf.
+
+    endloop.
+
+    " Get fallback locale
+    read table it_table_content with key tabname = '/NEPTUNE/APP' into ls_table_content.
+    if sy-subrc = 0.
+      assign ls_table_content-table_content->* to <lt_app_header>.
+      if sy-subrc = 0.
+        read table <lt_app_header> index 1 assigning <ls_app_header>.
+        if sy-subrc = 0.
+          lv_fallback_locale = <ls_app_header>-fallback_locale.
+        endif.
+      endif.
+    endif.
+
+    if lt_i18n_bundle is not initial.
+      data lt_attributes type lo_i18n->ty_t_i18n_attributes.
+      data lt_contents   type lo_i18n->ty_t_i18n_contents.
+      data lt_locales    type lo_i18n->ty_t_i18n_locales.
+
+      field-symbols <ls_attribute> like line of lt_attributes.
+      field-symbols <ls_content>   like line of lt_contents.
+      field-symbols <ls_locale>    like line of lt_locales.
+
+      create object lo_i18n.
+      lo_i18n->deserialize_i18n_bundle(
+        exporting
+          i18n_bundle = lt_i18n_bundle
+        importing
+          attributes  = lt_attributes
+          contents    = lt_contents
+          locales     = lt_locales ).
+
+      data lt_db_attributes type /neptune/i18n_a_tt.
+      data lt_db_contents   type /neptune/i18n_c_tt.
+      data lt_db_locales    type /neptune/i18n_l_tt.
+
+      field-symbols <ls_db_attribute> like line of lt_db_attributes.
+      field-symbols <ls_db_content>   like line of lt_db_contents.
+      field-symbols <ls_db_locale>    like line of lt_db_locales.
+      field-symbols <lt_tab>          type any table.
+
+      " Attributes
+      loop at lt_attributes assigning <ls_attribute>.
+        append initial line to lt_db_attributes assigning <ls_db_attribute>.
+        move-corresponding <ls_attribute> to <ls_db_attribute>.
+        <ls_db_attribute>-applid = iv_key.
+      endloop.
+
+      assign ir_attributes->* to <lt_tab>.
+      check sy-subrc = 0.
+      <lt_tab> = lt_db_attributes.
+
+      " Contents
+      loop at lt_contents assigning <ls_content>.
+        append initial line to lt_db_contents assigning <ls_db_content>.
+        move-corresponding <ls_content> to <ls_db_content>.
+        <ls_db_content>-applid = iv_key.
+      endloop.
+
+      assign ir_contents->* to <lt_tab>.
+      check sy-subrc = 0.
+      <lt_tab> = lt_db_contents.
+
+      " Locales
+      loop at lt_locales assigning <ls_locale>.
+        append initial line to lt_db_locales assigning <ls_db_locale>.
+        move-corresponding <ls_locale> to <ls_db_locale>.
+        <ls_db_locale>-applid = iv_key.
+        if <ls_db_locale>-locale = lv_fallback_locale.
+          <ls_db_locale>-fallback_locale = abap_true.
+        endif.
+      endloop.
+
+      assign ir_locales->* to <lt_tab>.
+      check sy-subrc = 0.
+      <lt_tab> = lt_db_locales.
+
+    endif.
+
+  endmethod.
+
+  method deserialize__i18n.
+
+    data ls_files           like line of it_files.
+    data ls_table_content   like line of it_table_content.
+    data lv_fallback_locale type string.
+
+    data lo_i18n        type ref to /neptune/cl_i18n.
+    data lt_i18n_bundle type lo_i18n->ty_t_i18n_bundle.
+
+    field-symbols <ls_i18n_bundle> like line of lt_i18n_bundle.
+    field-symbols <lt_app_header>  type /neptune/_app_tt.
+    field-symbols <ls_app_header>  type /neptune/_app.
+
+    " Properties
+    loop at it_files into ls_files where filename cp '*.zn01._i18n*.properties'.
+
+      append initial line to lt_i18n_bundle assigning <ls_i18n_bundle>.
+      find first occurrence of regex '.zn01._(i18n.*\.properties)$' in ls_files-filename submatches <ls_i18n_bundle>-filename.
+      <ls_i18n_bundle>-contents = zcl_abapgit_convert=>xstring_to_string_utf8( iv_data = ls_files-data ).
+
+      " Change newline sequence from git
+      replace all occurrences of cl_abap_char_utilities=>newline in <ls_i18n_bundle>-contents with cl_abap_char_utilities=>cr_lf.
+
+    endloop.
+
+    " Get fallback locale
+    read table it_table_content with key tabname = '/NEPTUNE/_APP' into ls_table_content.
+    if sy-subrc = 0.
+      assign ls_table_content-table_content->* to <lt_app_header>.
+      if sy-subrc = 0.
+        read table <lt_app_header> index 1 assigning <ls_app_header>.
+        if sy-subrc = 0.
+          lv_fallback_locale = <ls_app_header>-fallback_locale.
+        endif.
+      endif.
+    endif.
+
+    if lt_i18n_bundle is not initial.
+      data lt_attributes type lo_i18n->ty_t_i18n_attributes.
+      data lt_contents   type lo_i18n->ty_t_i18n_contents.
+      data lt_locales    type lo_i18n->ty_t_i18n_locales.
+
+      field-symbols <ls_attribute> like line of lt_attributes.
+      field-symbols <ls_content>   like line of lt_contents.
+      field-symbols <ls_locale>    like line of lt_locales.
+
+      create object lo_i18n.
+      lo_i18n->deserialize_i18n_bundle(
+        exporting
+          i18n_bundle = lt_i18n_bundle
+        importing
+          attributes  = lt_attributes
+          contents    = lt_contents
+          locales     = lt_locales ).
+
+      data lt_db_attributes type /neptune/_i18n_a_tt.
+      data lt_db_contents   type /neptune/_i18n_c_tt.
+      data lt_db_locales    type /neptune/_i18n_l_tt.
+
+      field-symbols <ls_db_attribute> like line of lt_db_attributes.
+      field-symbols <ls_db_content>   like line of lt_db_contents.
+      field-symbols <ls_db_locale>    like line of lt_db_locales.
+      field-symbols <lt_tab>          type any table.
+
+      " Attributes
+      loop at lt_attributes assigning <ls_attribute>.
+        append initial line to lt_db_attributes assigning <ls_db_attribute>.
+        move-corresponding <ls_attribute> to <ls_db_attribute>.
+        <ls_db_attribute>-applid  = iv_key.
+        <ls_db_attribute>-version = 1.
+      endloop.
+
+      assign ir_attributes->* to <lt_tab>.
+      check sy-subrc = 0.
+      <lt_tab> = lt_db_attributes.
+
+      " Contents
+      loop at lt_contents assigning <ls_content>.
+        append initial line to lt_db_contents assigning <ls_db_content>.
+        move-corresponding <ls_content> to <ls_db_content>.
+        <ls_db_content>-applid  = iv_key.
+        <ls_db_content>-version = 1.
+      endloop.
+
+      assign ir_contents->* to <lt_tab>.
+      check sy-subrc = 0.
+      <lt_tab> = lt_db_contents.
+
+      " Locales
+      loop at lt_locales assigning <ls_locale>.
+        append initial line to lt_db_locales assigning <ls_db_locale>.
+        move-corresponding <ls_locale> to <ls_db_locale>.
+        <ls_db_locale>-applid  = iv_key.
+        <ls_db_locale>-version = 1.
+        if <ls_db_locale>-locale = lv_fallback_locale.
+          <ls_db_locale>-fallback_locale = abap_true.
+        endif.
+      endloop.
+
+      assign ir_locales->* to <lt_tab>.
+      check sy-subrc = 0.
+      <lt_tab> = lt_db_locales.
+
+    endif.
+
+  endmethod.
+
+endclass.
