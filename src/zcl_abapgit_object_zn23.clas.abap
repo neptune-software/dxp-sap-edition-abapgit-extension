@@ -7,21 +7,23 @@ class zcl_abapgit_object_zn23 definition
   public section.
     interfaces zif_abapgit_object .
 
+    methods constructor
+      importing
+        !is_item        type zif_abapgit_definitions=>ty_item
+        !iv_language    type spras
+        !io_files       type ref to zcl_abapgit_objects_files optional
+        !io_i18n_params type ref to zcl_abapgit_i18n_params optional
+      raising
+        zcx_abapgit_exception.
+
   protected section.
   private section.
 
     constants:
       mc_name_separator(1) type c value '@'.                "#EC NOTEXT
 
-    constants:
-      begin of mc_tables,
-        header     type string value '/NEPTUNE/I18N_GH',    "#EC NOTEXT
-        attributes type string value '/NEPTUNE/I18N_GA',    "#EC NOTEXT
-        contents   type string value '/NEPTUNE/I18N_GC',    "#EC NOTEXT
-        locales    type string value '/NEPTUNE/I18N_GL',    "#EC NOTEXT
-      end of mc_tables.
-
     data mv_artifact_type type /neptune/artifact_type.
+    data mv_neptune_i18n_supported type abap_bool.
 
     methods serialize_table
       importing
@@ -59,126 +61,30 @@ class zcl_abapgit_object_zn23 definition
       raising
         zcx_abapgit_exception.
 
-    methods deserialize_i18n
-      importing
-        iv_key           type /neptune/artifact_key
-        it_files         type zif_abapgit_git_definitions=>ty_files_tt
-        it_table_content type /neptune/if_artifact_type=>ty_t_table_content
-        ir_attributes    type ref to data
-        ir_contents      type ref to data
-        ir_locales       type ref to data
-      raising
-        zcx_abapgit_exception.
-
-ENDCLASS.
+endclass.
 
 
 
-CLASS ZCL_ABAPGIT_OBJECT_ZN23 IMPLEMENTATION.
+class zcl_abapgit_object_zn23 implementation.
 
+  method constructor.
 
-  method deserialize_i18n.
+    super->constructor(
+      is_item        = is_item
+      iv_language    = iv_language
+      io_files       = io_files
+      io_i18n_params = io_i18n_params ).
 
-    data ls_files           like line of it_files.
-    data ls_table_content   like line of it_table_content.
-    data lv_fallback_locale type string.
+    try.
+        call method ('/NEPTUNE/CL_I18N')=>('ABAPGIT_I18N_AVAILABLE')
+          importing
+            ev_available = mv_neptune_i18n_supported.
 
-    data lo_i18n          type ref to /neptune/cl_i18n.
-    data lt_i18n_bundle   type lo_i18n->ty_t_i18n_bundle.
+      catch cx_sy_dyn_call_illegal_class
+            cx_sy_dyn_call_illegal_method.
 
-    field-symbols <ls_i18n_bundle>  like line of lt_i18n_bundle.
-    field-symbols <lt_db_header>    type /neptune/i18n_gh_tt.
-    field-symbols <ls_db_header>    type /neptune/i18n_gh.
-
-    " Properties
-    loop at it_files into ls_files where filename cp '*.zn23.i18n*.properties'.
-
-      append initial line to lt_i18n_bundle assigning <ls_i18n_bundle>.
-      find first occurrence of regex '.zn23.(i18n.*\.properties)$' in ls_files-filename submatches <ls_i18n_bundle>-filename.
-      <ls_i18n_bundle>-contents = zcl_abapgit_convert=>xstring_to_string_utf8( iv_data = ls_files-data ).
-
-      " Change newline sequence from git
-      replace all occurrences of cl_abap_char_utilities=>newline in <ls_i18n_bundle>-contents with cl_abap_char_utilities=>cr_lf.
-
-    endloop.
-
-    " Get fallback locale
-    read table it_table_content with key tabname = mc_tables-header into ls_table_content.
-    if sy-subrc = 0.
-      assign ls_table_content-table_content->* to <lt_db_header>.
-      if sy-subrc = 0.
-        read table <lt_db_header> index 1 assigning <ls_db_header>.
-        if sy-subrc = 0.
-          lv_fallback_locale = <ls_db_header>-fallback_locale.
-        endif.
-      endif.
-    endif.
-
-    if lt_i18n_bundle is not initial.
-      data lt_attributes    type lo_i18n->ty_t_i18n_attributes.
-      data lt_contents      type lo_i18n->ty_t_i18n_contents.
-      data lt_locales       type lo_i18n->ty_t_i18n_locales.
-
-      field-symbols <ls_attribute>    like line of lt_attributes.
-      field-symbols <ls_content>      like line of lt_contents.
-      field-symbols <ls_locale>       like line of lt_locales.
-
-      create object lo_i18n.
-      lo_i18n->deserialize_i18n_bundle(
-        exporting
-          i18n_bundle = lt_i18n_bundle
-        importing
-          attributes  = lt_attributes
-          contents    = lt_contents
-          locales     = lt_locales
-      ).
-
-      data lt_db_attributes type /neptune/i18n_ga_tt.
-      data lt_db_contents   type /neptune/i18n_gc_tt.
-      data lt_db_locales    type /neptune/i18n_gl_tt.
-
-      field-symbols <ls_db_attribute> like line of lt_db_attributes.
-      field-symbols <ls_db_content>   like line of lt_db_contents.
-      field-symbols <ls_db_locale>    like line of lt_db_locales.
-      field-symbols <lt_tab>          type any table.
-
-      " Attributes
-      loop at lt_attributes assigning <ls_attribute>.
-        append initial line to lt_db_attributes assigning <ls_db_attribute>.
-        move-corresponding <ls_attribute> to <ls_db_attribute>.
-        <ls_db_attribute>-model = iv_key.
-      endloop.
-
-      assign ir_attributes->* to <lt_tab>.
-      check sy-subrc = 0.
-      <lt_tab> = lt_db_attributes.
-
-      " Contents
-      loop at lt_contents assigning <ls_content>.
-        append initial line to lt_db_contents assigning <ls_db_content>.
-        move-corresponding <ls_content> to <ls_db_content>.
-        <ls_db_content>-model = iv_key.
-      endloop.
-
-      assign ir_contents->* to <lt_tab>.
-      check sy-subrc = 0.
-      <lt_tab> = lt_db_contents.
-
-      " Locales
-      loop at lt_locales assigning <ls_locale>.
-        append initial line to lt_db_locales assigning <ls_db_locale>.
-        move-corresponding <ls_locale> to <ls_db_locale>.
-        <ls_db_locale>-model = iv_key.
-        if <ls_db_locale>-locale = lv_fallback_locale.
-          <ls_db_locale>-fallback_locale = abap_true.
-        endif.
-      endloop.
-
-      assign ir_locales->* to <lt_tab>.
-      check sy-subrc = 0.
-      <lt_tab> = lt_db_locales.
-
-    endif.
+        zcx_abapgit_exception=>raise( 'Neptune i18n not supported' ).
+    endtry.
 
   endmethod.
 
@@ -277,79 +183,46 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN23 IMPLEMENTATION.
 
   method serialize_i18n.
 
-    data ls_table_content like line of it_table_content.
-    data lo_i18n          type ref to /neptune/cl_i18n.
-    data lt_attributes    type lo_i18n->ty_t_i18n_attributes.
-    data lt_contents      type lo_i18n->ty_t_i18n_contents.
-    data lt_locales       type lo_i18n->ty_t_i18n_locales.
-    data lt_i18n_bundle   type lo_i18n->ty_t_i18n_bundle.
+    types:
+      begin of ty_abapgit_file,
+        filename type string,
+        contents type string,
+      end of ty_abapgit_file.
+    types ty_abapgit_files type standard table of ty_abapgit_file with default key.
 
-    field-symbols <ls_attribute>     like line of lt_attributes.
-    field-symbols <ls_content>       like line of lt_contents.
-    field-symbols <ls_locale>        like line of lt_locales.
-    field-symbols <lt_db_attributes> type /neptune/i18n_ga_tt.
-    field-symbols <ls_db_attribute>  like line of <lt_db_attributes>.
-    field-symbols <lt_db_contents>   type /neptune/i18n_gc_tt.
-    field-symbols <ls_db_content>    like line of <lt_db_contents>.
-    field-symbols <lt_db_locales>    type /neptune/i18n_gl_tt.
-    field-symbols <ls_db_locale>     like line of <lt_db_locales>.
-    field-symbols <ls_i18n_bundle>   like line of lt_i18n_bundle.
-
-    read table it_table_content with key tabname = mc_tables-attributes into ls_table_content.
-    if sy-subrc = 0.
-      assign ls_table_content-table_content->* to <lt_db_attributes>.
-      check sy-subrc = 0 and <lt_db_attributes> is not initial.
-      loop at <lt_db_attributes> assigning <ls_db_attribute>.
-        append initial line to lt_attributes assigning <ls_attribute>.
-        move-corresponding <ls_db_attribute> to <ls_attribute>.
-      endloop.
-    endif.
-
-    read table it_table_content with key tabname = mc_tables-contents into ls_table_content.
-    if sy-subrc = 0.
-      assign ls_table_content-table_content->* to <lt_db_contents>.
-      check sy-subrc = 0 and <lt_db_contents> is not initial.
-      loop at <lt_db_contents> assigning <ls_db_content>.
-        append initial line to lt_contents assigning <ls_content>.
-        move-corresponding <ls_db_content> to <ls_content>.
-      endloop.
-    endif.
-
-    read table it_table_content with key tabname = mc_tables-locales into ls_table_content.
-    if sy-subrc = 0.
-      assign ls_table_content-table_content->* to <lt_db_locales>.
-      check sy-subrc = 0 and <lt_db_locales> is not initial.
-      loop at <lt_db_locales> assigning <ls_db_locale>.
-        append initial line to lt_locales assigning <ls_locale>.
-        move-corresponding <ls_db_locale> to <ls_locale>.
-      endloop.
-    endif.
-
-    create object lo_i18n.
-    lt_i18n_bundle = lo_i18n->serialize_i18n_bundle(
-        attributes = lt_attributes
-        contents   = lt_contents
-        locales    = lt_locales
-        annotated  = abap_true ).
-
+    data lt_abapgit_files type ty_abapgit_files.
     data ls_file type zif_abapgit_git_definitions=>ty_file.
-    data lv_message type string.
     data lv_stripped_filename type string.
+    data lv_message type string.
+
+    field-symbols <ls_abapgit_file> like line of lt_abapgit_files.
     field-symbols <lr_object_files> type ref to zcl_abapgit_objects_files.
 
-    loop at lt_i18n_bundle assigning <ls_i18n_bundle>.
+    try.
+        call method ('/NEPTUNE/CL_I18N')=>('ABAPGIT_SERIALIZE_ZN23')
+          exporting
+            it_table_content = it_table_content
+          importing
+            et_files         = lt_abapgit_files.
+
+      catch cx_sy_dyn_call_illegal_class
+            cx_sy_dyn_call_illegal_method.
+    endtry.
+
+    lv_stripped_filename = zcl_abapgit_filename_logic=>object_to_file(
+                               is_item       = ms_item
+                               iv_ext        = '' ).
+
+    loop at lt_abapgit_files assigning <ls_abapgit_file>.
 
       " Change newline sequence for git
-      replace all occurrences of cl_abap_char_utilities=>cr_lf in <ls_i18n_bundle>-contents with cl_abap_char_utilities=>newline.
+      replace all occurrences of cl_abap_char_utilities=>cr_lf in <ls_abapgit_file>-contents with cl_abap_char_utilities=>newline.
 
       ls_file-path = '/'.
-      ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( <ls_i18n_bundle>-contents ).
+      ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( <ls_abapgit_file>-contents ).
 
       " i18n languages are case sensitive, for example i18n_zh_CN.properties...
-      lv_stripped_filename = zcl_abapgit_filename_logic=>object_to_file(
-                                 is_item       = ms_item
-                                 iv_ext        = '' ).
-      concatenate lv_stripped_filename '.' <ls_i18n_bundle>-filename into ls_file-filename.
+      concatenate lv_stripped_filename '.' <ls_abapgit_file>-filename into ls_file-filename.
 
 
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
@@ -514,6 +387,10 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN23 IMPLEMENTATION.
 
   method zif_abapgit_object~delete.
 
+    if mv_neptune_i18n_supported = abap_false.
+      return.
+    endif.
+
     data: lo_artifact type ref to /neptune/if_artifact_type,
           ls_settings type /neptune/aty,
           lv_key1     type /neptune/artifact_key.
@@ -545,26 +422,33 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN23 IMPLEMENTATION.
 
   method zif_abapgit_object~deserialize.
 
-    data lo_artifact type ref to /neptune/if_artifact_type.
+    types:
+      begin of ty_abapgit_file,
+        filename type string,
+        contents type string,
+      end of ty_abapgit_file.
+    types ty_abapgit_files type standard table of ty_abapgit_file with default key.
 
-    data: lt_files type zif_abapgit_git_definitions=>ty_files_tt,
-          ls_files like line of lt_files.
-
-    data: lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
-          ls_table_content like line of lt_table_content.
-
+    data lo_artifact            type ref to /neptune/if_artifact_type.
+    data lt_files               type zif_abapgit_git_definitions=>ty_files_tt.
+    data ls_files               like line of lt_files.
+    data lt_table_content       type /neptune/if_artifact_type=>ty_t_table_content.
+    data ls_table_content       like line of lt_table_content.
     data lt_system_field_values type /neptune/if_artifact_type=>ty_t_system_field_values.
+    data lr_data                type ref to data.
+    data lv_tabname             type tadir-obj_name.
+    data lv_key                 type /neptune/artifact_key.
+    data lv_name                type /neptune/artifact_name.
+    data ls_settings            type /neptune/aty.
+    data lv_message             type string.
+    data lt_abapgit_files       type ty_abapgit_files.
 
-    data lr_data    type ref to data.
-    data lv_tabname type tadir-obj_name.
-    data lv_key     type /neptune/artifact_key.
-    data lv_name    type /neptune/artifact_name.
-    data ls_settings type /neptune/aty.
-    data lv_message type string.
-    data lv_fallback_locale type string.
+    field-symbols <lr_object_files>   type ref to zcl_abapgit_objects_files.
+    field-symbols <ls_abapgit_file>   like line of lt_abapgit_files.
 
-    field-symbols <lr_object_files> type ref to zcl_abapgit_objects_files.
-    field-symbols <lt_standard_table> type standard table.
+    if mv_neptune_i18n_supported = abap_false.
+      return.
+    endif.
 
     try.
         io_xml->read(
@@ -618,23 +502,35 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN23 IMPLEMENTATION.
     endloop.
 
     " I18n
+    loop at lt_files into ls_files where filename cp '*.zn23.i18n*.properties'.
+
+      append initial line to lt_abapgit_files assigning <ls_abapgit_file>.
+      <ls_abapgit_file>-filename = ls_files-filename.
+      <ls_abapgit_file>-contents = zcl_abapgit_convert=>xstring_to_string_utf8( iv_data = ls_files-data ).
+
+    endloop.
+
     data lr_i18n_attributes type ref to data.
     data lr_i18n_contents   type ref to data.
     data lr_i18n_locales    type ref to data.
 
-    " zn01.i18n*.properties files
     create data lr_i18n_attributes type ('/NEPTUNE/I18N_GA_TT').
     create data lr_i18n_contents   type ('/NEPTUNE/I18N_GC_TT').
     create data lr_i18n_locales    type ('/NEPTUNE/I18N_GL_TT').
 
-    deserialize_i18n(
-      exporting
-        iv_key           = lv_key
-        it_files         = lt_files
-        it_table_content = lt_table_content
-        ir_attributes    = lr_i18n_attributes
-        ir_contents      = lr_i18n_contents
-        ir_locales       = lr_i18n_locales  ).
+    try.
+        call method ('/NEPTUNE/CL_I18N')=>('ABAPGIT_DESERIALIZE_ZN23')
+          exporting
+            iv_key           = lv_key
+            it_files         = lt_abapgit_files
+            it_table_content = lt_table_content
+            ir_attributes    = lr_i18n_attributes
+            ir_contents      = lr_i18n_contents
+            ir_locales       = lr_i18n_locales.
+
+      catch cx_sy_dyn_call_illegal_class
+            cx_sy_dyn_call_illegal_method.
+    endtry.
 
     ls_table_content-tabname = '/NEPTUNE/I18N_GA'.
     ls_table_content-table_content = lr_i18n_attributes.
@@ -763,6 +659,10 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN23 IMPLEMENTATION.
 
   method zif_abapgit_object~serialize.
 
+    if mv_neptune_i18n_supported = abap_false.
+      return.
+    endif.
+
     data: lo_artifact      type ref to /neptune/if_artifact_type,
           lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
           ls_table_content like line of lt_table_content,
@@ -788,7 +688,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN23 IMPLEMENTATION.
       importing et_table_content        = lt_table_content ).
 
     " Serialize header table
-    read table lt_table_content with key tabname = mc_tables-header into ls_table_content.
+    read table lt_table_content with key tabname = '/NEPTUNE/I18N_GH' into ls_table_content.
     if sy-subrc = 0.
       assign ls_table_content-table_content->* to <lt_standard_table>.
       check sy-subrc = 0 and <lt_standard_table> is not initial.
@@ -802,4 +702,4 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN23 IMPLEMENTATION.
 
   endmethod.
 
-ENDCLASS.
+endclass.
