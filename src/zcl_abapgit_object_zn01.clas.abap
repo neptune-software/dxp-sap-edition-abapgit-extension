@@ -207,8 +207,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
   method constructor.
 
     super->constructor(
-      is_item        = is_item
-      iv_language    = iv_language ).
+      is_item     = is_item
+      iv_language = iv_language ).
 
     try.
         call method ('/NEPTUNE/CL_I18N')=>('ABAPGIT_I18N_AVAILABLE')

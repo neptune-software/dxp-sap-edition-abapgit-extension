@@ -71,10 +71,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN23 IMPLEMENTATION.
   method constructor.
 
     super->constructor(
-      is_item        = is_item
-      iv_language    = iv_language ).
-*      io_files       = io_files
-*      io_i18n_params = io_i18n_params ).
+      is_item     = is_item
+      iv_language = iv_language ).
 
     try.
         call method ('/NEPTUNE/CL_I18N')=>('ABAPGIT_I18N_AVAILABLE')
