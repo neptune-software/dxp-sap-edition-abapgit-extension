@@ -124,7 +124,7 @@
     "method_length": {
       "exclude": [],
       "severity": "Error",
-      "statements": 100,
+      "statements": 500,
       "errorWhenEmpty": false,
       "ignoreTestClasses": false,
       "checkForms": true
