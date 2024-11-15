@@ -11,8 +11,8 @@ class zcl_abapgit_object_zn23 definition
       importing
         !is_item        type zif_abapgit_definitions=>ty_item
         !iv_language    type spras
-        !io_files       type ref to zcl_abapgit_objects_files optional
-        !io_i18n_params type ref to zcl_abapgit_i18n_params optional
+*        !io_files       type ref to zcl_abapgit_objects_files optional
+*        !io_i18n_params type ref to zcl_abapgit_i18n_params optional
       raising
         zcx_abapgit_exception.
 
@@ -61,19 +61,20 @@ class zcl_abapgit_object_zn23 definition
       raising
         zcx_abapgit_exception.
 
-endclass.
+ENDCLASS.
 
 
 
-class zcl_abapgit_object_zn23 implementation.
+CLASS ZCL_ABAPGIT_OBJECT_ZN23 IMPLEMENTATION.
+
 
   method constructor.
 
     super->constructor(
       is_item        = is_item
-      iv_language    = iv_language
-      io_files       = io_files
-      io_i18n_params = io_i18n_params ).
+      iv_language    = iv_language ).
+*      io_files       = io_files
+*      io_i18n_params = io_i18n_params ).
 
     try.
         call method ('/NEPTUNE/CL_I18N')=>('ABAPGIT_I18N_AVAILABLE')
@@ -210,8 +211,8 @@ class zcl_abapgit_object_zn23 implementation.
     endtry.
 
     lv_stripped_filename = zcl_abapgit_filename_logic=>object_to_file(
-                               is_item       = ms_item
-                               iv_ext        = '' ).
+                               is_item = ms_item
+                               iv_ext  = '' ).
 
     loop at lt_abapgit_files assigning <ls_abapgit_file>.
 
@@ -293,9 +294,9 @@ class zcl_abapgit_object_zn23 implementation.
     ls_file-path = '/'.
     ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_json ).
     ls_file-filename = zcl_abapgit_filename_logic=>object_to_file(
-                           is_item       = ms_item
-                           iv_extra      = iv_tabname
-                           iv_ext        = 'json' ).
+                           is_item  = ms_item
+                           iv_extra = iv_tabname
+                           iv_ext   = 'json' ).
 
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
 *    zif_abapgit_object~mo_files->add( ls_file ).
@@ -701,5 +702,4 @@ class zcl_abapgit_object_zn23 implementation.
     serialize_i18n( lt_table_content ).
 
   endmethod.
-
-endclass.
+ENDCLASS.

@@ -12,8 +12,6 @@ class zcl_abapgit_object_zn01 definition
       importing
         !is_item        type zif_abapgit_definitions=>ty_item
         !iv_language    type spras
-        !io_files       type ref to zcl_abapgit_objects_files optional
-        !io_i18n_params type ref to zcl_abapgit_i18n_params optional
       raising
         zcx_abapgit_exception.
 
@@ -210,9 +208,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
     super->constructor(
       is_item        = is_item
-      iv_language    = iv_language
-      io_files       = io_files
-      io_i18n_params = io_i18n_params ).
+      iv_language    = iv_language ).
 
     try.
         call method ('/NEPTUNE/CL_I18N')=>('ABAPGIT_I18N_AVAILABLE')
@@ -2196,7 +2192,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
       into lv_status
       from /neptune/ver
       where applid = lv_applid
-        and version = 1.
+        and version = 1.      "#EC CI_SUBRC
 
     if lv_status = 'Active'.
       rv_active = abap_true.
@@ -2238,8 +2234,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
           lt_table_content   type /neptune/if_artifact_type=>ty_t_table_content,
           ls_table_content   like line of lt_table_content,
           lv_key             type /neptune/artifact_key,
-          lv_serialize_i18n  type abap_bool,
-          lv_serialize__i18n type abap_bool.
+          lv_serialize_i18n  type abap_bool.
 
     data lt_obj type /neptune/_obj_tt.
 
