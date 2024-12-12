@@ -12,6 +12,8 @@ class zcl_abapgit_object_zn01 definition
       importing
         !is_item        type zif_abapgit_definitions=>ty_item
         !iv_language    type spras
+        !io_files       type ref to zcl_abapgit_objects_files optional
+        !io_i18n_params type ref to zcl_abapgit_i18n_params optional
       raising
         zcx_abapgit_exception.
 
@@ -207,8 +209,10 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
   method constructor.
 
     super->constructor(
-      is_item     = is_item
-      iv_language = iv_language ).
+      is_item        = is_item
+      iv_language    = iv_language
+      io_files       = io_files
+      io_i18n_params = io_i18n_params ).
 
     try.
         call method ('/NEPTUNE/CL_I18N')=>('ABAPGIT_I18N_AVAILABLE')
@@ -1853,7 +1857,14 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
     data: lo_artifact type ref to /neptune/if_artifact_type,
           ls_settings type /neptune/aty,
-          lv_key1     type /neptune/artifact_key.
+          lv_key1     type /neptune/artifact_key,
+          lv_url      type string.
+
+    data: lt_mimes type /neptune/mime_object_tt,
+          ls_mimes like line of lt_mimes.
+
+    data lo_mime_repo type ref to /neptune/if_mime_repo.
+    data lo_mime_utils type ref to /neptune/cl_mime_utilities.
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
     ls_settings = lo_artifact->get_settings( ).
@@ -1876,6 +1887,41 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
         iv_artifact_type = ls_settings-artifact_type ).
 
     endif.
+
+* Delete MIME
+    if lo_mime_repo is initial.
+      lo_mime_repo = /neptune/cl_mime_repo=>create_instance( ).
+    endif.
+
+* Build MIME URL - Top Folder
+    concatenate '/neptune/public/application/'
+                lv_key1
+                into lv_url.
+
+    create object lo_mime_utils.
+
+    lo_mime_utils->get_mimes(
+      exporting
+        iv_path           = lv_url    " MIME Path
+      importing
+        et_mimes          = lt_mimes ).   " Tabletype for /NEPTUNE/ADMIN_MIME_OBJECT
+
+    sort lt_mimes by path descending.
+
+    loop at lt_mimes into ls_mimes.
+* Delete MIME
+      try.
+          lo_mime_repo->delete(
+            exporting
+              i_url              = ls_mimes-path
+              i_delete_children  = 'X'
+              i_corr_number      = iv_transport
+              i_suppress_dialogs = 'X' ).
+
+        catch /neptune/cx_mime_repo.
+      endtry.
+
+    endloop.
 
   endmethod.
 
