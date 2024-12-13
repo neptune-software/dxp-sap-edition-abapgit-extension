@@ -20,7 +20,6 @@ private section.
 
   constants:
     mc_name_separator(1) type c value '@'. "#EC NOTEXT
-  class-data GT_MAPPING type TY_MAPPING_TT .
   data MV_ARTIFACT_TYPE type /NEPTUNE/ARTIFACT_TYPE .
   data MS_THEME type /NEPTUNE/LIB_UTH .
 
@@ -288,14 +287,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN25 IMPLEMENTATION.
 
     data: lo_artifact type ref to /neptune/if_artifact_type,
           ls_settings type /neptune/aty,
-          lv_key1     type /neptune/artifact_key,
-          lv_url      type string.
-
-    data: lt_mimes type /neptune/mime_object_tt,
-          ls_mimes like line of lt_mimes.
-
-    data lo_mime_repo type ref to /neptune/if_mime_repo.
-    data lo_mime_utils type ref to /neptune/cl_mime_utilities.
+          lv_key1     type /neptune/artifact_key.
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
     ls_settings = lo_artifact->get_settings( ).
@@ -637,6 +629,7 @@ return.
 
       check sy-subrc = 0 and <lt_standard_table> is not initial.
       read table <lt_standard_table> into ms_theme index 1.
+      check sy-subrc eq 0.
 
       serialize_table(
         iv_tabname = ls_table_content-tabname

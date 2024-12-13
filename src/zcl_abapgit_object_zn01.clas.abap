@@ -1902,9 +1902,11 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
     lo_mime_utils->get_mimes(
       exporting
-        iv_path           = lv_url    " MIME Path
+        " MIME Path
+        iv_path  = lv_url
       importing
-        et_mimes          = lt_mimes ).   " Tabletype for /NEPTUNE/ADMIN_MIME_OBJECT
+        " Tabletype for /NEPTUNE/ADMIN_MIME_OBJECT
+        et_mimes = lt_mimes ).
 
     sort lt_mimes by path descending.
 
@@ -1912,7 +1914,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 * Delete MIME
       try.
           lo_mime_repo->delete(
-            exporting
               i_url              = ls_mimes-path
               i_delete_children  = 'X'
               i_corr_number      = iv_transport
