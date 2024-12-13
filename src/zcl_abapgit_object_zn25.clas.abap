@@ -303,8 +303,9 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN25 IMPLEMENTATION.
     lv_key1 = ms_item-obj_name.
 
     lo_artifact->delete_artifact(
-      iv_key1     = lv_key1
-      iv_devclass = iv_package ).
+      iv_key1      = lv_key1
+      iv_devclass  = iv_package
+      iv_transport = iv_transport ).
 
     lo_artifact->delete_tadir_entry( iv_key1 = lv_key1 ).
 
@@ -442,7 +443,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN25 IMPLEMENTATION.
     data lt_messages  type /neptune/cl_artifact_type_thm=>tt_messages.
     field-symbols <lt_standard_table> type standard table.
 
-    concatenate ms_item-obj_type ms_item-obj_name 'zip' into lv_file_name separated by '.'.
+    concatenate ms_item-obj_name ms_item-obj_type 'zip' into lv_file_name separated by '.'.
+    translate lv_file_name to lower case.
 
     read table lt_files into ls_files with key filename = lv_file_name.
     check sy-subrc eq 0.
@@ -458,17 +460,17 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN25 IMPLEMENTATION.
             iv_zip       = ls_files-data
             iv_devclass  = iv_package
             iv_transport = iv_transport
-            iv_tabname   = lv_tabname
+            iv_mime_path = /neptune/cl_artifact_type_thm=>mc_cus_mime_path
             is_theme     = ms_theme
           importing
             et_messages  = lt_messages.
         if lt_messages is not initial.
-          concatenate 'Error deserializing' ms_item-obj_type ms_item-obj_name into lv_message separated by space.
+          concatenate 'Error deserializing' ms_item-obj_type ms_item-obj_name 'Errors occured in method UNPACK_ZIP_FILE' into lv_message separated by space.
           zcx_abapgit_exception=>raise( lv_message ).
         endif.
 
       catch cx_sy_dyn_call_error.
-        concatenate 'Error deserializing' ms_item-obj_type ms_item-obj_name into lv_message separated by space.
+        concatenate 'Error deserializing' ms_item-obj_type ms_item-obj_name 'No class or method exists' into lv_message separated by space.
         zcx_abapgit_exception=>raise( lv_message ).
     endtry.
 
@@ -590,7 +592,6 @@ return.
 
   method zif_abapgit_object~serialize.
 
-*    data: lo_artifact      type ref to /neptune/if_artifact_type,
     data: lo_artifact_thm  type ref to object,
           lo_artifact      type ref to /neptune/if_artifact_type,
           lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
@@ -654,11 +655,11 @@ return.
             ev_zip        = lv_zip
             et_messages   = lt_messages.
         if lt_messages is not initial.
-          concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name into lv_message separated by space.
+          concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name 'Errors occured in method GET_ZIP_FILE' into lv_message separated by space.
           zcx_abapgit_exception=>raise( lv_message ).
         endif.
       catch cx_sy_dyn_call_error.
-        concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name into lv_message separated by space.
+        concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name 'No class or method exists' into lv_message separated by space.
         zcx_abapgit_exception=>raise( lv_message ).
     endtry.
 
@@ -684,7 +685,7 @@ return.
         exporting
           is_file = ls_file.
     else.
-      concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name into lv_message separated by space.
+      concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name '<lr_object_files> not assigned' into lv_message separated by space.
       zcx_abapgit_exception=>raise( lv_message ).
     endif.
 
