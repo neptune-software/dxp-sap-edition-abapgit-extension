@@ -210,14 +210,12 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN25 IMPLEMENTATION.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~CHANGED_BY.
+  method zif_abapgit_object~changed_by.
 
     data: lo_artifact type ref to /neptune/if_artifact_type,
           lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
           ls_table_content like line of lt_table_content,
           lv_key           type /neptune/artifact_key.
-
-    data ls_cuscat type /neptune/cuscat.
 
     data: lv_crenam type /neptune/create_user,
           lv_credat type /neptune/create_date,
@@ -227,6 +225,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN25 IMPLEMENTATION.
           lv_updtim type /neptune/update_time.
 
     field-symbols <lt_standard_table> type standard table.
+    field-symbols <ls_any> type any.
+    field-symbols <la_user> type any.
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
 
@@ -258,15 +258,22 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN25 IMPLEMENTATION.
                     iv_only_sys_independent = abap_true
           importing et_table_content        = lt_table_content ).
 
-        read table lt_table_content into ls_table_content with table key tabname = '/NEPTUNE/CUSCAT'.
+        read table lt_table_content into ls_table_content with table key tabname = '/NEPTUNE/LIB_UTH'.
         if sy-subrc = 0.
           assign ls_table_content-table_content->* to <lt_standard_table>.
           check sy-subrc = 0.
-          read table <lt_standard_table> into ls_cuscat index 1.
-          if sy-subrc = 0 and ls_cuscat-updnam is not initial.
-            rv_user = ls_cuscat-updnam.
-          else.
-            rv_user = ls_cuscat-crenam.
+          read table <lt_standard_table> assigning <ls_any> index 1.
+          if sy-subrc = 0.
+            unassign <la_user>.
+            assign component 'UPDNAM' of structure <ls_any> to <la_user>.
+            if sy-subrc = 0 and <la_user> is not initial.
+              rv_user = <la_user>.
+            else.
+              assign component 'CRENAM' of structure <la_user> to <la_user>.
+              if sy-subrc = 0.
+                rv_user = <la_user>.
+              endif.
+            endif.
           endif.
         endif.
 
@@ -285,11 +292,14 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN25 IMPLEMENTATION.
     ls_settings = lo_artifact->get_settings( ).
 
     lv_key1 = ms_item-obj_name.
-
-    lo_artifact->delete_artifact(
-      iv_key1      = lv_key1
-      iv_devclass  = iv_package
-      iv_transport = iv_transport ).
+    try.
+        call method lo_artifact->('DELETE_ARTIFACT')
+          exporting
+            iv_key1      = lv_key1
+            iv_devclass  = iv_package
+            iv_transport = iv_transport.
+      catch cx_sy_dyn_call_error.
+    endtry.
 
     lo_artifact->delete_tadir_entry( iv_key1 = lv_key1 ).
 

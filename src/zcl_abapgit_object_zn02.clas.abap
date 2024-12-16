@@ -308,9 +308,17 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN02 IMPLEMENTATION.
     lv_key1 = ms_item-obj_name.
     translate lv_key1 to lower case.
 
-    lo_artifact->delete_artifact(
-      iv_key1     = lv_key1
-      iv_devclass = iv_package ).
+    try.
+        call method lo_artifact->('DELETE_ARTIFACT')
+          exporting
+            iv_key1      = lv_key1
+            iv_devclass  = iv_package
+            iv_transport = iv_transport.
+      catch cx_sy_dyn_call_error.
+        lo_artifact->delete_artifact(
+          iv_key1     = lv_key1
+          iv_devclass = iv_package ).
+    endtry.
 
     lo_artifact->delete_tadir_entry( iv_key1 = lv_key1 ).
 

@@ -226,7 +226,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN24 IMPLEMENTATION.
           ls_table_content like line of lt_table_content,
           lv_key           type /neptune/artifact_key.
 
-    data ls_cuscat type /neptune/cuscat.
+*    data ls_cuscat type /neptune/cuscat.
 
     data: lv_crenam type /neptune/create_user,
           lv_credat type /neptune/create_date,
@@ -236,6 +236,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN24 IMPLEMENTATION.
           lv_updtim type /neptune/update_time.
 
     field-symbols <lt_standard_table> type standard table.
+    field-symbols <ls_any> type any.
+    field-symbols <la_user> type any.
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
 
@@ -271,12 +273,24 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN24 IMPLEMENTATION.
         if sy-subrc = 0.
           assign ls_table_content-table_content->* to <lt_standard_table>.
           check sy-subrc = 0.
-          read table <lt_standard_table> into ls_cuscat index 1.
-          if sy-subrc = 0 and ls_cuscat-updnam is not initial.
-            rv_user = ls_cuscat-updnam.
-          else.
-            rv_user = ls_cuscat-crenam.
+          read table <lt_standard_table> assigning <ls_any> index 1."into ls_cuscat index 1.
+          if sy-subrc = 0.
+            unassign <la_user>.
+            assign component 'UPDNAM' of structure <ls_any> to <la_user>.
+            if sy-subrc = 0 and <la_user> is not initial.
+              rv_user = <la_user>.
+            else.
+              assign component 'CRENAM' of structure <la_user> to <la_user>.
+              if sy-subrc = 0.
+                rv_user = <la_user>.
+              endif.
+            endif.
           endif.
+*          IF sy-subrc = 0 AND ls_cuscat-updnam IS NOT INITIAL.
+*            rv_user = ls_cuscat-updnam.
+*          ELSE.
+*            rv_user = ls_cuscat-crenam.
+*          ENDIF.
         endif.
 
     endtry.
