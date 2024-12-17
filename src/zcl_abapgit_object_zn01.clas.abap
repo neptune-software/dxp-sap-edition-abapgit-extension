@@ -221,8 +221,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN01 IMPLEMENTATION.
 
       catch cx_sy_dyn_call_illegal_class
             cx_sy_dyn_call_illegal_method.
-
-        zcx_abapgit_exception=>raise( 'Neptune i18n not supported' ).
     endtry.
 
   endmethod.
