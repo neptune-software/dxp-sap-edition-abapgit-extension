@@ -226,8 +226,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN24 IMPLEMENTATION.
           ls_table_content like line of lt_table_content,
           lv_key           type /neptune/artifact_key.
 
-*    data ls_cuscat type /neptune/cuscat.
-
     data: lv_crenam type /neptune/create_user,
           lv_credat type /neptune/create_date,
           lv_cretim type /neptune/create_time,
@@ -273,7 +271,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN24 IMPLEMENTATION.
         if sy-subrc = 0.
           assign ls_table_content-table_content->* to <lt_standard_table>.
           check sy-subrc = 0.
-          read table <lt_standard_table> assigning <ls_any> index 1."into ls_cuscat index 1.
+          read table <lt_standard_table> assigning <ls_any> index 1.
           if sy-subrc = 0.
             unassign <la_user>.
             assign component 'UPDNAM' of structure <ls_any> to <la_user>.
@@ -286,11 +284,6 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN24 IMPLEMENTATION.
               endif.
             endif.
           endif.
-*          IF sy-subrc = 0 AND ls_cuscat-updnam IS NOT INITIAL.
-*            rv_user = ls_cuscat-updnam.
-*          ELSE.
-*            rv_user = ls_cuscat-crenam.
-*          ENDIF.
         endif.
 
     endtry.
@@ -521,7 +514,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN24 IMPLEMENTATION.
     data lv_key type /neptune/artifact_key.
     data lv_message type string.
 
-    field-symbols: <fs_cons_value> type any.
+    field-symbols: <ls_cons_value> type any.
 
     check is_item-devclass is not initial.
 
@@ -529,8 +522,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN24 IMPLEMENTATION.
 
     try.
 
-        assign /neptune/if_artifact_type=>('GC_ARTIFACT_TYPE-TILEGROUP_LAYOUT') to <fs_cons_value>.
-        if <fs_cons_value> is not assigned.
+        assign ('/NEPTUNE/IF_ARTIFACT_TYPE=>GC_ARTIFACT_TYPE-TILEGROUP_LAYOUT') to <ls_cons_value>.
+        if <ls_cons_value> is not assigned.
           concatenate 'Error in' is_item-obj_type  is_item-obj_name 'Mapping object to file' into lv_message separated by space.
           zcx_abapgit_exception=>raise( lv_message ).
         endif.
@@ -541,7 +534,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN24 IMPLEMENTATION.
           exporting
             iv_key           = lv_key
             iv_devclass      = is_item-devclass
-            iv_artifact_type = <fs_cons_value>
+            iv_artifact_type = <ls_cons_value>
           receiving
             rs_tadir         = ls_tadir          ##called.
 

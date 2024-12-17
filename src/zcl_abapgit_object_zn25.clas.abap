@@ -12,7 +12,7 @@ private section.
 
   constants:
     mc_name_separator(1) type c value '@', "#EC NOTEXT
-    mc_msg_datatype type string value '/NEPTUNE/CL_ARTIFACT_TYPE_THM=>TT_MESSAGES'.. "#EC NOTEXT
+    mc_msg_datatype type string value '/NEPTUNE/CL_ARTIFACT_TYPE_THM=>TT_MESSAGES'. "#EC NOTEXT
   data MV_ARTIFACT_TYPE type /NEPTUNE/ARTIFACT_TYPE .
   data MS_THEME type /NEPTUNE/LIB_UTH .
   data mr_generic_data type ref to data.
@@ -346,7 +346,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN25 IMPLEMENTATION.
     field-symbols <lt_standard_table> type standard table.
     field-symbols <lt_messages> type standard table.
     field-symbols <lr_object_files> type ref to zcl_abapgit_objects_files.
-    field-symbols: <fs_cons_value> type any.
+    field-symbols: <ls_cons_value> type any.
 
     try.
         io_xml->read(
@@ -438,7 +438,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN25 IMPLEMENTATION.
 
     try.
         create data mr_generic_data type (mc_msg_datatype).
-        assign mr_generic_data->* to <lt_messages>.
+        assign mr_generic_data->* to <lt_messages>. "#EC CI_SUBRC
       catch cx_sy_create_data_error
             cx_sy_assign_cast_illegal_cast.
         concatenate 'Error deserializing' ms_item-obj_type ms_item-obj_name 'Dynamic assignment' into lv_message separated by space.
@@ -458,8 +458,8 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN25 IMPLEMENTATION.
 
     try.
 
-        assign ('/NEPTUNE/CL_ARTIFACT_TYPE_THM=>MC_CUS_MIME_PATH') to <fs_cons_value>.
-        if <fs_cons_value> is not assigned.
+        assign ('/NEPTUNE/CL_ARTIFACT_TYPE_THM=>MC_CUS_MIME_PATH') to <ls_cons_value>.
+        if <ls_cons_value> is not assigned.
           concatenate 'Error deserializing' ms_item-obj_type  ms_item-obj_name ' Dynamic assignment of constant' into lv_message separated by space.
           zcx_abapgit_exception=>raise( lv_message ).
         endif.
@@ -469,7 +469,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN25 IMPLEMENTATION.
             iv_zip       = ls_files-data
             iv_devclass  = iv_package
             iv_transport = iv_transport
-            iv_mime_path = <fs_cons_value>
+            iv_mime_path = <ls_cons_value>
             is_theme     = ms_theme
           importing
             et_messages  = <lt_messages>.
@@ -606,7 +606,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN25 IMPLEMENTATION.
 
     try.
         create data mr_generic_data type (mc_msg_datatype).
-        assign mr_generic_data->* to <lt_messages>.
+        assign mr_generic_data->* to <lt_messages>. "#EC CI_SUBRC
       catch cx_sy_create_data_error
             cx_sy_assign_cast_illegal_cast.
         concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name 'Dynamic assignment' into lv_message separated by space.
