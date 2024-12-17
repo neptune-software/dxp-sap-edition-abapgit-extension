@@ -11,9 +11,11 @@ public section.
 private section.
 
   constants:
-    mc_name_separator(1) type c value '@'. "#EC NOTEXT
+    mc_name_separator(1) type c value '@', "#EC NOTEXT
+    mc_msg_datatype type string value '/NEPTUNE/CL_ARTIFACT_TYPE_THM=>TT_MESSAGES'.. "#EC NOTEXT
   data MV_ARTIFACT_TYPE type /NEPTUNE/ARTIFACT_TYPE .
   data MS_THEME type /NEPTUNE/LIB_UTH .
+  data mr_generic_data type ref to data.
 
   methods SERIALIZE_TABLE
     importing
@@ -339,7 +341,12 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN25 IMPLEMENTATION.
     data lv_name    type /neptune/artifact_name.
     data lv_message type string.
 
+    data lv_file_name type string.
+
+    field-symbols <lt_standard_table> type standard table.
+    field-symbols <lt_messages> type standard table.
     field-symbols <lr_object_files> type ref to zcl_abapgit_objects_files.
+    field-symbols: <fs_cons_value> type any.
 
     try.
         io_xml->read(
@@ -429,13 +436,14 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN25 IMPLEMENTATION.
 
     endif.
 
-
-**********************************************************************
-**********************************************************************
-**********************************************************************
-    data lv_file_name type string.
-    data lt_messages  type /neptune/cl_artifact_type_thm=>tt_messages.
-    field-symbols <lt_standard_table> type standard table.
+    try.
+        create data mr_generic_data type (mc_msg_datatype).
+        assign mr_generic_data->* to <lt_messages>.
+      catch cx_sy_create_data_error
+            cx_sy_assign_cast_illegal_cast.
+        concatenate 'Error deserializing' ms_item-obj_type ms_item-obj_name 'Dynamic assignment' into lv_message separated by space.
+        zcx_abapgit_exception=>raise( lv_message ).
+    endtry.
 
     concatenate ms_item-obj_name ms_item-obj_type 'zip' into lv_file_name separated by '.'.
     translate lv_file_name to lower case.
@@ -449,16 +457,23 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN25 IMPLEMENTATION.
     check sy-subrc eq 0.
 
     try.
+
+        assign ('/NEPTUNE/CL_ARTIFACT_TYPE_THM=>MC_CUS_MIME_PATH') to <fs_cons_value>.
+        if <fs_cons_value> is not assigned.
+          concatenate 'Error deserializing' ms_item-obj_type  ms_item-obj_name ' Dynamic assignment of constant' into lv_message separated by space.
+          zcx_abapgit_exception=>raise( lv_message ).
+        endif.
+
         call method lo_artifact_thm->('UNPACK_ZIP_FILE')
           exporting
             iv_zip       = ls_files-data
             iv_devclass  = iv_package
             iv_transport = iv_transport
-            iv_mime_path = /neptune/cl_artifact_type_thm=>mc_cus_mime_path
+            iv_mime_path = <fs_cons_value>
             is_theme     = ms_theme
           importing
-            et_messages  = lt_messages.
-        if lt_messages is not initial.
+            et_messages  = <lt_messages>.
+        if <lt_messages> is not initial.
           concatenate 'Error deserializing' ms_item-obj_type ms_item-obj_name 'Errors occured in method UNPACK_ZIP_FILE' into lv_message separated by space.
           zcx_abapgit_exception=>raise( lv_message ).
         endif.
@@ -467,6 +482,12 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN25 IMPLEMENTATION.
         concatenate 'Error deserializing' ms_item-obj_type ms_item-obj_name 'No class or method exists' into lv_message separated by space.
         zcx_abapgit_exception=>raise( lv_message ).
     endtry.
+
+
+
+
+
+
 
   endmethod.
 
@@ -517,70 +538,12 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN25 IMPLEMENTATION.
 
 
   method ZIF_ABAPGIT_OBJECT~MAP_FILENAME_TO_OBJECT.
-
-*    data lt_parts type standard table of string with default key.
-*    data: lv_artifact_name type string,
-*          lv_key type string,
-*          lv_filename type string.
-*    data ls_mapping like line of gt_mapping.
-*
-*    split iv_filename at mc_name_separator into lv_artifact_name lv_filename.
-*    split lv_filename at '.' into table lt_parts.
-*    read table lt_parts into lv_key index 1.
-*    check sy-subrc = 0.
-*
-*    if lv_artifact_name is not initial.
-*      translate lv_key to upper case.
-*      cs_item-obj_name = lv_key.
-*
-*      read table gt_mapping transporting no fields with key key = lv_key.
-*      check sy-subrc <> 0.
-*
-*      ls_mapping-key = lv_key.
-*      ls_mapping-name = lv_artifact_name.
-*      append ls_mapping to gt_mapping.
-*
-*    endif.
-return.
+    return.
   endmethod.
 
 
   method ZIF_ABAPGIT_OBJECT~MAP_OBJECT_TO_FILENAME.
-
-*    data ls_mapping like line of gt_mapping.
-*    data ls_tadir type /neptune/if_artifact_type=>ty_lcl_tadir.
-*    data lv_key type /neptune/artifact_key.
-*
-*    check is_item-devclass is not initial.
-*
-*    lv_key = is_item-obj_name.
-*
-*    try.
-*        " Ongoing from DXP 23 fetch wie tadir framework (all artifacts can be assigned to a devclass)
-*        call method ('/NEPTUNE/CL_TADIR')=>('GET_ARTIFACT_ENTRY')
-*          exporting
-*            iv_key           = lv_key
-*            iv_devclass      = is_item-devclass
-*            iv_artifact_type = /neptune/if_artifact_type=>gc_artifact_type-custom_theme
-*          receiving
-*            rs_tadir         = ls_tadir          ##called.
-*
-*      catch cx_sy_dyn_call_illegal_class
-*            cx_sy_dyn_call_illegal_method.
-*
-*        return.
-*
-*    endtry.
-*
-*    if ls_tadir is not initial.
-*      concatenate ls_tadir-artifact_name cv_filename into cv_filename separated by mc_name_separator.
-*    else.
-*      read table gt_mapping into ls_mapping with key key = is_item-obj_name.
-*      if sy-subrc = 0.
-*        concatenate ls_mapping-name cv_filename into cv_filename separated by mc_name_separator.
-*      endif.
-*    endif.
-return.
+    return.
   endmethod.
 
 
@@ -590,7 +553,6 @@ return.
           lo_artifact      type ref to /neptune/if_artifact_type,
           lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
           ls_table_content like line of lt_table_content,
-          lt_messages      type /neptune/cl_artifact_type_thm=>tt_messages,
           lv_key           type /neptune/artifact_key,
           lv_zip           type xstring.
 
@@ -598,6 +560,7 @@ return.
     data lv_message    type string.
 
     field-symbols <lt_standard_table> type standard table.
+    field-symbols <lt_messages> type standard table.
     field-symbols <lr_object_files>   type ref to zcl_abapgit_objects_files.
 
 **********************************************************************
@@ -642,14 +605,23 @@ return.
     check ms_theme is not initial.
 
     try.
+        create data mr_generic_data type (mc_msg_datatype).
+        assign mr_generic_data->* to <lt_messages>.
+      catch cx_sy_create_data_error
+            cx_sy_assign_cast_illegal_cast.
+        concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name 'Dynamic assignment' into lv_message separated by space.
+        zcx_abapgit_exception=>raise( lv_message ).
+    endtry.
+
+    try.
         call method lo_artifact_thm->('GET_ZIP_FILE')
           exporting
             iv_plugin_id  = ms_theme-plugin_id
             iv_theme_root = ms_theme-theme_root
           importing
             ev_zip        = lv_zip
-            et_messages   = lt_messages.
-        if lt_messages is not initial.
+            et_messages   = <lt_messages>.
+        if <lt_messages> is not initial.
           concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name 'Errors occured in method GET_ZIP_FILE' into lv_message separated by space.
           zcx_abapgit_exception=>raise( lv_message ).
         endif.

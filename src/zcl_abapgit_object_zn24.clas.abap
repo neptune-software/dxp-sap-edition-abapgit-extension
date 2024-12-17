@@ -514,31 +514,42 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN24 IMPLEMENTATION.
   endmethod.
 
 
-  method ZIF_ABAPGIT_OBJECT~MAP_OBJECT_TO_FILENAME.
+  method zif_abapgit_object~map_object_to_filename.
 
     data ls_mapping like line of gt_mapping.
     data ls_tadir type /neptune/if_artifact_type=>ty_lcl_tadir.
     data lv_key type /neptune/artifact_key.
+    data lv_message type string.
+
+    field-symbols: <fs_cons_value> type any.
 
     check is_item-devclass is not initial.
 
     lv_key = is_item-obj_name.
 
     try.
+
+        assign /neptune/if_artifact_type=>('GC_ARTIFACT_TYPE-TILEGROUP_LAYOUT') to <fs_cons_value>.
+        if <fs_cons_value> is not assigned.
+          concatenate 'Error in' is_item-obj_type  is_item-obj_name 'Mapping object to file' into lv_message separated by space.
+          zcx_abapgit_exception=>raise( lv_message ).
+        endif.
+
         " Ongoing from DXP 23 fetch wie tadir framework (all artifacts can be assigned to a devclass)
         call method ('/NEPTUNE/CL_TADIR')=>('GET_ARTIFACT_ENTRY')
 *          call method  /neptune/cl_tadir=>get_artifact_entry
           exporting
             iv_key           = lv_key
             iv_devclass      = is_item-devclass
-            iv_artifact_type = /neptune/if_artifact_type=>gc_artifact_type-tilegroup_layout
+            iv_artifact_type = <fs_cons_value>
           receiving
-            rs_tadir    = ls_tadir          ##called.
+            rs_tadir         = ls_tadir          ##called.
 
       catch cx_sy_dyn_call_illegal_class
             cx_sy_dyn_call_illegal_method.
 
-        return.
+        concatenate 'Error in' is_item-obj_type  is_item-obj_name 'Mapping object to file' into lv_message separated by space.
+        zcx_abapgit_exception=>raise( lv_message ).
 
     endtry.
 
