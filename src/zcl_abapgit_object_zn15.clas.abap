@@ -23,9 +23,9 @@ class zcl_abapgit_object_zn15 definition
               file_name   type string,
              end of ty_lcl_jshlptx .
     types:
-      ty_tt_lcl_jshlptx type standard table of ty_lcl_jshlptx .
+      ty_tt_lcl_jshlptx type standard table of ty_lcl_jshlptx with non-unique default key.
     types:
-      ty_tt_jshlpgr type standard table of /neptune/jshlpgr with default key .
+      ty_tt_jshlpgr type standard table of /neptune/jshlpgr with non-unique default key.
 
     constants:
       mc_name_separator(1) type c value '@'.                "#EC NOTEXT

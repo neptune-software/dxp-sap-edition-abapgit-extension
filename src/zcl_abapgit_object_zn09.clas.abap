@@ -17,7 +17,7 @@ class zcl_abapgit_object_zn09 definition
                 file_name   type string,
                end of ty_lcl_enhtext .
     types:
-      ty_tt_lcl_enhtext type standard table of ty_lcl_enhtext .
+      ty_tt_lcl_enhtext type standard table of ty_lcl_enhtext with non-unique default key.
 
     constants:
       mc_name_separator(1) type c value '@'.                "#EC NOTEXT
