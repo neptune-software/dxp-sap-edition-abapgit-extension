@@ -28,14 +28,14 @@ class zcl_abapgit_object_zn01 definition
                             file_name type string,
                            end of ty_lcl_evtscr .
     types:
-      ty_tt_lcl_evtscr type standard table of ty_lcl_evtscr .
+      ty_tt_lcl_evtscr type standard table of ty_lcl_evtscr with non-unique default key.
     types:
       begin of ty_lcl_css,
                             applid    type /neptune/applid,
                             file_name type string,
                            end of ty_lcl_css .
     types:
-      ty_tt_lcl_css type standard table of ty_lcl_css .
+      ty_tt_lcl_css type standard table of ty_lcl_css with non-unique default key.
     types:
       begin of ty_code,
                             file_name type string,
@@ -50,7 +50,7 @@ class zcl_abapgit_object_zn01 definition
                             file_name type string,
                            end of ty_lcl_script .
     types:
-      ty_tt_lcl_script type standard table of ty_lcl_script .
+      ty_tt_lcl_script type standard table of ty_lcl_script with non-unique default key.
 
     data mv_artifact_type type /neptune/artifact_type .
     data mv_neptune_i18n_supported type abap_bool.
@@ -198,7 +198,6 @@ class zcl_abapgit_object_zn01 definition
         it_table_content type /neptune/if_artifact_type=>ty_t_table_content
       raising
         zcx_abapgit_exception.
-
 ENDCLASS.
 
 

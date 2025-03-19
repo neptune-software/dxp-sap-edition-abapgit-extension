@@ -25,7 +25,7 @@ class zcl_abapgit_object_zn18 definition
     types: file_name      type string,
       end of ty_lcl_mime .
     types:
-      ty_tt_lcl_mime type standard table of ty_lcl_mime .
+      ty_tt_lcl_mime type standard table of ty_lcl_mime with non-unique default key.
 
     constants:
       mc_name_separator(1) type c value '@'.                "#EC NOTEXT

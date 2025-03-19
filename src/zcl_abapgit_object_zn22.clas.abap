@@ -16,21 +16,21 @@ class zcl_abapgit_object_zn22 definition
                     file_name     type string,
                    end of ty_lcl_cushead .
     types:
-      ty_tt_lcl_cushead type standard table of ty_lcl_cushead .
+      ty_tt_lcl_cushead type standard table of ty_lcl_cushead with non-unique default key.
     types:
       begin of ty_lcl_cuslogi,
                     configuration type /neptune/cuslogi-configuration,
                     file_name     type string,
                    end of ty_lcl_cuslogi .
     types:
-      ty_tt_lcl_cuslogi type standard table of ty_lcl_cuslogi .
+      ty_tt_lcl_cuslogi type standard table of ty_lcl_cuslogi with non-unique default key.
     types:
       begin of ty_lcl_confxml,
                     configuration type /neptune/confxml-configuration,
                     file_name     type string,
                    end of ty_lcl_confxml .
     types:
-      ty_tt_lcl_confxml type standard table of ty_lcl_confxml .
+      ty_tt_lcl_confxml type standard table of ty_lcl_confxml with non-unique default key.
 
     data mv_artifact_type type /neptune/artifact_type .
 
