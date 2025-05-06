@@ -9,9 +9,9 @@ This will allow you to have side-by-side your ABAP artifacts with your Neptune D
 Check out our full documentation about this extension [here.](https://docs.neptune-software.com/neptune-sap-edition/23/resources-help/abapGit-integration.html)
 
 ## Post-installation activities
-If this is the first time implementing abapGit user exits, you will need to create a class named ZCL_ABAPGIT_USER_EXIT with interface ZIF_ABAPGIT_EXIT, then it is necessary to implement the code showned below in the mentioned methods. The full user exit guide for abapGit can be found [here.](https://docs.abapgit.org/user-guide/reference/exits.html)
+If this is the first time implementing abapGit user exits, you will need to create a class named ZCL_ABAPGIT_USER_EXIT with interface ZIF_ABAPGIT_EXIT, then it is necessary to implement the code shown below in the mentioned methods. The full user exit guide for abapGit can be found [here.](https://docs.abapgit.org/user-guide/reference/exits.html)
 
-If you already have the abapGit user exit class implemented, please add and adjust the code shown below to the mentioned methods.
+If you have already implemented the abapGit user exit class, please add and adjust the code below to the mentioned methods.
 
 #### CHANGE_SUPPORTED_OBJECT_TYPES:
 
@@ -27,7 +27,7 @@ If you already have the abapGit user exit class implemented, please add and adju
     lt_neptune_types = /neptune/cl_abapgit_user_exit=>change_supported_object_types( ).
     loop at lt_neptune_types into ls_neptune_types.
       ls_types = ls_neptune_types.
-      append ls_types to ct_types.
+      insert ls_types into table ct_types.
     endloop.
 
   endmethod.
@@ -53,7 +53,7 @@ If you already have the abapGit user exit class implemented, please add and adju
 
     loop at lt_neptune_tadir into ls_neptune_tadir.
       move-corresponding ls_neptune_tadir to ls_tadir.
-      append ls_tadir to ct_tadir.
+      insert ls_tadir into table ct_tadir.
     endloop.
 
   endmethod.
