@@ -17,50 +17,42 @@ class zcl_abapgit_object_zn23 definition
         zcx_abapgit_exception.
 
   protected section.
-  private section.
+private section.
 
-    constants:
-      mc_name_separator(1) type c value '@'.                "#EC NOTEXT
+  data MV_ARTIFACT_TYPE type /NEPTUNE/ARTIFACT_TYPE .
+  data MV_NEPTUNE_I18N_SUPPORTED type ABAP_BOOL .
 
-    data mv_artifact_type type /neptune/artifact_type.
-    data mv_neptune_i18n_supported type abap_bool.
-
-    methods serialize_table
-      importing
-        !iv_tabname type tabname
-        !it_table   type any
-      raising
-        zcx_abapgit_exception.
-
-    methods get_values_from_filename
-      importing
-        !is_filename type string
-      exporting
-        !ev_tabname  type tadir-obj_name
-        !ev_name     type /neptune/artifact_name .
-
-    methods deserialize_table
-      importing
-        !is_file    type zif_abapgit_git_definitions=>ty_file
-        !ir_data    type ref to data
-        !iv_tabname type tadir-obj_name
-      raising
-        zcx_abapgit_exception .
-
-    methods insert_to_transport
-      importing
-        !io_artifact      type ref to /neptune/if_artifact_type
-        !iv_transport     type trkorr
-        !iv_package       type devclass
-        !iv_key1          type any
-        !iv_artifact_type type /neptune/aty-artifact_type.
-
-    methods serialize_i18n
-      importing
-        it_table_content type /neptune/if_artifact_type=>ty_t_table_content
-      raising
-        zcx_abapgit_exception.
-
+  methods SERIALIZE_TABLE
+    importing
+      !IV_TABNAME type TABNAME
+      !IT_TABLE type ANY
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods GET_VALUES_FROM_FILENAME
+    importing
+      !IS_FILENAME type STRING
+    exporting
+      !EV_TABNAME type TADIR-OBJ_NAME
+      !EV_NAME type /NEPTUNE/ARTIFACT_NAME .
+  methods DESERIALIZE_TABLE
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IR_DATA type ref to DATA
+      !IV_TABNAME type TADIR-OBJ_NAME
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods INSERT_TO_TRANSPORT
+    importing
+      !IO_ARTIFACT type ref to /NEPTUNE/IF_ARTIFACT_TYPE
+      !IV_TRANSPORT type TRKORR
+      !IV_PACKAGE type DEVCLASS
+      !IV_KEY1 type ANY
+      !IV_ARTIFACT_TYPE type /NEPTUNE/ATY-ARTIFACT_TYPE .
+  methods SERIALIZE_I18N
+    importing
+      !IT_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_T_TABLE_CONTENT
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
 ENDCLASS.
 
 
@@ -132,7 +124,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN23 IMPLEMENTATION.
 
     read table lt_comp into ls_comp index 1.
     if sy-subrc = 0.
-      split ls_comp at mc_name_separator into lv_name lv_key.
+      split ls_comp at zcl_neptune_abapgit_utilities=>mc_name_separator into lv_name lv_key.
       translate lv_name to upper case.
       ev_name = lv_name.
     endif.

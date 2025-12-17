@@ -30,7 +30,7 @@ ENDCLASS.
 CLASS ZCL_NEPTUNE_ABAPGIT_MARKET IMPLEMENTATION.
 
 
-  method ADD_ABAPGIT_REPO.
+  method add_abapgit_repo.
 **********************************************************************
 ** CALLED DYNAMICALLY IN /NEPTUNE/CL_NAD_MARKETPLACE -> ADD_ABAPGIT_REPO
 **********************************************************************
@@ -95,11 +95,21 @@ CLASS ZCL_NEPTUNE_ABAPGIT_MARKET IMPLEMENTATION.
     try.
 
         zcl_abapgit_migrations=>run( ).
+        try.
+            call method zcl_abapgit_login_manager=>('SET')
+              exporting
+                iv_uri      = ls_logon-url
+                iv_username = lv_user
+                iv_password = lv_password.
 
-        zcl_abapgit_login_manager=>set(
-          iv_uri      = ls_logon-url
-          iv_username = lv_user
-          iv_password = lv_password ).
+          catch cx_sy_dyn_call_error.
+            " compatibility with v1.132.0
+            call method zcl_abapgit_login_manager=>('SET_BASIC')
+              exporting
+                iv_uri      = ls_logon-url
+                iv_username = lv_user
+                iv_password = lv_password.
+        endtry.
 
         lo_repo = zcl_abapgit_repo_srv=>get_instance( )->new_online(
           iv_url            = ls_logon-url
