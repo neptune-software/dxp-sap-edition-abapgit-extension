@@ -10,12 +10,10 @@ public section.
   protected section.
 private section.
 
-  constants:
-    mc_name_separator(1) type c value '@', "#EC NOTEXT
-    mc_msg_datatype type string value '/NEPTUNE/CL_ARTIFACT_TYPE_THM=>TT_MESSAGES'. "#EC NOTEXT
+  constants MC_MSG_DATATYPE type STRING value '/NEPTUNE/CL_ARTIFACT_TYPE_THM=>TT_MESSAGES'. "#EC NOTEXT
   data MV_ARTIFACT_TYPE type /NEPTUNE/ARTIFACT_TYPE .
   data MS_THEME type /NEPTUNE/LIB_UTH .
-  data mr_generic_data type ref to data.
+  data MR_GENERIC_DATA type ref to DATA .
 
   methods SERIALIZE_TABLE
     importing
@@ -82,7 +80,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN25 IMPLEMENTATION.
   endmethod.
 
 
-  method GET_VALUES_FROM_FILENAME.
+  method get_values_from_filename.
 
     data lt_comp type standard table of string with default key.
     data ls_comp like line of lt_comp.
@@ -93,7 +91,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN25 IMPLEMENTATION.
 
     read table lt_comp into ls_comp index 1.
     if sy-subrc = 0.
-      split ls_comp at mc_name_separator into lv_name lv_key.
+      split ls_comp at zcl_neptune_abapgit_utilities=>mc_name_separator into lv_name lv_key.
       translate lv_name to upper case.
       ev_name = lv_name.
     endif.

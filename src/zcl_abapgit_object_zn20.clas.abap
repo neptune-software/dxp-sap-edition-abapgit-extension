@@ -8,47 +8,46 @@ class zcl_abapgit_object_zn20 definition
 
     interfaces zif_abapgit_object .
   protected section.
-  private section.
+private section.
 
-    types:
-      begin of ty_mapping,
+  types:
+    begin of ty_mapping,
                   key type tadir-obj_name,
                   name type string,
                  end of ty_mapping .
-    types:
-      ty_mapping_tt type standard table of ty_mapping with key key .
+  types:
+    ty_mapping_tt type standard table of ty_mapping with key key .
 
-    constants:
-      mc_name_separator(1) type c value '@'.                "#EC NOTEXT
-    class-data gt_mapping type ty_mapping_tt .
-    data mv_artifact_type type /neptune/artifact_type .
+  class ZCL_NEPTUNE_ABAPGIT_UTILITIES definition load .
+  class-data GT_MAPPING type ZCL_NEPTUNE_ABAPGIT_UTILITIES=>TY_MAPPING_TT .
+  data MV_ARTIFACT_TYPE type /NEPTUNE/ARTIFACT_TYPE .
 
-    methods serialize_table
-      importing
-      !iv_tabname type tabname
-      !it_table type any
-      raising
-      zcx_abapgit_exception .
-    methods deserialize_table
-      importing
-      !is_file type zif_abapgit_git_definitions=>ty_file
-      !ir_data type ref to data
-      !iv_tabname type tadir-obj_name
-      raising
-      zcx_abapgit_exception .
-    methods get_values_from_filename
-      importing
-      !is_filename type string
-      exporting
-      !ev_tabname type tadir-obj_name
-      !ev_name type /neptune/artifact_name .
-    methods insert_to_transport
-      importing
-      !io_artifact type ref to /neptune/if_artifact_type
-      !iv_transport type trkorr
-      !iv_package type devclass
-      !iv_key1 type any
-      !iv_artifact_type type /neptune/aty-artifact_type .
+  methods SERIALIZE_TABLE
+    importing
+      !IV_TABNAME type TABNAME
+      !IT_TABLE type ANY
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods DESERIALIZE_TABLE
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IR_DATA type ref to DATA
+      !IV_TABNAME type TADIR-OBJ_NAME
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods GET_VALUES_FROM_FILENAME
+    importing
+      !IS_FILENAME type STRING
+    exporting
+      !EV_TABNAME type TADIR-OBJ_NAME
+      !EV_NAME type /NEPTUNE/ARTIFACT_NAME .
+  methods INSERT_TO_TRANSPORT
+    importing
+      !IO_ARTIFACT type ref to /NEPTUNE/IF_ARTIFACT_TYPE
+      !IV_TRANSPORT type TRKORR
+      !IV_PACKAGE type DEVCLASS
+      !IV_KEY1 type ANY
+      !IV_ARTIFACT_TYPE type /NEPTUNE/ATY-ARTIFACT_TYPE .
 ENDCLASS.
 
 
@@ -98,7 +97,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN20 IMPLEMENTATION.
 
     read table lt_comp into ls_comp index 1.
     if sy-subrc = 0.
-      split ls_comp at mc_name_separator into lv_name lv_key.
+      split ls_comp at zcl_neptune_abapgit_utilities=>mc_name_separator into lv_name lv_key.
       translate lv_name to upper case.
       ev_name = lv_name.
     endif.
@@ -469,69 +468,57 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN20 IMPLEMENTATION.
 
   method zif_abapgit_object~map_filename_to_object.
 
-    data lt_parts type standard table of string with default key.
-    data: lv_artifact_name type string,
-          lv_key type string,
-          lv_filename type string.
-    data ls_mapping like line of gt_mapping.
+    field-symbols: <iv_filename> type clike.
 
-    split iv_filename at mc_name_separator into lv_artifact_name lv_filename.
-    split lv_filename at '.' into table lt_parts.
-    read table lt_parts into lv_key index 1.
-    check sy-subrc = 0.
-
-    if lv_artifact_name is not initial.
-      translate lv_key to upper case.
-      cs_item-obj_name = lv_key.
-
-      read table gt_mapping transporting no fields with key key = lv_key.
-      check sy-subrc <> 0.
-
-      ls_mapping-key = lv_key.
-      ls_mapping-name = lv_artifact_name.
-      append ls_mapping to gt_mapping.
-
+    assign ('IV_FILENAME') to <iv_filename>.
+    if sy-subrc <> 0.
+      assign ('IV_ITEM_PART_OF_FILENAME') to <iv_filename>.
     endif.
+
+    zcl_neptune_abapgit_utilities=>map_filename_to_object(
+      exporting iv_item_part_of_filename = <iv_filename>
+*               iv_path                  = iv_path
+*               io_dot                   = io_dot
+*               iv_package               = iv_package
+      changing cs_item                  = cs_item
+               ct_mapping               = gt_mapping ).
 
   endmethod.
 
 
   method zif_abapgit_object~map_object_to_filename.
 
-    data ls_mapping like line of gt_mapping.
-    data ls_tadir type /neptune/if_artifact_type=>ty_lcl_tadir.
-    data lv_key type /neptune/artifact_key.
+    data lv_key                type /neptune/artifact_key.
+    data lv_modular_file_parts type abap_bool.
+    data lv_ext                type string.
+    data lv_extra              type string.
 
-    check is_item-devclass is not initial.
+    field-symbols: <cv_item_part_of_filename> type clike,
+                   <iv_ext>                   type clike,
+                   <iv_extra>                 type clike.
+
+    assign ('CV_FILENAME') to <cv_item_part_of_filename>.
+    if sy-subrc <> 0.
+      " new signature starting with abapGit v1.132.0
+      assign ('CV_ITEM_PART_OF_FILENAME') to <cv_item_part_of_filename>.
+      assign ('IV_EXT') to <iv_ext>.
+      assign ('IV_EXTRA') to <iv_extra>.
+      lv_ext = <iv_ext>.
+      lv_extra = <iv_extra>.
+      lv_modular_file_parts = abap_true.
+    endif.
 
     lv_key = is_item-obj_name.
 
-    try.
-        " Ongoing from DXP 23 fetch wie tadir framework (all artifacts can be assigned to a devclass)
-        call method ('/NEPTUNE/CL_TADIR')=>('GET_ARTIFACT_ENTRY')
-*          call method  /neptune/cl_tadir=>get_artifact_entry
-          exporting
-            iv_key           = lv_key
-            iv_devclass      = is_item-devclass
-            iv_artifact_type = /neptune/if_artifact_type=>gc_artifact_type-url_alias
-          receiving
-            rs_tadir    = ls_tadir          ##called.
-
-      catch cx_sy_dyn_call_illegal_class
-            cx_sy_dyn_call_illegal_method.
-
-        return.
-
-    endtry.
-
-    if ls_tadir is not initial.
-      concatenate ls_tadir-artifact_name cv_filename into cv_filename separated by mc_name_separator.
-    else.
-      read table gt_mapping into ls_mapping with key key = is_item-obj_name.
-      if sy-subrc = 0.
-        concatenate ls_mapping-name cv_filename into cv_filename separated by mc_name_separator.
-      endif.
-    endif.
+    zcl_neptune_abapgit_utilities=>map_object_to_filename(
+      exporting is_item                  = is_item
+                it_mapping               = gt_mapping
+                iv_modular_file_parts    = lv_modular_file_parts
+                iv_ext                   = lv_ext
+                iv_extra                 = lv_extra
+                iv_artifact_key          = lv_key
+                iv_artifact_type         = /neptune/if_artifact_type=>gc_artifact_type-url_alias
+      changing  cv_item_part_of_filename = <cv_item_part_of_filename> ).
 
   endmethod.
 

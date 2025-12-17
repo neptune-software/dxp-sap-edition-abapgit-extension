@@ -8,60 +8,58 @@ class zcl_abapgit_object_zn09 definition
 
     interfaces zif_abapgit_object .
   protected section.
-  private section.
+private section.
 
-    types:
-      begin of ty_lcl_enhtext,
+  types:
+    begin of ty_lcl_enhtext,
                 enhancement type /neptune/enhancement,
                 spot        type /neptune/enhancement_spot,
                 file_name   type string,
                end of ty_lcl_enhtext .
-    types:
-      ty_tt_lcl_enhtext type standard table of ty_lcl_enhtext with non-unique default key.
+  types:
+    ty_tt_lcl_enhtext type standard table of ty_lcl_enhtext with non-unique default key .
 
-    constants:
-      mc_name_separator(1) type c value '@'.                "#EC NOTEXT
-    data mv_artifact_type type /neptune/artifact_type .
+  data MV_ARTIFACT_TYPE type /NEPTUNE/ARTIFACT_TYPE .
 
-    methods serialize_table
-      importing
-      !iv_tabname type tabname
-      !it_table type any
-      raising
-      zcx_abapgit_exception .
-    interface zif_abapgit_git_definitions load .
-    methods deserialize_table
-      importing
-      !is_file type zif_abapgit_git_definitions=>ty_file
-      !ir_data type ref to data
-      !iv_tabname type tadir-obj_name
-      raising
-      zcx_abapgit_exception .
-    methods serialize_enhtext
-      importing
-      !is_table_content type /neptune/if_artifact_type=>ty_table_content
-      raising
-      zcx_abapgit_exception .
-    methods get_values_from_filename
-      importing
-      !is_filename type string
-      exporting
-      !ev_tabname type tadir-obj_name
-      !ev_name type /neptune/artifact_name .
-    methods deserialize_enhtext
-      importing
-      !is_file type zif_abapgit_git_definitions=>ty_file
-      !it_files type zif_abapgit_git_definitions=>ty_files_tt
-      !ir_data type ref to data
-      raising
-      zcx_abapgit_exception .
-    methods insert_to_transport
-      importing
-      !io_artifact type ref to /neptune/if_artifact_type
-      !iv_transport type trkorr
-      !iv_package type devclass
-      !iv_key1 type any
-      !iv_artifact_type type /neptune/aty-artifact_type .
+  methods SERIALIZE_TABLE
+    importing
+      !IV_TABNAME type TABNAME
+      !IT_TABLE type ANY
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  interface ZIF_ABAPGIT_GIT_DEFINITIONS load .
+  methods DESERIALIZE_TABLE
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IR_DATA type ref to DATA
+      !IV_TABNAME type TADIR-OBJ_NAME
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods SERIALIZE_ENHTEXT
+    importing
+      !IS_TABLE_CONTENT type /NEPTUNE/IF_ARTIFACT_TYPE=>TY_TABLE_CONTENT
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods GET_VALUES_FROM_FILENAME
+    importing
+      !IS_FILENAME type STRING
+    exporting
+      !EV_TABNAME type TADIR-OBJ_NAME
+      !EV_NAME type /NEPTUNE/ARTIFACT_NAME .
+  methods DESERIALIZE_ENHTEXT
+    importing
+      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
+      !IT_FILES type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILES_TT
+      !IR_DATA type ref to DATA
+    raising
+      ZCX_ABAPGIT_EXCEPTION .
+  methods INSERT_TO_TRANSPORT
+    importing
+      !IO_ARTIFACT type ref to /NEPTUNE/IF_ARTIFACT_TYPE
+      !IV_TRANSPORT type TRKORR
+      !IV_PACKAGE type DEVCLASS
+      !IV_KEY1 type ANY
+      !IV_ARTIFACT_TYPE type /NEPTUNE/ATY-ARTIFACT_TYPE .
 ENDCLASS.
 
 
@@ -168,7 +166,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN09 IMPLEMENTATION.
 
     read table lt_comp into ls_comp index 1.
     if sy-subrc = 0.
-      split ls_comp at mc_name_separator into lv_name lv_key.
+      split ls_comp at zcl_neptune_abapgit_utilities=>mc_name_separator into lv_name lv_key.
       translate lv_name to upper case.
       ev_name = lv_name.
     endif.
