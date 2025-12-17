@@ -1,158 +1,158 @@
-class zcl_abapgit_object_zn05 definition
-  public
-  inheriting from zcl_abapgit_objects_super
-  final
-  create public .
+CLASS zcl_abapgit_object_zn05 DEFINITION
+  PUBLIC
+  INHERITING FROM zcl_abapgit_objects_super
+  FINAL
+  CREATE PUBLIC .
 
-  public section.
+  PUBLIC SECTION.
 
-    interfaces zif_abapgit_object .
-  protected section.
-private section.
+    INTERFACES zif_abapgit_object .
+  PROTECTED SECTION.
+  PRIVATE SECTION.
 
-  class ZCL_NEPTUNE_ABAPGIT_UTILITIES definition load .
-  class-data GT_MAPPING type ZCL_NEPTUNE_ABAPGIT_UTILITIES=>TY_MAPPING_TT .
-  data MV_ARTIFACT_TYPE type /NEPTUNE/ARTIFACT_TYPE .
+    CLASS zcl_neptune_abapgit_utilities DEFINITION LOAD .
+    CLASS-DATA gt_mapping TYPE zcl_neptune_abapgit_utilities=>ty_mapping_tt .
+    DATA mv_artifact_type TYPE /neptune/artifact_type .
 
-  methods SERIALIZE_TABLE
-    importing
-      !IV_TABNAME type TABNAME
-      !IT_TABLE type ANY
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods DESERIALIZE_TABLE
-    importing
-      !IS_FILE type ZIF_ABAPGIT_GIT_DEFINITIONS=>TY_FILE
-      !IR_DATA type ref to DATA
-      !IV_TABNAME type TADIR-OBJ_NAME
-    raising
-      ZCX_ABAPGIT_EXCEPTION .
-  methods GET_VALUES_FROM_FILENAME
-    importing
-      !IS_FILENAME type STRING
-    exporting
-      !EV_TABNAME type TADIR-OBJ_NAME
-      !EV_NAME type /NEPTUNE/ARTIFACT_NAME .
-  methods INSERT_TO_TRANSPORT
-    importing
-      !IO_ARTIFACT type ref to /NEPTUNE/IF_ARTIFACT_TYPE
-      !IV_TRANSPORT type TRKORR
-      !IV_PACKAGE type DEVCLASS
-      !IV_KEY1 type ANY
-      !IV_ARTIFACT_TYPE type /NEPTUNE/ATY-ARTIFACT_TYPE .
+    METHODS serialize_table
+      IMPORTING
+      !iv_tabname TYPE tabname
+      !it_table TYPE any
+      RAISING
+      zcx_abapgit_exception .
+    METHODS deserialize_table
+      IMPORTING
+      !is_file TYPE zif_abapgit_git_definitions=>ty_file
+      !ir_data TYPE REF TO data
+      !iv_tabname TYPE tadir-obj_name
+      RAISING
+      zcx_abapgit_exception .
+    METHODS get_values_from_filename
+      IMPORTING
+      !is_filename TYPE string
+      EXPORTING
+      !ev_tabname TYPE tadir-obj_name
+      !ev_name TYPE /neptune/artifact_name .
+    METHODS insert_to_transport
+      IMPORTING
+      !io_artifact TYPE REF TO /neptune/if_artifact_type
+      !iv_transport TYPE trkorr
+      !iv_package TYPE devclass
+      !iv_key1 TYPE any
+      !iv_artifact_type TYPE /neptune/aty-artifact_type .
 ENDCLASS.
 
 
 
-CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
+CLASS zcl_abapgit_object_zn05 IMPLEMENTATION.
 
 
-  method deserialize_table.
+  METHOD deserialize_table.
 
-    data lo_ajson type ref to zcl_abapgit_ajson.
-    data lx_ajson type ref to zcx_abapgit_ajson_error.
+    DATA lo_ajson TYPE REF TO zcl_abapgit_ajson.
+    DATA lx_ajson TYPE REF TO zcx_abapgit_ajson_error.
 
-    data lt_table_content type ref to data.
+    DATA lt_table_content TYPE REF TO data.
 
-    field-symbols <lt_tab> type any table.
-    field-symbols <lt_standard_table> type standard table.
+    FIELD-SYMBOLS <lt_tab> TYPE ANY TABLE.
+    FIELD-SYMBOLS <lt_standard_table> TYPE STANDARD TABLE.
 
-    assign ir_data->* to <lt_tab>.
-    check sy-subrc = 0.
+    ASSIGN ir_data->* TO <lt_tab>.
+    CHECK sy-subrc = 0.
 
-    create data lt_table_content type standard table of (iv_tabname) with non-unique default key.
-    assign lt_table_content->* to <lt_standard_table>.
-    check sy-subrc = 0.
+    CREATE DATA lt_table_content TYPE STANDARD TABLE OF (iv_tabname) WITH NON-UNIQUE DEFAULT KEY.
+    ASSIGN lt_table_content->* TO <lt_standard_table>.
+    CHECK sy-subrc = 0.
 
-    try.
+    TRY.
         lo_ajson = zcl_abapgit_ajson=>parse( zcl_abapgit_convert=>xstring_to_string_utf8( is_file-data ) ).
 
-        lo_ajson->zif_abapgit_ajson~to_abap( exporting iv_corresponding = abap_true
-                                             importing ev_container     = <lt_standard_table> ).
-      catch zcx_abapgit_ajson_error into lx_ajson.
+        lo_ajson->zif_abapgit_ajson~to_abap( EXPORTING iv_corresponding = abap_true
+                                             IMPORTING ev_container     = <lt_standard_table> ).
+      CATCH zcx_abapgit_ajson_error INTO lx_ajson.
         zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
-    endtry.
+    ENDTRY.
 
     <lt_tab> = <lt_standard_table>.
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method get_values_from_filename.
+  METHOD get_values_from_filename.
 
-    data lt_comp type standard table of string with default key.
-    data ls_comp like line of lt_comp.
-    data lv_key type /neptune/artifact_key.
-    data lv_name type string.
+    DATA lt_comp TYPE STANDARD TABLE OF string WITH DEFAULT KEY.
+    DATA ls_comp LIKE LINE OF lt_comp.
+    DATA lv_key TYPE /neptune/artifact_key.
+    DATA lv_name TYPE string.
 
-    split is_filename at '.' into table lt_comp.
+    SPLIT is_filename AT '.' INTO TABLE lt_comp.
 
-    read table lt_comp into ls_comp index 1.
-    if sy-subrc = 0.
-      split ls_comp at zcl_neptune_abapgit_utilities=>mc_name_separator into lv_name lv_key.
-      translate lv_name to upper case.
+    READ TABLE lt_comp INTO ls_comp INDEX 1.
+    IF sy-subrc = 0.
+      SPLIT ls_comp AT zcl_neptune_abapgit_utilities=>mc_name_separator INTO lv_name lv_key.
+      TRANSLATE lv_name TO UPPER CASE.
       ev_name = lv_name.
-    endif.
+    ENDIF.
 
-    read table lt_comp into ls_comp index 3.
-    if sy-subrc = 0.
-      replace all occurrences of '#' in ls_comp with '/'.
-      translate ls_comp to upper case.
+    READ TABLE lt_comp INTO ls_comp INDEX 3.
+    IF sy-subrc = 0.
+      REPLACE ALL OCCURRENCES OF '#' IN ls_comp WITH '/'.
+      TRANSLATE ls_comp TO UPPER CASE.
       ev_tabname = ls_comp.
-    endif.
+    ENDIF.
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method insert_to_transport.
+  METHOD insert_to_transport.
 
-    data ls_message type /neptune/message.
-    data lv_task type trkorr.
+    DATA ls_message TYPE /neptune/message.
+    DATA lv_task TYPE trkorr.
 
     /neptune/cl_nad_transport=>transport_task_find(
-      exporting
+      EXPORTING
         transport = iv_transport
-      importing
+      IMPORTING
         task      = lv_task ).
 
     io_artifact->insert_to_transport(
-      exporting
+      EXPORTING
         iv_korrnum = lv_task
         iv_key1    = iv_key1
-      importing
+      IMPORTING
         ev_message = ls_message ).
 
-    try.
-        call method ('/NEPTUNE/CL_TADIR')=>('INSERT_TO_TRANSPORT')
+    TRY.
+        CALL METHOD ('/NEPTUNE/CL_TADIR')=>('INSERT_TO_TRANSPORT')
 *            call method /neptune/cl_tadir=>insert_to_transport
-            exporting
+            EXPORTING
               iv_korrnum       = lv_task
               iv_devclass      = iv_package
               iv_artifact_key  = iv_key1
               iv_artifact_type = iv_artifact_type
-            importing
+            IMPORTING
               ev_message      = ls_message.
-      catch cx_sy_dyn_call_illegal_class
+      CATCH cx_sy_dyn_call_illegal_class
             cx_sy_dyn_call_illegal_method.
-    endtry.
+    ENDTRY.
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method serialize_table.
+  METHOD serialize_table.
 
-    data: lo_ajson         type ref to zcl_abapgit_ajson,
-          lx_ajson         type ref to zcx_abapgit_ajson_error,
-          lv_json          type string,
-          ls_file          type zif_abapgit_git_definitions=>ty_file.
+    DATA: lo_ajson         TYPE REF TO zcl_abapgit_ajson,
+          lx_ajson         TYPE REF TO zcx_abapgit_ajson_error,
+          lv_json          TYPE string,
+          ls_file          TYPE zif_abapgit_git_definitions=>ty_file.
 
-    data lt_skip_paths type string_table.
+    DATA lt_skip_paths TYPE string_table.
 
-    data lv_message type string.
+    DATA lv_message TYPE string.
 
-    field-symbols <lr_object_files> type ref to zcl_abapgit_objects_files.
+    FIELD-SYMBOLS <lr_object_files> TYPE REF TO zcl_abapgit_objects_files.
 
-    try.
+    TRY.
         lo_ajson = zcl_abapgit_ajson=>create_empty( ).
         lo_ajson->keep_item_order( ).
         lo_ajson->set(
@@ -168,18 +168,18 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
         lt_skip_paths = zcl_neptune_abapgit_utilities=>get_skip_fields_for_artifact(
                                                           iv_artifact_type = mv_artifact_type
                                                           iv_serialize     = abap_true ).
-        if lt_skip_paths is not initial.
+        IF lt_skip_paths IS NOT INITIAL.
           lo_ajson = zcl_abapgit_ajson=>create_from(
                         ii_source_json = lo_ajson
                         ii_filter      = zcl_abapgit_ajson_filter_lib=>create_path_filter(
                                              it_skip_paths     = lt_skip_paths
                                              iv_pattern_search = abap_true ) ).
-        endif.
+        ENDIF.
 
         lv_json = lo_ajson->stringify( 2 ).
-      catch zcx_abapgit_ajson_error into lx_ajson.
+      CATCH zcx_abapgit_ajson_error INTO lx_ajson.
         zcx_abapgit_exception=>raise( lx_ajson->get_text( ) ).
-    endtry.
+    ENDTRY.
 
     ls_file-path = '/'.
     ls_file-data = zcl_abapgit_convert=>string_to_xstring_utf8( lv_json ).
@@ -191,41 +191,41 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->ADD does not work anymore
 *    zif_abapgit_object~mo_files->add( ls_file ).
     " for version 1.125.0
-    assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <lr_object_files>.
-    if <lr_object_files> is not assigned.
+    ASSIGN ('ZIF_ABAPGIT_OBJECT~MO_FILES') TO <lr_object_files>.
+    IF <lr_object_files> IS NOT ASSIGNED.
       " for version 1.126.0
-      assign ('MO_FILES') to <lr_object_files>.
-    endif.
+      ASSIGN ('MO_FILES') TO <lr_object_files>.
+    ENDIF.
 
-    if <lr_object_files> is assigned.
-      call method <lr_object_files>->add
-        exporting
+    IF <lr_object_files> IS ASSIGNED.
+      CALL METHOD <lr_object_files>->add
+        EXPORTING
           is_file = ls_file.
-    else.
-      concatenate 'Error serializing' ms_item-obj_type ms_item-obj_name iv_tabname into lv_message separated by space.
+    ELSE.
+      CONCATENATE 'Error serializing' ms_item-obj_type ms_item-obj_name iv_tabname INTO lv_message SEPARATED BY space.
       zcx_abapgit_exception=>raise( lv_message ).
-    endif.
+    ENDIF.
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method zif_abapgit_object~changed_by.
+  METHOD zif_abapgit_object~changed_by.
 
-    data: lo_artifact type ref to /neptune/if_artifact_type,
-          lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
-          ls_table_content like line of lt_table_content,
-          lv_key           type /neptune/artifact_key.
+    DATA: lo_artifact TYPE REF TO /neptune/if_artifact_type,
+          lt_table_content TYPE /neptune/if_artifact_type=>ty_t_table_content,
+          ls_table_content LIKE LINE OF lt_table_content,
+          lv_key           TYPE /neptune/artifact_key.
 
-    data ls_menu type /neptune/menu.
+    DATA ls_menu TYPE /neptune/menu.
 
-    data: lv_crenam type /neptune/create_user,
-          lv_credat type /neptune/create_date,
-          lv_cretim type /neptune/create_time,
-          lv_updnam type /neptune/update_user,
-          lv_upddat type /neptune/update_date,
-          lv_updtim type /neptune/update_time.
+    DATA: lv_crenam TYPE /neptune/create_user,
+          lv_credat TYPE /neptune/create_date,
+          lv_cretim TYPE /neptune/create_time,
+          lv_updnam TYPE /neptune/update_user,
+          lv_upddat TYPE /neptune/update_date,
+          lv_updtim TYPE /neptune/update_time.
 
-    field-symbols <lt_standard_table> type standard table.
+    FIELD-SYMBOLS <lt_standard_table> TYPE STANDARD TABLE.
 
 **********************************************************************
 
@@ -233,11 +233,11 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
 
     lv_key = ms_item-obj_name.
 
-    try.
-        call method lo_artifact->('GET_METADATA')
-          exporting
+    TRY.
+        CALL METHOD lo_artifact->('GET_METADATA')
+          EXPORTING
             iv_key1   = lv_key
-          importing
+          IMPORTING
             ev_crenam = lv_crenam
             ev_credat = lv_credat
             ev_cretim = lv_cretim
@@ -245,42 +245,42 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
             ev_upddat = lv_upddat
             ev_updtim = lv_updtim.
 
-        if lv_upddat is not initial.
+        IF lv_upddat IS NOT INITIAL.
           rv_user = lv_updnam.
-        else.
+        ELSE.
           rv_user = lv_crenam.
-        endif.
+        ENDIF.
 
-      catch cx_sy_dyn_call_illegal_class
+      CATCH cx_sy_dyn_call_illegal_class
             cx_sy_dyn_call_illegal_method.
 
         lo_artifact->get_table_content(
-          exporting iv_key1                 = lv_key
+          EXPORTING iv_key1                 = lv_key
                     iv_only_sys_independent = abap_true
-          importing et_table_content        = lt_table_content ).
+          IMPORTING et_table_content        = lt_table_content ).
 
-        read table lt_table_content into ls_table_content with table key tabname = '/NEPTUNE/MENU'.
-        if sy-subrc = 0.
-          assign ls_table_content-table_content->* to <lt_standard_table>.
-          check sy-subrc = 0.
-          read table <lt_standard_table> into ls_menu index 1.
-          if sy-subrc = 0 and ls_menu-updnam is not initial.
+        READ TABLE lt_table_content INTO ls_table_content WITH TABLE KEY tabname = '/NEPTUNE/MENU'.
+        IF sy-subrc = 0.
+          ASSIGN ls_table_content-table_content->* TO <lt_standard_table>.
+          CHECK sy-subrc = 0.
+          READ TABLE <lt_standard_table> INTO ls_menu INDEX 1.
+          IF sy-subrc = 0 AND ls_menu-updnam IS NOT INITIAL.
             rv_user = ls_menu-updnam.
-          else.
+          ELSE.
             rv_user = ls_menu-crenam.
-          endif.
-        endif.
+          ENDIF.
+        ENDIF.
 
-    endtry.
+    ENDTRY.
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method zif_abapgit_object~delete.
+  METHOD zif_abapgit_object~delete.
 
-    data: lo_artifact type ref to /neptune/if_artifact_type,
-          ls_settings type /neptune/aty,
-          lv_key1     type /neptune/artifact_key.
+    DATA: lo_artifact TYPE REF TO /neptune/if_artifact_type,
+          ls_settings TYPE /neptune/aty,
+          lv_key1     TYPE /neptune/artifact_key.
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
     ls_settings = lo_artifact->get_settings( ).
@@ -293,7 +293,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
 
     lo_artifact->delete_tadir_entry( iv_key1 = lv_key1 ).
 
-    if ls_settings-transportable is not initial and iv_transport is not initial.
+    IF ls_settings-transportable IS NOT INITIAL AND iv_transport IS NOT INITIAL.
 
       insert_to_transport(
         io_artifact      = lo_artifact
@@ -302,73 +302,73 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
         iv_key1          = lv_key1
         iv_artifact_type = ls_settings-artifact_type ).
 
-    endif.
+    ENDIF.
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method zif_abapgit_object~deserialize.
+  METHOD zif_abapgit_object~deserialize.
 
 ** pick up logic from CLASS ZCL_ABAPGIT_DATA_DESERIALIZER
 
-    data lo_artifact type ref to /neptune/if_artifact_type.
+    DATA lo_artifact TYPE REF TO /neptune/if_artifact_type.
 
-    data: lt_files type zif_abapgit_git_definitions=>ty_files_tt,
-          ls_files like line of lt_files.
+    DATA: lt_files TYPE zif_abapgit_git_definitions=>ty_files_tt,
+          ls_files LIKE LINE OF lt_files.
 
-    data: lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
-          ls_table_content like line of lt_table_content.
+    DATA: lt_table_content TYPE /neptune/if_artifact_type=>ty_t_table_content,
+          ls_table_content LIKE LINE OF lt_table_content.
 
-    data lt_system_field_values type /neptune/if_artifact_type=>ty_t_system_field_values.
+    DATA lt_system_field_values TYPE /neptune/if_artifact_type=>ty_t_system_field_values.
 
-    data lr_data    type ref to data.
-    data lv_tabname type tadir-obj_name.
-    data lv_key     type /neptune/artifact_key.
-    data lv_name    type /neptune/artifact_name.
-    data ls_settings type /neptune/aty.
-    data lv_message type string.
+    DATA lr_data    TYPE REF TO data.
+    DATA lv_tabname TYPE tadir-obj_name.
+    DATA lv_key     TYPE /neptune/artifact_key.
+    DATA lv_name    TYPE /neptune/artifact_name.
+    DATA ls_settings TYPE /neptune/aty.
+    DATA lv_message TYPE string.
 
-    field-symbols <lr_object_files> type ref to zcl_abapgit_objects_files.
+    FIELD-SYMBOLS <lr_object_files> TYPE REF TO zcl_abapgit_objects_files.
 
-    try.
+    TRY.
         io_xml->read(
-          exporting
+          EXPORTING
             iv_name = 'key'
-          changing
+          CHANGING
             cg_data = lv_key ).
-      catch zcx_abapgit_exception.
-    endtry.
+      CATCH zcx_abapgit_exception.
+    ENDTRY.
 
 * in 1.126.0 ZIF_ABAPGIT_OBJECT~MO_FILES->GET_FILES does not work anymore
 *    lt_files = zif_abapgit_object~mo_files->get_files( ).
     " for version 1.125.0
-    assign ('ZIF_ABAPGIT_OBJECT~MO_FILES') to <lr_object_files>.
-    if <lr_object_files> is not assigned.
+    ASSIGN ('ZIF_ABAPGIT_OBJECT~MO_FILES') TO <lr_object_files>.
+    IF <lr_object_files> IS NOT ASSIGNED.
       " for version 1.126.0
-      assign ('MO_FILES') to <lr_object_files>.
-    endif.
+      ASSIGN ('MO_FILES') TO <lr_object_files>.
+    ENDIF.
 
-    if <lr_object_files> is assigned.
-      call method <lr_object_files>->get_files
-        receiving
+    IF <lr_object_files> IS ASSIGNED.
+      CALL METHOD <lr_object_files>->get_files
+        RECEIVING
           rt_files = lt_files.
-    else.
-      concatenate 'Error deserializing' ms_item-obj_type  ms_item-obj_name lv_key into lv_message separated by space.
+    ELSE.
+      CONCATENATE 'Error deserializing' ms_item-obj_type  ms_item-obj_name lv_key INTO lv_message SEPARATED BY space.
       zcx_abapgit_exception=>raise( lv_message ).
-    endif.
+    ENDIF.
 
-    loop at lt_files into ls_files where filename cp '*.json'.
+    LOOP AT lt_files INTO ls_files WHERE filename CP '*.json'.
 
       get_values_from_filename(
-        exporting
+        EXPORTING
           is_filename = ls_files-filename
-        importing
+        IMPORTING
           ev_tabname  = lv_tabname
           ev_name     = lv_name ).
 
-      translate lv_key to upper case.
+      TRANSLATE lv_key TO UPPER CASE.
 
-      create data lr_data type standard table of (lv_tabname) with non-unique default key.
+      CREATE DATA lr_data TYPE STANDARD TABLE OF (lv_tabname) WITH NON-UNIQUE DEFAULT KEY.
 
       deserialize_table(
         is_file    = ls_files
@@ -377,21 +377,21 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
 
       ls_table_content-tabname = lv_tabname.
       ls_table_content-table_content = lr_data.
-      append ls_table_content to lt_table_content.
-      clear ls_table_content.
+      APPEND ls_table_content TO lt_table_content.
+      CLEAR ls_table_content.
 
-    endloop.
+    ENDLOOP.
 
-    if lt_table_content is not initial.
+    IF lt_table_content IS NOT INITIAL.
 
       lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
       ls_settings = lo_artifact->get_settings( ).
 
       lo_artifact->delete_artifact(
-        exporting
+        EXPORTING
           iv_key1                = lv_key
           iv_devclass            = iv_package
-        importing
+        IMPORTING
           et_system_field_values = lt_system_field_values ).
 
       lo_artifact->set_table_content(
@@ -404,7 +404,7 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
           iv_devclass      = iv_package
           iv_artifact_name = lv_name ).
 
-      if ls_settings-transportable is not initial and iv_transport is not initial.
+      IF ls_settings-transportable IS NOT INITIAL AND iv_transport IS NOT INITIAL.
 
         insert_to_transport(
           io_artifact      = lo_artifact
@@ -413,153 +413,166 @@ CLASS ZCL_ABAPGIT_OBJECT_ZN05 IMPLEMENTATION.
           iv_key1          = lv_key
           iv_artifact_type = ls_settings-artifact_type ).
 
-      endif.
+      ENDIF.
 
-    endif.
+    ENDIF.
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method zif_abapgit_object~exists.
+  METHOD zif_abapgit_object~exists.
     rv_bool = abap_true.
-  endmethod.
+  ENDMETHOD.
 
 
-  method zif_abapgit_object~get_comparator.
-    return.
-  endmethod.
+  METHOD zif_abapgit_object~get_comparator.
+    RETURN.
+  ENDMETHOD.
 
 
-  method zif_abapgit_object~get_deserialize_order.
-    return.
-  endmethod.
+  METHOD zif_abapgit_object~get_deserialize_order.
+    RETURN.
+  ENDMETHOD.
 
 
-  method zif_abapgit_object~get_deserialize_steps.
-    append zif_abapgit_object=>gc_step_id-late to rt_steps.
-  endmethod.
+  METHOD zif_abapgit_object~get_deserialize_steps.
+    APPEND zif_abapgit_object=>gc_step_id-late TO rt_steps.
+  ENDMETHOD.
 
 
-  method zif_abapgit_object~get_metadata.
-    return.
-  endmethod.
+  METHOD zif_abapgit_object~get_metadata.
+    RETURN.
+  ENDMETHOD.
 
 
-  method zif_abapgit_object~is_active.
+  METHOD zif_abapgit_object~is_active.
     rv_active = abap_true.
-  endmethod.
+  ENDMETHOD.
 
 
-  method zif_abapgit_object~is_locked.
+  METHOD zif_abapgit_object~is_locked.
 
-    data lo_artifact type ref to /neptune/if_artifact_type.
+    DATA lo_artifact TYPE REF TO /neptune/if_artifact_type.
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
     rv_is_locked = lo_artifact->check_artifact_is_locked( iv_key = ms_item-obj_name ).
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method zif_abapgit_object~jump.
-    return.
-  endmethod.
+  METHOD zif_abapgit_object~jump.
+    RETURN.
+  ENDMETHOD.
 
 
-  method zif_abapgit_object~map_filename_to_object.
+  METHOD zif_abapgit_object~map_filename_to_object.
 
-    field-symbols: <iv_filename> type clike.
+    FIELD-SYMBOLS: <lv_filename> TYPE clike.
 
-    assign ('IV_FILENAME') to <iv_filename>.
-    if sy-subrc <> 0.
-      assign ('IV_ITEM_PART_OF_FILENAME') to <iv_filename>.
-    endif.
+    ASSIGN ('IV_FILENAME') TO <lv_filename>.
+    IF sy-subrc <> 0.
+      " new signature starting with abapGit v1.132.0
+      ASSIGN ('IV_ITEM_PART_OF_FILENAME') TO <lv_filename>.
+      IF sy-subrc <> 0.
+        zcx_abapgit_exception=>raise( 'IV_ITEM_PART_OF_FILENAME assignment failed. Version COMPATIBILITY ERROR!' ).
+      ENDIF.
+    ENDIF.
 
     zcl_neptune_abapgit_utilities=>map_filename_to_object(
-      exporting iv_item_part_of_filename = <iv_filename>
+      EXPORTING iv_item_part_of_filename = <lv_filename>
 *               iv_path                  = iv_path
 *               io_dot                   = io_dot
 *               iv_package               = iv_package
-      changing cs_item                  = cs_item
-               ct_mapping               = gt_mapping ).
+      CHANGING cs_item                   = cs_item
+               ct_mapping                = gt_mapping ).
 
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method zif_abapgit_object~map_object_to_filename.
+  METHOD zif_abapgit_object~map_object_to_filename.
 
-    data lv_key                type /neptune/artifact_key.
-    data lv_modular_file_parts type abap_bool.
-    data lv_ext                type string.
-    data lv_extra              type string.
+    DATA lv_key                TYPE /neptune/artifact_key.
+    DATA lv_modular_file_parts TYPE abap_bool.
+    DATA lv_ext                TYPE string.
+    DATA lv_extra              TYPE string.
 
-    field-symbols: <cv_item_part_of_filename> type clike,
-                   <iv_ext>                   type clike,
-                   <iv_extra>                 type clike.
+    FIELD-SYMBOLS: <lv_item_part_of_filename> TYPE clike,
+                   <lv_ext>                   TYPE clike,
+                   <lv_extra>                 TYPE clike.
 
-    assign ('CV_FILENAME') to <cv_item_part_of_filename>.
-    if sy-subrc <> 0.
+    ASSIGN ('CV_FILENAME') TO <lv_item_part_of_filename>.
+    IF sy-subrc <> 0.
       " new signature starting with abapGit v1.132.0
-      assign ('CV_ITEM_PART_OF_FILENAME') to <cv_item_part_of_filename>.
-      assign ('IV_EXT') to <iv_ext>.
-      assign ('IV_EXTRA') to <iv_extra>.
-      lv_ext = <iv_ext>.
-      lv_extra = <iv_extra>.
+      ASSIGN ('CV_ITEM_PART_OF_FILENAME') TO <lv_item_part_of_filename>.
+      IF sy-subrc <> 0.
+        zcx_abapgit_exception=>raise( 'CV_ITEM_PART_OF_FILENAME assignment failed. Version COMPATIBILITY ERROR!' ).
+      ENDIF.
+      ASSIGN ('IV_EXT') TO <lv_ext>.
+      IF sy-subrc <> 0.
+        zcx_abapgit_exception=>raise( 'IV_EXT assignment failed. Version COMPATIBILITY ERROR!' ).
+      ENDIF.
+      ASSIGN ('IV_EXTRA') TO <lv_extra>.
+      IF sy-subrc <> 0.
+        zcx_abapgit_exception=>raise( 'IV_EXTRA assignment failed. Version COMPATIBILITY ERROR!' ).
+      ENDIF.
+      lv_ext = <lv_ext>.
+      lv_extra = <lv_extra>.
       lv_modular_file_parts = abap_true.
-    endif.
+    ENDIF.
 
     lv_key = is_item-obj_name.
 
     zcl_neptune_abapgit_utilities=>map_object_to_filename(
-      exporting is_item                  = is_item
+      EXPORTING is_item                  = is_item
                 it_mapping               = gt_mapping
                 iv_modular_file_parts    = lv_modular_file_parts
                 iv_ext                   = lv_ext
                 iv_extra                 = lv_extra
                 iv_artifact_key          = lv_key
                 iv_artifact_type         = /neptune/if_artifact_type=>gc_artifact_type-tile
-      changing  cv_item_part_of_filename = <cv_item_part_of_filename> ) .
+      CHANGING  cv_item_part_of_filename = <lv_item_part_of_filename> ).
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method zif_abapgit_object~serialize.
+  METHOD zif_abapgit_object~serialize.
 
-    data: lo_artifact      type ref to /neptune/if_artifact_type,
-          lt_table_content type /neptune/if_artifact_type=>ty_t_table_content,
-          ls_table_content like line of lt_table_content,
-          lv_key           type /neptune/artifact_key.
+    DATA: lo_artifact      TYPE REF TO /neptune/if_artifact_type,
+          lt_table_content TYPE /neptune/if_artifact_type=>ty_t_table_content,
+          ls_table_content LIKE LINE OF lt_table_content,
+          lv_key           TYPE /neptune/artifact_key.
 
-    field-symbols <lt_standard_table> type standard table.
+    FIELD-SYMBOLS <lt_standard_table> TYPE STANDARD TABLE.
 
     lo_artifact = /neptune/cl_artifact_type=>get_instance( iv_object_type = ms_item-obj_type ).
     mv_artifact_type = lo_artifact->artifact_type.
 
-    try.
+    TRY.
         io_xml->add(
           iv_name = 'key'
           ig_data = ms_item-obj_name ).
-      catch zcx_abapgit_exception.
-    endtry.
+      CATCH zcx_abapgit_exception.
+    ENDTRY.
 
     lv_key = ms_item-obj_name.
 
     lo_artifact->get_table_content(
-      exporting iv_key1                 = lv_key
+      EXPORTING iv_key1                 = lv_key
                 iv_only_sys_independent = abap_true
-      importing et_table_content        = lt_table_content ).
+      IMPORTING et_table_content        = lt_table_content ).
 
 * serialize
-    loop at lt_table_content into ls_table_content.
+    LOOP AT lt_table_content INTO ls_table_content.
 
-      assign ls_table_content-table_content->* to <lt_standard_table>.
+      ASSIGN ls_table_content-table_content->* TO <lt_standard_table>.
 
-      check sy-subrc = 0 and <lt_standard_table> is not initial.
+      CHECK sy-subrc = 0 AND <lt_standard_table> IS NOT INITIAL.
 
       serialize_table(
         iv_tabname = ls_table_content-tabname
         it_table   = <lt_standard_table> ).
-    endloop.
+    ENDLOOP.
 
-  endmethod.
+  ENDMETHOD.
 ENDCLASS.
