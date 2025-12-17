@@ -8,7 +8,7 @@ public section.
 
   interfaces ZIF_ABAPGIT_OBJECT .
 
-  constants MC_EXTENSION_VERSION type STRING value '1.0.4'. "#EC NOTEXT
+  constants MC_EXTENSION_VERSION type STRING value '1.0.5'. "#EC NOTEXT
   protected section.
   private section.
 
