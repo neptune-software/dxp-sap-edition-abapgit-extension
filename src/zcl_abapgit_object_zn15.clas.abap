@@ -11,13 +11,6 @@ class zcl_abapgit_object_zn15 definition
 private section.
 
   types:
-    begin of ty_mapping,
-                    key type tadir-obj_name,
-                    name type string,
-                   end of ty_mapping .
-  types:
-    ty_mapping_tt type standard table of ty_mapping with key key .
-  types:
     begin of ty_lcl_jshlptx,
               guid type /neptune/jshlptx-guid,
               file_name   type string,

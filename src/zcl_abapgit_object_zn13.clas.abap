@@ -11,14 +11,6 @@ class zcl_abapgit_object_zn13 definition
   protected section.
 private section.
 
-  types:
-    begin of ty_mapping,
-                  key type tadir-obj_name,
-                  name type string,
-                 end of ty_mapping .
-  types:
-    ty_mapping_tt type standard table of ty_mapping with key key .
-
   constants:
     mc_colorset_cammel(8) type c value 'ColorSet'. "#EC NOTEXT
   constants:

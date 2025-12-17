@@ -10,14 +10,6 @@ class zcl_abapgit_object_zn07 definition
   protected section.
 private section.
 
-  types:
-    begin of ty_mapping,
-                  key type tadir-obj_name,
-                  name type string,
-                 end of ty_mapping .
-  types:
-    ty_mapping_tt type standard table of ty_mapping with key key .
-
   class ZCL_NEPTUNE_ABAPGIT_UTILITIES definition load .
   class-data GT_MAPPING type ZCL_NEPTUNE_ABAPGIT_UTILITIES=>TY_MAPPING_TT .
   data MV_ARTIFACT_TYPE type /NEPTUNE/ARTIFACT_TYPE .
