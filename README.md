@@ -4,6 +4,10 @@ Leveraging the already well-known open-source software [abapGit](https://github.
 
 This will allow you to have side-by-side your ABAP artifacts with your Neptune DXP artifacts, making it possible to store, version, and deploy full solutions across systems using GitHub.
 
+## Installation
+To install this abapGit Extension you have multiple options:
+- You can use abapGit itself to pull the extension classes from this repository directly into your system
+- You can download the transport zip file from our portal at [https://portal.neptune-software.com/launchpad/portal#product-download](https://portal.neptune-software.com/launchpad/portal#product-download). You can then either import the transport manually (see also post-installation activities below) or use the Neptune Setup Helper ABAP Program (can be downloaded from our portal).
 
 ## Documentation and Guides
 Check out our full documentation about this extension [here.](https://docs.neptune-software.com/neptune-sap-edition/23/resources-help/abapGit-integration.html)
