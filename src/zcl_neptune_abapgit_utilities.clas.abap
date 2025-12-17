@@ -56,7 +56,7 @@ CLASS zcl_neptune_abapgit_utilities DEFINITION
       !ct_mapping TYPE ty_mapping_tt
       RAISING
       zcx_abapgit_exception .
-  
+
     CLASS-METHODS map_object_to_filename
       IMPORTING
       !is_item TYPE zif_abapgit_definitions=>ty_item
@@ -65,7 +65,7 @@ CLASS zcl_neptune_abapgit_utilities DEFINITION
       !iv_artifact_type TYPE /neptune/artifact_type
       !iv_ext TYPE clike
       !iv_extra TYPE clike
-      !iv_modular_file_parts TYPE abap_bool 
+      !iv_modular_file_parts TYPE abap_bool
       CHANGING
       !cv_item_part_of_filename TYPE string
       RAISING
